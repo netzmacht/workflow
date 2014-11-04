@@ -78,4 +78,22 @@ abstract class ConditionCollection implements Condition
     {
         return $this->conditions;
     }
+
+    /**
+     * Remove condition from collection.
+     *
+     * @param Condition $condition Condition to remove.
+     *
+     * @return $this
+     */
+    public function removeCondition(Condition $condition)
+    {
+        foreach ($this->conditions as $index => $value) {
+            if ($value === $condition) {
+                unset($this->conditions[$index]);
+            }
+        }
+
+        return $this;
+    }
 }

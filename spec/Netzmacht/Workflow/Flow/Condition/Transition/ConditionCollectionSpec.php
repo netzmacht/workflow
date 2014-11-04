@@ -40,6 +40,14 @@ class ConditionCollectionSpec extends ObjectBehavior
         $this->getConditions()->shouldReturn(array($condition));
     }
 
+    function it_removes_a_condition(Condition $condition)
+    {
+        $this->addCondition($condition);
+        $this->getConditions()->shouldReturn(array($condition));
+        $this->removeCondition($condition)->shouldReturn($this);
+        $this->getConditions()->shouldReturn(array());
+    }
+
     function it_throws_if_invalid_condition_passed()
     {
         $this->shouldThrow('Assert\InvalidArgumentException')->duringAddConditions(array('test'));

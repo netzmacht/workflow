@@ -55,6 +55,14 @@ class StepSpec extends ObjectBehavior
         $this->isTransitionAllowed('test')->shouldReturn(true);
     }
 
+    function it_disallows_transition()
+    {
+        $this->allowTransition('test');
+        $this->isTransitionAllowed('test')->shouldReturn(true);
+        $this->disallowTransition('test')->shouldReturn($this);
+        $this->isTransitionAllowed('test')->shouldReturn(false);
+    }
+
     function it_returns_allowed_transitions()
     {
         $this->allowTransition('test')->shouldReturn($this);

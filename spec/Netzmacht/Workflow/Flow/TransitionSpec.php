@@ -106,6 +106,20 @@ class TransitionSpec extends ObjectBehavior
         $this->checkPreCondition($item, $context)->shouldReturn(false);
     }
 
+    function it_gets_condition(Condition $condition)
+    {
+        $this->getCondition()->shouldReturn(null);
+        $this->addCondition($condition);
+        $this->getCondition()->shouldHaveType('Netzmacht\Workflow\Flow\Condition\Transition\AndCondition');
+    }
+
+    function it_gets_pre_condition(Condition $condition)
+    {
+        $this->getPreCondition()->shouldReturn(null);
+        $this->addPreCondition($condition);
+        $this->getPreCondition()->shouldHaveType('Netzmacht\Workflow\Flow\Condition\Transition\AndCondition');
+    }
+
     function it_checks_a_condition(Condition $condition, Item $item, Context $context)
     {
         $condition->match($this, $item, $context)->willReturn(true);
