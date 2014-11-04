@@ -24,7 +24,8 @@
     },
     "require-dev": {
         "phpspec/phpspec": "2.1.*@dev",
-        "netzmacht/contao-build-tools": "dev-master"
+        "netzmacht/contao-build-tools": "dev-master",
+        "henrikbjorn/phpspec-code-coverage" : "~0.2"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
