@@ -34,14 +34,14 @@ class Transition extends Base
     /**
      * A pre condition which has to be passed to execute transition.
      *
-     * @var Condition
+     * @var AndCondition
      */
     private $preCondition;
 
     /**
      * A condition which has to be passed to execute the transition.
      *
-     * @var Condition
+     * @var AndCondition
      */
     private $condition;
 
