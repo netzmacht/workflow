@@ -2,6 +2,8 @@
 
 namespace spec\Netzmacht\Workflow\Flow;
 
+use Netzmacht\Workflow\Acl\Role;
+use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Data\EntityId;
@@ -307,5 +309,71 @@ class TransitionSpec extends ObjectBehavior
         $context->getProperties()->willReturn(array());
 
         $this->transit($item, $context)->shouldBe($newState);
+    }
+
+    function it_catches_action_failed_exceptions_during_action_execution(
+        Item $item,
+        Context $context,
+        State $state,
+        State $newState
+    ) {
+        $item->getLatestState()->willReturn($state);
+        $item->transit($newState)->shouldBeCalled();
+
+        $state->transit($this, $context, false)->willReturn($newState);
+
+        $this->isAllowed($item, $context)->shouldReturn(true);
+        $this->addAction(new ThrowingAction());
+
+        $context->addError(Argument::type('string'), Argument::type('array'))->shouldBeCalled();
+        $context->getProperties()->willReturn(array());
+
+        $this->transit($item, $context)->shouldBe($newState);
+    }
+
+    function it_has_roles(Role $role)
+    {
+        $this->addRole($role)->shouldReturn($this);
+        $this->getRoles()->shouldReturn(array($role));
+    }
+}
+
+class ThrowingAction implements Action
+{
+    /**
+     * Consider if user input is required.
+     *
+     * @return bool
+     */
+    public function requiresInputData()
+    {
+        // TODO: Implement requiresInputData() method.
+    }
+
+    /**
+     * Build the corresponding form.
+     *
+     * @param Form $form Transition form.
+     * @param Item $item Workflow item.
+     *
+     * @return void
+     */
+    public function buildForm(Form $form, Item $item)
+    {
+        // TODO: Implement buildForm() method.
+    }
+
+    /**
+     * Transit will execute the action.
+     *
+     * @param Transition $transition Current transition.
+     * @param Item       $item       Workflow item.
+     * @param Context    $context    Transition context.
+     *
+     * @return void
+     */
+    public function transit(Transition $transition, Item $item, Context $context)
+    {
+        throw new ActionFailedException();
     }
 }
