@@ -45,7 +45,7 @@ class Comparison
      */
     public static function compare($valueA, $valueB, $operator)
     {
-        $method = static::getOperatorMethod($operator);
+        $method = self::getOperatorMethod($operator);
 
         if ($method) {
             return call_user_func(array(get_called_class(), $method), $valueA, $valueB);
@@ -186,14 +186,15 @@ class Comparison
      */
     private static function getOperators()
     {
-        if (!is_array(static::$operators)) {
+        if (!is_array(self::$operators)) {
             $reflector = new \ReflectionClass(get_called_class());
             $constants = $reflector->getConstants();
             $operators = array();
 
             foreach ($constants as $name => $operator) {
                 $parts = explode('_', $name);
-                $parts = array_map(function($item) {
+                $parts = array_map(
+                    function ($item) {
                         $item = strtolower($item);
                         $item = ucfirst($item);
 
@@ -205,9 +206,9 @@ class Comparison
                 $operators[$operator] = lcfirst(implode('', $parts));
             }
 
-            static::$operators = $operators;
+            self::$operators = $operators;
         }
 
-        return static::$operators;
+        return self::$operators;
     }
 }
