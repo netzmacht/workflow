@@ -15,7 +15,7 @@ use Prophecy\Argument;
  * @package spec\Netzmacht\Workflow\Handler\Event
  * @mixin PostTransitionEvent
  */
-class PosTransitionEventSpec extends ObjectBehavior
+class PostTransitionEventSpec extends ObjectBehavior
 {
 
     function let(Workflow $workflow, Item $item, Context $context, State $state)
@@ -25,7 +25,7 @@ class PosTransitionEventSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Handler\Event\PreTransitionEvent');
+        $this->shouldHaveType('Netzmacht\Workflow\Handler\Event\PostTransitionEvent');
     }
 
     function it_extends_abstract_flow_event()

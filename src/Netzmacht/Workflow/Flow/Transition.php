@@ -308,11 +308,7 @@ class Transition extends Base
      */
     public function checkPreCondition(Item $item, Context $context)
     {
-        if (!$this->preCondition) {
-            return true;
-        }
-
-        return $this->preCondition->match($this, $item, $context);
+        return $this->performConditionCheck($this->preCondition, $item, $context);
     }
 
     /**
@@ -325,11 +321,7 @@ class Transition extends Base
      */
     public function checkCondition(Item $item, Context $context)
     {
-        if (!$this->condition) {
-            return true;
-        }
-
-        return $this->condition->match($this, $item, $context);
+        return $this->performConditionCheck($this->condition, $item, $context);
     }
 
     /**
@@ -388,5 +380,23 @@ class Transition extends Base
         }
 
         return $success;
+    }
+
+    /**
+     * Perform condition check.
+     *
+     * @param Condition|null $condition Condition to be checked.
+     * @param Item           $item      Workflow item.
+     * @param Context        $context   Condition context.
+     *
+     * @return bool
+     */
+    private function performConditionCheck($condition, $item, $context)
+    {
+        if (!$condition) {
+            return true;
+        }
+
+        return $condition->match($this, $item, $context);
     }
 }
