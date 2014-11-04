@@ -23,7 +23,7 @@ abstract class ConditionCollection implements Condition
     /**
      * All child conditions of the collection.
      *
-     * @var array|Condition[]
+     * @var Condition[]
      */
     protected $conditions = array();
 
@@ -62,7 +62,7 @@ abstract class ConditionCollection implements Condition
     /**
      * Get child conditions.
      *
-     * @return array|Condition[]
+     * @return Condition[]
      */
     public function getConditions()
     {

@@ -11,8 +11,6 @@
 
 namespace Netzmacht\Workflow\Data;
 
-use Traversable;
-
 /**
  * Interface Entity describes the public interface of an data entity being processed in a workflow.
  *

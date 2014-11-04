@@ -37,7 +37,7 @@ class Item
     /**
      * State the items already had.
      *
-     * @var State[]|array
+     * @var State[]
      */
     private $stateHistory;
 
@@ -133,7 +133,7 @@ class Item
     /**
      * Get the state history of the workflow item.
      *
-     * @return array|State[]
+     * @return State[]
      */
     public function getStateHistory()
     {

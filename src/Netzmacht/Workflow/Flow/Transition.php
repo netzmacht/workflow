@@ -355,7 +355,7 @@ class Transition extends Base
     /**
      * Get all roles.
      *
-     * @return array
+     * @return Role[]
      */
     public function getRoles()
     {

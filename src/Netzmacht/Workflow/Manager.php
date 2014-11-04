@@ -47,12 +47,12 @@ class Manager
      *
      * @param TransitionHandlerFactory $handlerFactory  The transition handler factory.
      * @param StateRepository          $stateRepository The state repository.
-     * @param Workflow[]|array         $workflows       The set of managed workflows.
+     * @param Workflow[]               $workflows       The set of managed workflows.
      */
     public function __construct(
         TransitionHandlerFactory $handlerFactory,
         StateRepository $stateRepository,
-        array $workflows = array()
+        $workflows = array()
     ) {
         Assertion::allIsInstanceOf($workflows, 'Netzmacht\Workflow\Flow\Workflow');
 

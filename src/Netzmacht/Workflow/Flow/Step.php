@@ -29,7 +29,7 @@ class Step extends Base
     /**
      * Assigned role.
      *
-     * @var Role
+     * @var Role|null
      */
     private $role;
 

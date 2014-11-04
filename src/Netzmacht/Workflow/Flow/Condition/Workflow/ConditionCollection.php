@@ -23,16 +23,16 @@ abstract class ConditionCollection implements Condition
     /**
      * Child conditions of the collection.
      *
-     * @var Condition[]|array
+     * @var Condition[]
      */
     protected $conditions = array();
 
     /**
      * Construct.
      *
-     * @param Condition[]|array $conditions Conditions.
+     * @param Condition[] $conditions Conditions.
      */
-    public function __construct(array $conditions = array())
+    public function __construct($conditions = array())
     {
         $this->addConditions($conditions);
     }
@@ -72,7 +72,7 @@ abstract class ConditionCollection implements Condition
     /**
      * Get all conditions.
      *
-     * @return array|Condition[]
+     * @return Condition[]
      */
     public function getConditions()
     {
