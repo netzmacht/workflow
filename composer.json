@@ -1,0 +1,44 @@
+{
+    "name":"netzmacht/workflow",
+    "description":"Workflow library",
+    "keywords":["workflow", "transition", "states"],
+    "type":"library",
+    "license":"LGPL-3.0+",
+    "authors":[
+        {
+            "name":"David Molineus",
+            "email":"mail@netzmacht.de",
+            "homepage":"http://www.netzmacht.de",
+            "role":"Project leader"
+        }
+    ],
+    "support":{
+        "email":"mail@netzmacht.de",
+        "issues":"https://github.com/netzmacht/workflow/issues",
+        "source":"https://github.com/netzmacht/workflow"
+    },
+    "require":{
+        "php":"~5.3",
+        "symfony/event-dispatcher": "~2.3",
+        "beberlei/assert": "~2.0"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "2.1.*@dev",
+        "netzmacht/contao-build-tools": "dev-master"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-0": {
+            "Netzmacht\\Workflow\\": "src/"
+        }
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "extra":{
+        "branch-alias": {
+            "dev-master": "0.2.*@dev"
+        }
+    }
+}
