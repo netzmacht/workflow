@@ -71,13 +71,26 @@ class ContextSpec extends ObjectBehavior
 
     function it_gets_namespace_properties_as_array()
     {
-        $this->getProperties(static::CUSTOM_NS)->shouldBeArray();
+        $this->setProperty('foo', 'bar', static::CUSTOM_NS);
+        $this->getProperties(static::CUSTOM_NS)->shouldReturn(array('foo' => 'bar'));
     }
 
     function it_sets_param()
     {
         $this->setParam('param', 'val')->shouldReturn($this);
         $this->getParam('param')->shouldReturn('val');
+    }
+
+    function it_gets_null_if_param_not_exists()
+    {
+        $this->getParam('foo')->shouldReturn(null);
+    }
+
+    function it_sets_params()
+    {
+        $data = array('default' => array('foo' => 'bar'));
+        $this->setParams($data)->shouldReturn($this);
+        $this->getParams()->shouldReturn($data);
     }
 
     function it_knows_if_param_exists()
