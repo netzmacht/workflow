@@ -15,14 +15,13 @@ use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Form\Form;
-use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Class ValidateTransitionEvent is dispatched when validating a transition.
  *
  * @package Netzmacht\Workflow\Handler\Event
  */
-class ValidateTransitionEvent extends Event
+class ValidateTransitionEvent extends AbstractFlowEvent
 {
     const NAME = 'workflow.transition.handler.validate';
 
@@ -41,14 +40,6 @@ class ValidateTransitionEvent extends Event
     private $validated = true;
 
     /**
-     * The current workflow.
-     *
-     * @var Workflow
-     */
-
-    private $workflow;
-
-    /**
      * The transition name.
      *
      * @var string
@@ -56,21 +47,7 @@ class ValidateTransitionEvent extends Event
     private $transitionName;
 
     /**
-     * The workflow item.
-     *
-     * @var Item
-     */
-    private $item;
-
-    /**
-     * The transition context.
-     *
-     * @var Context
-     */
-    private $context;
-
-    /**
-     * Consruct.
+     * Construct.
      *
      * @param Workflow $workflow       Current workflow.
      * @param string   $transitionName Transition name.
@@ -87,11 +64,10 @@ class ValidateTransitionEvent extends Event
         Form $form,
         $validated
     ) {
+        parent::__construct($workflow, $item, $context);
+
         $this->form           = $form;
-        $this->workflow       = $workflow;
         $this->transitionName = $transitionName;
-        $this->item           = $item;
-        $this->context        = $context;
         $this->validated      = $validated;
     }
 
@@ -128,16 +104,6 @@ class ValidateTransitionEvent extends Event
     }
 
     /**
-     * Get workflow item.
-     *
-     * @return Item
-     */
-    public function getItem()
-    {
-        return $this->item;
-    }
-
-    /**
      * Get name of current transition.
      *
      * @return string
@@ -145,25 +111,5 @@ class ValidateTransitionEvent extends Event
     public function getTransitionName()
     {
         return $this->transitionName;
-    }
-
-    /**
-     * Get the context.
-     *
-     * @return Context
-     */
-    public function getContext()
-    {
-        return $this->context;
-    }
-
-    /**
-     * Get the workflow.
-     *
-     * @return Workflow
-     */
-    public function getWorkflow()
-    {
-        return $this->workflow;
     }
 }

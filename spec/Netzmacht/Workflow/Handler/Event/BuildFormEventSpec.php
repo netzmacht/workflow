@@ -29,24 +29,14 @@ class BuildFormEventSpec extends ObjectBehavior
         $this->shouldHaveType('Netzmacht\Workflow\Handler\Event\BuildFormEvent');
     }
 
-    function it_gets_the_workflow(Workflow $workflow)
+    function it_extends_abstract_flow_event()
     {
-        $this->getWorkflow()->shouldReturn($workflow);
-    }
-
-    function it_gets_the_context(Context $context)
-    {
-        $this->getContext()->shouldReturn($context);
+        $this->shouldHaveType('Netzmacht\Workflow\Handler\Event\AbstractFlowEvent');
     }
 
     function it_gets_the_form(Form $form)
     {
         $this->getForm()->shouldReturn($form);
-    }
-
-    function it_gets_the_item(Item $item)
-    {
-        $this->getItem()->shouldReturn($item);
     }
 
     function it_gets_the_transition_name()

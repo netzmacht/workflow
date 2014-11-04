@@ -28,19 +28,9 @@ class PreTransitionEventSpec extends ObjectBehavior
         $this->shouldHaveType('Netzmacht\Workflow\Handler\Event\PreTransitionEvent');
     }
 
-    function it_gets_the_workflow(Workflow $workflow)
+    function it_extends_abstract_flow_event()
     {
-        $this->getWorkflow()->shouldReturn($workflow);
-    }
-
-    function it_gets_the_context(Context $context)
-    {
-        $this->getContext()->shouldReturn($context);
-    }
-
-    function it_gets_the_item(Item $item)
-    {
-        $this->getItem()->shouldReturn($item);
+        $this->shouldHaveType('Netzmacht\Workflow\Handler\Event\AbstractFlowEvent');
     }
 
     function it_gets_the_transition_name()

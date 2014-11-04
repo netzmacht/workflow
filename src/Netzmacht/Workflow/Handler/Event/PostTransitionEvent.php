@@ -16,14 +16,13 @@ use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
-use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Class PostTransitionEvent is dispatched after transition was executed.
  *
  * @package Netzmacht\Workflow\Handler\Event
  */
-class PostTransitionEvent extends Event
+class PostTransitionEvent extends AbstractFlowEvent
 {
     const NAME = 'workflow.transition.handler.post-transition';
 
@@ -35,27 +34,6 @@ class PostTransitionEvent extends Event
     private $state;
 
     /**
-     * Current workflow.
-     *
-     * @var Workflow
-     */
-    private $workflow;
-
-    /**
-     * Workflow item.
-     *
-     * @var Item
-     */
-    private $item;
-
-    /**
-     * Transition context.
-     *
-     * @var Context
-     */
-    private $context;
-
-    /**
      * Construct.
      *
      * @param Workflow $workflow Current workflow.
@@ -65,30 +43,9 @@ class PostTransitionEvent extends Event
      */
     public function __construct(Workflow $workflow, Item $item, Context $context, State $state)
     {
+        parent::__construct($workflow, $item, $context);
+
         $this->state    = $state;
-        $this->workflow = $workflow;
-        $this->item     = $item;
-        $this->context  = $context;
-    }
-
-    /**
-     * Get workflow.
-     *
-     * @return Workflow
-     */
-    public function getWorkflow()
-    {
-        return $this->workflow;
-    }
-
-    /**
-     * Get workflow item.
-     *
-     * @return Item
-     */
-    public function getItem()
-    {
-        return $this->item;
     }
 
     /**
@@ -99,15 +56,5 @@ class PostTransitionEvent extends Event
     public function getState()
     {
         return $this->state;
-    }
-
-    /**
-     * Get workflow context.
-     *
-     * @return Context
-     */
-    public function getContext()
-    {
-        return $this->context;
     }
 }
