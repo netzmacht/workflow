@@ -45,7 +45,7 @@ class PostTransitionEvent extends AbstractFlowEvent
     {
         parent::__construct($workflow, $item, $context);
 
-        $this->state    = $state;
+        $this->state = $state;
     }
 
     /**

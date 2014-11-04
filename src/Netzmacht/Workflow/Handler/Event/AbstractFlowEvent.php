@@ -18,7 +18,7 @@ use Netzmacht\Workflow\Flow\Workflow;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Class AbstractFlowEvent
+ * Class AbstractFlowEvent provides basic properties for a flow event.
  *
  * @package Netzmacht\Workflow\Handler\Event
  */
@@ -52,7 +52,7 @@ abstract class AbstractFlowEvent extends Event
      * @param Item     $item     The workflow item.
      * @param Context  $context  The transition context.
      */
-    function __construct(Workflow $workflow, Item $item, Context $context)
+    public function __construct(Workflow $workflow, Item $item, Context $context)
     {
         $this->workflow = $workflow;
         $this->item     = $item;

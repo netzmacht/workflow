@@ -56,5 +56,4 @@ class PreTransitionEvent extends AbstractFlowEvent
     {
         return $this->transitionName;
     }
-
 }
