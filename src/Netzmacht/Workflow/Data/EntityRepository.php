@@ -11,13 +11,17 @@
 
 namespace Netzmacht\Workflow\Data;
 
-
-interface EntityRepository 
+/**
+ * Interface EntityRepository describes the repository which stores the items.
+ *
+ * @package Netzmacht\Workflow\Data
+ */
+interface EntityRepository
 {
     /**
      * Find an entity by id.
      *
-     * @param int $entityId Entity id.
+     * @param int $entityId The Entity id.
      *
      * @return Entity
      */

@@ -48,7 +48,7 @@ class Transition extends Base
     /**
      * A set of roles which can perform the transition.
      *
-     * @var \Netzmacht\Workflow\Acl\Role[]
+     * @var Role[]
      */
     private $roles = array();
 
@@ -60,10 +60,11 @@ class Transition extends Base
     private $workflow;
 
     /**
-     * This method should not be called. It's used to set the workflow reference when transition is added to the
-     * workflow.
+     * This method should not be called.
      *
-     * @param Workflow $workflow
+     * It's used to set the workflow reference when transition is added to the workflow.
+     *
+     * @param Workflow $workflow Current workflow.
      *
      * @return $this
      */
@@ -279,7 +280,7 @@ class Transition extends Base
     /**
      * Transit an Item using this transition.
      *
-     * @param Item   $item     The Item.
+     * @param Item    $item    The Item.
      * @param Context $context The transition context.
      *
      * @throws WorkflowException If process was not started yet.
@@ -334,7 +335,7 @@ class Transition extends Base
     /**
      * Add a new role.
      *
-     * @param \Netzmacht\Workflow\Acl\Role $role The role being added.
+     * @param Role $role The role being added.
      *
      * @return $this
      */
@@ -362,8 +363,10 @@ class Transition extends Base
     }
 
     /**
-     * @param Item    $item
-     * @param Context $context
+     * Execute all actions.
+     *
+     * @param Item    $item    The workflow item.
+     * @param Context $context The transition context.
      *
      * @return bool
      */

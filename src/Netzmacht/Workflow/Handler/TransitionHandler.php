@@ -88,7 +88,7 @@ interface TransitionHandler
     /**
      * Validate the input.
      *
-     * @param \Netzmacht\Workflow\Form\Form $form The transition form instance.
+     * @param Form $form The transition form instance.
      *
      * @return bool
      */

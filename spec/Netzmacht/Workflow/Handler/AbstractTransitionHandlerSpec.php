@@ -197,7 +197,7 @@ class TransitionHandler extends AbstractTransitionHandler
         Workflow $workflow,
         Item $item,
         Context $context,
-        $state
+        State $state
     ) {
     }
 

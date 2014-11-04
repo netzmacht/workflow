@@ -21,6 +21,8 @@ use Assert\Assertion;
 abstract class ConditionCollection implements Condition
 {
     /**
+     * All child conditions of the collection.
+     *
      * @var array|Condition[]
      */
     protected $conditions = array();
@@ -28,7 +30,7 @@ abstract class ConditionCollection implements Condition
     /**
      * Add condition.
      *
-     * @param Condition $condition
+     * @param Condition $condition Condition being added.
      *
      * @return $this
      */
@@ -42,7 +44,7 @@ abstract class ConditionCollection implements Condition
     /**
      * Remove condition from collection.
      *
-     * @param Condition $condition
+     * @param Condition $condition Condition being removed.
      *
      * @return $this
      */
@@ -58,7 +60,7 @@ abstract class ConditionCollection implements Condition
     }
 
     /**
-     * Get child conditions
+     * Get child conditions.
      *
      * @return array|Condition[]
      */
@@ -70,7 +72,7 @@ abstract class ConditionCollection implements Condition
     /**
      * Add multiple conditions.
      *
-     * @param array $conditions
+     * @param array $conditions Array of conditions being added.
      *
      * @return $this
      *

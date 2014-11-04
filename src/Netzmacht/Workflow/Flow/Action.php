@@ -33,7 +33,7 @@ interface Action
     /**
      * Build the corresponding form.
      *
-     * @param \Netzmacht\Workflow\Form\Form $form Transition form.
+     * @param Form $form Transition form.
      * @param Item $item Workflow item.
      *
      * @return void

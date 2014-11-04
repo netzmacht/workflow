@@ -45,6 +45,8 @@ class EntityPropertyCondition implements Condition
     private $value;
 
     /**
+     * Get the operator.
+     *
      * @return string
      */
     public function getOperator()
@@ -53,7 +55,9 @@ class EntityPropertyCondition implements Condition
     }
 
     /**
-     * @param string $operator
+     * Set the operator.
+     *
+     * @param string $operator Comparison operator.
      *
      * @return $this
      */
@@ -65,6 +69,8 @@ class EntityPropertyCondition implements Condition
     }
 
     /**
+     * Get the property.
+     *
      * @return string
      */
     public function getProperty()
@@ -87,6 +93,8 @@ class EntityPropertyCondition implements Condition
     }
 
     /**
+     * Get the comparison value.
+     *
      * @return mixed
      */
     public function getValue()
@@ -95,7 +103,9 @@ class EntityPropertyCondition implements Condition
     }
 
     /**
-     * @param mixed $value
+     * Set the value to which the entity property should be compared.
+     *
+     * @param mixed $value The value.
      *
      * @return $this
      */
@@ -111,7 +121,7 @@ class EntityPropertyCondition implements Condition
      *
      * @param Transition $transition The transition being in.
      * @param Item       $item       The entity being transits.
-     * @param \Netzmacht\Workflow\Flow\Context    $context    The transition context.
+     * @param Context    $context    The transition context.
      *
      * @return bool
      */

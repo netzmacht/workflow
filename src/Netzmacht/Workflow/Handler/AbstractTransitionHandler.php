@@ -219,7 +219,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * Validate the input.
      *
-     * @param \Netzmacht\Workflow\Form\Form $form The transition form.
+     * @param Form $form The transition form.
      *
      * @return bool
      */
@@ -317,7 +317,11 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     }
 
     /**
-     * @param Form $form
+     * Build transition form.
+     *
+     * @param Form $form The form being built.
+     *
+     * @return void
      */
     private function buildForm(Form $form)
     {
@@ -382,7 +386,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
      * Consider if form is validated.
      *
      * @param Form $form      Transition form.
-     * @param bool $validated Current validation state
+     * @param bool $validated Current validation state.
      *
      * @return bool
      */
@@ -411,23 +415,24 @@ abstract class AbstractTransitionHandler implements TransitionHandler
      * @param Workflow $workflow The workflow.
      * @param Item     $item     Current workflow item.
      * @param Context  $context  Transition context.
-     * @param          $state
+     * @param State    $state    Item state.
+     *
      * @return void
      */
     abstract protected function dispatchPostTransit(
         Workflow $workflow,
         Item $item,
         Context $context,
-        $state
+        State $state
     );
 
     /**
      * Dispatch build form.
      *
-     * @param Form    $form Form being build.
-     * @param Item    $item Workflow item.
-     * @param Context $context
-     * @param string  $transitionName
+     * @param Form    $form           Form being build.
+     * @param Item    $item           Workflow item.
+     * @param Context $context        Transition context.
+     * @param string  $transitionName Transition name.
      *
      * @return void
      */

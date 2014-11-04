@@ -25,9 +25,9 @@ interface Condition
     /**
      * Consider if condition matches for the given entity.
      *
-     * @param \Netzmacht\Workflow\Flow\Transition $transition The transition being in.
-     * @param \Netzmacht\Workflow\Flow\Item       $item       The entity being transits.
-     * @param \Netzmacht\Workflow\Flow\Context    $context    The transition context.
+     * @param Transition $transition The transition being in.
+     * @param Item       $item       The entity being transits.
+     * @param Context    $context    The transition context.
      *
      * @return bool
      */

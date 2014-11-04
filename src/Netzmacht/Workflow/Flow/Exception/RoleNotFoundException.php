@@ -11,8 +11,11 @@
 
 namespace Netzmacht\Workflow\Flow\Exception;
 
-
+/**
+ * Class RoleNotFoundException is thrown when role is not found.
+ *
+ * @package Netzmacht\Workflow\Flow\Exception
+ */
 class RoleNotFoundException extends WorkflowException
 {
-
 }

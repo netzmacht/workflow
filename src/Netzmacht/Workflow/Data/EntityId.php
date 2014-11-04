@@ -52,7 +52,7 @@ class EntityId
     /**
      * Great the entity id from an string.
      *
-     * @param $entityId Entity id as string representation. For example provider::2.
+     * @param string $entityId Entity id as string representation. For example provider::2.
      *
      * @return static
      */
@@ -99,7 +99,7 @@ class EntityId
     /**
      * Consider if it is equal with another entity id.
      *
-     * @param EntityId $entityId
+     * @param EntityId $entityId The entity id to compare with.
      *
      * @return bool
      */

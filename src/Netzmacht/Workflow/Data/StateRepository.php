@@ -23,7 +23,7 @@ interface StateRepository
     /**
      * Find last worfklow state of an entity.
      *
-     * @param EntityId $entityId   The entity id.
+     * @param EntityId $entityId The entity id.
      *
      * @return State[]
      */

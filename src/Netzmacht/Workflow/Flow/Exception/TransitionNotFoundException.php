@@ -30,6 +30,10 @@ class TransitionNotFoundException extends \Exception
      */
     public function __construct($transitionName, $workflowName, $code = 0, Exception $previous = null)
     {
-        parent::__construct(sprintf('Transition "%s" not found in workflow "%s"', $transitionName, $workflowName));
+        parent::__construct(
+            sprintf('Transition "%s" not found in workflow "%s"', $transitionName, $workflowName),
+            $code,
+            $previous
+        );
     }
 }

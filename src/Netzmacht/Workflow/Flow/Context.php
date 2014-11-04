@@ -69,7 +69,7 @@ class Context
     /**
      * Get the property value.
      *
-     * @param string $name Property name.
+     * @param string $name      Property name.
      * @param string $namespace Namespace the property belongs to.
      *
      * @return mixed
@@ -86,7 +86,7 @@ class Context
     /**
      * Consider if property is set.
      *
-     * @param string $name Property name.
+     * @param string $name      Property name.
      * @param string $namespace Namespace the property belongs to.
      *
      * @return bool

@@ -75,7 +75,7 @@ abstract class Base
     /**
      * Set the label.
      *
-     * @param string $label
+     * @param string $label The label.
      *
      * @return $this
      */
@@ -97,6 +97,8 @@ abstract class Base
     }
 
     /**
+     * Get the model id.
+     *
      * @return int
      */
     public function getModelId()
@@ -127,7 +129,7 @@ abstract class Base
      *
      * @return null
      */
-    public function getConfigValue($name, $default=null)
+    public function getConfigValue($name, $default = null)
     {
         if (isset($this->config[$name])) {
             return $this->config[$name];

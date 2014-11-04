@@ -17,63 +17,99 @@ use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Form\Form;
 use Symfony\Component\EventDispatcher\Event;
 
+/**
+ * Class ValidateTransitionEvent is dispatched when validating a transition.
+ *
+ * @package Netzmacht\Workflow\Handler\Event
+ */
 class ValidateTransitionEvent extends Event
 {
     const NAME = 'workflow.transition.handler.validate';
 
     /**
+     * The transition form.
+     *
      * @var Form
      */
     private $form;
 
     /**
+     * Validation state.
+     *
      * @var bool
      */
     private $validated = true;
+
     /**
+     * The current workflow.
+     *
      * @var Workflow
      */
+
     private $workflow;
+
     /**
+     * The transition name.
+     *
      * @var string
      */
     private $transitionName;
+
     /**
+     * The workflow item.
+     *
      * @var Item
      */
     private $item;
 
     /**
+     * The transition context.
+     *
      * @var Context
      */
     private $context;
 
     /**
-     * @param Workflow $workflow
-     * @param string   $transitionName
-     * @param Context  $context
-     * @param Item     $item
-     * @param Form     $form
-     * @param bool     $validated
+     * Consruct.
+     *
+     * @param Workflow $workflow       Current workflow.
+     * @param string   $transitionName Transition name.
+     * @param Item     $item           Workflow item.
+     * @param Context  $context        Transition context.
+     * @param Form     $form           Transition form.
+     * @param bool     $validated      Validation state.
      */
-    public function __construct(Workflow $workflow, $transitionName, Item $item, Context $context, Form $form, $validated)
-    {
-        $this->form = $form;
-        $this->workflow = $workflow;
+    public function __construct(
+        Workflow $workflow,
+        $transitionName,
+        Item $item,
+        Context $context,
+        Form $form,
+        $validated
+    ) {
+        $this->form           = $form;
+        $this->workflow       = $workflow;
         $this->transitionName = $transitionName;
-        $this->item = $item;
-        $this->context = $context;
-        $this->validated = $validated;
+        $this->item           = $item;
+        $this->context        = $context;
+        $this->validated      = $validated;
     }
 
     /**
-     * @return \Netzmacht\Workflow\Form\Form
+     * Get the form.
+     *
+     * @return Form
      */
     public function getForm()
     {
         return $this->form;
     }
 
+    /**
+     * Set validation state to invalid.
+     *
+     * @return $this
+     */
     public function setInvalid()
     {
         $this->validated = false;
@@ -81,12 +117,19 @@ class ValidateTransitionEvent extends Event
         return $this;
     }
 
+    /**
+     * Consider validation state.
+     *
+     * @return bool
+     */
     public function isValid()
     {
         return $this->validated;
     }
 
     /**
+     * Get workflow item.
+     *
      * @return Item
      */
     public function getItem()
@@ -95,6 +138,8 @@ class ValidateTransitionEvent extends Event
     }
 
     /**
+     * Get name of current transition.
+     *
      * @return string
      */
     public function getTransitionName()
@@ -103,6 +148,8 @@ class ValidateTransitionEvent extends Event
     }
 
     /**
+     * Get the context.
+     *
      * @return Context
      */
     public function getContext()
@@ -111,6 +158,8 @@ class ValidateTransitionEvent extends Event
     }
 
     /**
+     * Get the workflow.
+     *
      * @return Workflow
      */
     public function getWorkflow()

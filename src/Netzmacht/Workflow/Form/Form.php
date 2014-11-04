@@ -11,9 +11,7 @@
 
 namespace Netzmacht\Workflow\Form;
 
-use Netzmacht\Workflow\Form\FormField;
 use Netzmacht\Workflow\Flow\Context;
-
 
 /**
  * Interface Form describes a form instance which is used for workflow transition.
@@ -25,7 +23,7 @@ interface Form
     /**
      * Validate form data.
      *
-     * @param \Netzmacht\Workflow\Flow\Context $context
+     * @param Context $context The transition context.
      *
      * @return bool
      */
@@ -51,9 +49,11 @@ interface Form
     public function setFieldsetDetails($name, $label, $description = null, $class = null);
 
     /**
-     * @param string $name
-     * @param string $type
-     * @param array  $extra
+     * Create a form field.
+     *
+     * @param string $name  Form field name.
+     * @param string $type  Form field type.
+     * @param array  $extra Form field extra configuration.
      *
      * @return FormField
      */
@@ -62,8 +62,8 @@ interface Form
     /**
      * Add a field to the form.
      *
-     * @param FormField $formField
-     * @param string    $fieldset
+     * @param FormField $formField Formfield to be added.
+     * @param string    $fieldset  Name of the fieldset.
      *
      * @return $this
      */

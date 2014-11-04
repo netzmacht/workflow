@@ -55,7 +55,7 @@ class ProviderNameCondition implements Condition
     /**
      * Consider if workflow matches to the entity.
      *
-     * @param \Netzmacht\Workflow\Flow\Workflow $workflow
+     * @param Workflow $workflow The workflow.
      * @param Entity   $entity   The entity.
      *
      * @return bool

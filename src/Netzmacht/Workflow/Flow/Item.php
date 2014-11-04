@@ -93,7 +93,7 @@ class Item
     /**
      * Transits to a new state.
      *
-     * @param \Netzmacht\Workflow\Flow\State $state The state being created.
+     * @param State $state The state being created.
      *
      * @return $this
      */
@@ -131,9 +131,9 @@ class Item
     }
 
     /**
-     * Get the state history.
+     * Get the state history of the workflow item.
      *
-     * @return array|\Netzmacht\Workflow\Flow\State[]
+     * @return array|State[]
      */
     public function getStateHistory()
     {
@@ -145,7 +145,7 @@ class Item
      *
      * @param bool $successfulOnly Return only success ful steps.
      *
-     * @return bool|\Netzmacht\Workflow\Flow\State
+     * @return bool|State
      */
     public function getLatestState($successfulOnly = true)
     {

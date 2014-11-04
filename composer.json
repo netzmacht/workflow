@@ -23,7 +23,7 @@
         "beberlei/assert": "~2.0"
     },
     "require-dev": {
-        "phpspec/phpspec": "2.1.*@dev",
+        "phpspec/phpspec": "2.1.*",
         "netzmacht/contao-build-tools": "dev-master",
         "henrikbjorn/phpspec-code-coverage" : "~0.2"
     },
@@ -39,7 +39,7 @@
     },
     "extra":{
         "branch-alias": {
-            "dev-master": "0.2.*@dev"
+            "dev-master": "1.0.x-dev"
         }
     }
 }

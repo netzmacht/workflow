@@ -52,7 +52,7 @@ class Step extends Base
      */
     public function setFinal($final)
     {
-        $this->final = (bool)$final;
+        $this->final = (bool) $final;
 
         return $this;
     }
@@ -125,7 +125,7 @@ class Step extends Base
     /**
      * Assign step to a role.
      *
-     * @param Role $role
+     * @param Role $role Acl role.
      *
      * @return $this
      */

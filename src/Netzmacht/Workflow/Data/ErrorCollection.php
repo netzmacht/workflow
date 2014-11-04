@@ -110,7 +110,7 @@ class ErrorCollection
     public function addErrors(array $errors)
     {
         foreach ($errors as $error) {
-            list($message, $params) = (array)$error;
+            list($message, $params) = (array) $error;
             $this->addError($message, $params);
         }
 

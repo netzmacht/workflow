@@ -14,7 +14,8 @@ namespace Netzmacht\Workflow\Flow\Exception;
 use Exception;
 
 /**
- * Class WorkflowException is thrown if something went wrong during workflow
+ * Class WorkflowException is thrown if something went wrong during workflow.
+ *
  * @package Netzmacht\Workflow\Exception\Flow
  */
 class WorkflowException extends \Exception

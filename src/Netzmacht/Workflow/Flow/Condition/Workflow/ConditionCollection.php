@@ -13,9 +13,16 @@ namespace Netzmacht\Workflow\Flow\Condition\Workflow;
 
 use Assert\Assertion;
 
+/**
+ * Class ConditionCollection contains child condition which are called during match.
+ *
+ * @package Netzmacht\Workflow\Flow\Condition\Workflow
+ */
 abstract class ConditionCollection implements Condition
 {
     /**
+     * Child conditions of the collection.
+     *
      * @var Condition[]|array
      */
     protected $conditions = array();
@@ -25,7 +32,7 @@ abstract class ConditionCollection implements Condition
      *
      * @param Condition[]|array $conditions Conditions.
      */
-    function __construct(array $conditions = array())
+    public function __construct(array $conditions = array())
     {
         $this->addConditions($conditions);
     }
@@ -45,7 +52,9 @@ abstract class ConditionCollection implements Condition
     }
 
     /**
-     * @param array $conditions
+     * Add multiple conditions.
+     *
+     * @param array $conditions Array of conditions.
      *
      * @return $this
      */
@@ -61,6 +70,8 @@ abstract class ConditionCollection implements Condition
     }
 
     /**
+     * Get all conditions.
+     *
      * @return array|Condition[]
      */
     public function getConditions()

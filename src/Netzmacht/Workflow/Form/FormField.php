@@ -12,7 +12,8 @@
 namespace Netzmacht\Workflow\Form;
 
 /**
- * Interface FormField describes an form field which can be added to
+ * Interface FormField describes an form field which can be added to transition form.
+ *
  * @package Netzmacht\Workflow\Form
  */
 interface FormField
@@ -139,8 +140,8 @@ interface FormField
     /**
      * Add field to a form.
      *
-     * @param Form   $form
-     * @param string $fieldset
+     * @param Form   $form     Form object.
+     * @param string $fieldset Name of the fieldset.
      *
      * @return $this
      */

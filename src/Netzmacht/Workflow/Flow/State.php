@@ -34,7 +34,7 @@ class State
     /**
      * The entity id.
      *
-     * @var \Netzmacht\Workflow\Data\EntityId
+     * @var EntityId
      */
     private $entityId;
 
@@ -90,7 +90,7 @@ class State
     /**
      * Construct.
      *
-     * @param \Netzmacht\Workflow\Data\EntityId $entityId       The entity id.
+     * @param EntityId $entityId       The entity id.
      * @param string   $workflowName   Workflow name.
      * @param string   $transitionName The transition executed to reach the step.
      * @param string   $stepToName     The step reached after transition.
@@ -213,7 +213,7 @@ class State
     /**
      * Get the entity id.
      *
-     * @return \Netzmacht\Workflow\Data\EntityId
+     * @return EntityId
      */
     public function getEntityId()
     {

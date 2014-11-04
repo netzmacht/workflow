@@ -12,6 +12,7 @@
 namespace Netzmacht\Workflow\Handler;
 
 use Netzmacht\Workflow\Data\EntityRepository;
+use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Handler\Event\BuildFormEvent;
 use Netzmacht\Workflow\Handler\Event\ValidateTransitionEvent;
 use Netzmacht\Workflow\Data\StateRepository;
@@ -25,16 +26,31 @@ use Netzmacht\Workflow\Transaction\TransactionHandler;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface as EventDispatcher;
 
 /**
- * Class EventDispatchingTransitionHandler
+ * Class EventDispatchingTransitionHandler dispatches events during handling the transition.
+ *
  * @package Netzmacht\Workflow\Handler
  */
 class EventDispatchingTransitionHandler extends AbstractTransitionHandler
 {
     /**
+     * The event dispatcher.
+     *
      * @var EventDispatcher
      */
     private $eventDispatcher;
 
+    /**
+     * Construct.
+     *
+     * @param Item               $item               The item.
+     * @param Workflow           $workflow           The current workflow.
+     * @param string             $transitionName     The transition to be handled.
+     * @param EntityRepository   $entityRepository   EntityRepository which stores changes.
+     * @param StateRepository    $stateRepository    StateRepository which stores new states.
+     * @param TransactionHandler $transactionHandler TransactionHandler take care of transactions.
+     * @param Context            $context            The context of the transition.
+     * @param EventDispatcher    $eventDispatcher    The event dispatcher.
+     */
     public function __construct(
         Item $item,
         Workflow $workflow,
@@ -61,10 +77,10 @@ class EventDispatchingTransitionHandler extends AbstractTransitionHandler
     /**
      * Dispatch build form.
      *
-     * @param Form    $form Form being build.
-     * @param Item    $item Workflow item.
-     * @param Context $context
-     * @param string  $transitionName
+     * @param Form    $form           Form being build.
+     * @param Item    $item           Workflow item.
+     * @param Context $context        Transition context.
+     * @param string  $transitionName Transition name.
      *
      * @return void
      */
@@ -78,7 +94,7 @@ class EventDispatchingTransitionHandler extends AbstractTransitionHandler
      * Consider if form is validated.
      *
      * @param Form $form      Transition form.
-     * @param bool $validated Current validation state
+     * @param bool $validated Current validation state.
      *
      * @return bool
      */
@@ -101,10 +117,10 @@ class EventDispatchingTransitionHandler extends AbstractTransitionHandler
     /**
      * Dispatch pre transition.
      *
-     * @param Workflow   $workflow       The workflow.
-     * @param Item       $item           Current workflow item.
-     * @param Context    $context        Transition context.
-     * @param string     $transitionName Transition name.
+     * @param Workflow $workflow       The workflow.
+     * @param Item     $item           Current workflow item.
+     * @param Context  $context        Transition context.
+     * @param string   $transitionName Transition name.
      *
      * @return void
      */
@@ -124,7 +140,7 @@ class EventDispatchingTransitionHandler extends AbstractTransitionHandler
      * @param Workflow $workflow The workflow.
      * @param Item     $item     Current workflow item.
      * @param Context  $context  Transition context.
-     * @param          $state
+     * @param State    $state    Item state.
      *
      * @return void
      */
@@ -132,7 +148,7 @@ class EventDispatchingTransitionHandler extends AbstractTransitionHandler
         Workflow $workflow,
         Item $item,
         Context $context,
-        $state
+        State $state
     ) {
         $event = new PostTransitionEvent($workflow, $item, $context, $state);
         $this->eventDispatcher->dispatch($event::NAME, $event);

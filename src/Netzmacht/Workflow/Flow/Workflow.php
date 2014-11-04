@@ -55,6 +55,8 @@ class Workflow extends Base
     private $roles;
 
     /**
+     * Name of the provider.
+     *
      * @var string
      */
     private $providerName;
@@ -62,11 +64,11 @@ class Workflow extends Base
     /**
      * Construct.
      *
-     * @param string      $name   The name of the workflow.
-     * @param null|string $providerName
-     * @param null        $label  The label of the workflow.
-     * @param array       $config Extra config.
-     * @param null        $modelId
+     * @param string $name         The name of the workflow.
+     * @param string $providerName Name of the provider.
+     * @param null   $label        The label of the workflow.
+     * @param array  $config       Extra config.
+     * @param null   $modelId      Model id.
      */
     public function __construct($name, $providerName, $label = null, array $config = array(), $modelId = null)
     {
@@ -276,7 +278,7 @@ class Workflow extends Base
     /**
      * Transit the entity to a new state.
      *
-     * @param Item    $item         The entity.
+     * @param Item    $item           The item.
      * @param string  $transitionName The transition name.
      * @param Context $context        The context of the transition.
      *

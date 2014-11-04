@@ -18,39 +18,62 @@ use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Symfony\Component\EventDispatcher\Event;
 
+/**
+ * Class PostTransitionEvent is dispatched after transition was executed.
+ *
+ * @package Netzmacht\Workflow\Handler\Event
+ */
 class PostTransitionEvent extends Event
 {
     const NAME = 'workflow.transition.handler.post-transition';
 
     /**
+     * Workflow item state.
+     *
      * @var State
      */
     private $state;
 
     /**
+     * Current workflow.
+     *
      * @var Workflow
      */
     private $workflow;
 
     /**
+     * Workflow item.
+     *
      * @var Item
      */
     private $item;
 
     /**
-     * @param Workflow  $workflow
-     * @param Item      $item
-     * @param Context   $context
-     * @param State     $state
+     * Transition context.
+     *
+     * @var Context
+     */
+    private $context;
+
+    /**
+     * Construct.
+     *
+     * @param Workflow $workflow Current workflow.
+     * @param Item     $item     Workflow item.
+     * @param Context  $context  Transition context.
+     * @param State    $state    Workflow item state.
      */
     public function __construct(Workflow $workflow, Item $item, Context $context, State $state)
     {
         $this->state    = $state;
         $this->workflow = $workflow;
         $this->item     = $item;
+        $this->context  = $context;
     }
 
     /**
+     * Get workflow.
+     *
      * @return Workflow
      */
     public function getWorkflow()
@@ -59,6 +82,8 @@ class PostTransitionEvent extends Event
     }
 
     /**
+     * Get workflow item.
+     *
      * @return Item
      */
     public function getItem()
@@ -67,10 +92,22 @@ class PostTransitionEvent extends Event
     }
 
     /**
+     * Get current state.
+     *
      * @return State
      */
     public function getState()
     {
         return $this->state;
+    }
+
+    /**
+     * Get workflow context.
+     *
+     * @return Context
+     */
+    public function getContext()
+    {
+        return $this->context;
     }
 }

@@ -15,12 +15,17 @@ use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Item;
 
+/**
+ * Class AndCondition matches if all child conditions does.
+ *
+ * @package Netzmacht\Workflow\Flow\Condition\Transition
+ */
 class AndCondition extends ConditionCollection
 {
     /**
      * Consider if condition matches for the given entity.
      *
-     * @param \Netzmacht\Workflow\Flow\Transition $transition The transition being in.
+     * @param Transition $transition The transition being in.
      * @param Item       $item       The entity being transits.
      * @param Context    $context    The transition context.
      *
