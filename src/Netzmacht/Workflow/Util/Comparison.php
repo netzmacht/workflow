@@ -28,6 +28,13 @@ class Comparison
     const GREATER_THAN_OR_EQUALS = '>=';
 
     /**
+     * Operation method mapping cache.
+     *
+     * @var array
+     */
+    private static $operators;
+
+    /**
      * Compare two values.
      *
      * @param mixed  $valueA   Value a.
@@ -38,34 +45,14 @@ class Comparison
      */
     public static function compare($valueA, $valueB, $operator)
     {
-        switch ($operator) {
-            case static::EQUALS:
-                return static::equals($valueA, $valueB);
+        $method = static::getOperatorMethod($operator);
 
-            case static::NOT_EQUALS:
-                return static::notEquals($valueA, $valueB);
-
-            case static::IDENTICAL:
-                return static::identical($valueA, $valueB);
-
-            case static::NOT_IDENTICAL:
-                return static::notIdentical($valueA, $valueB);
-
-            case static::GREATER_THAN:
-                return static::greaterThan($valueA, $valueB);
-
-            case static::GREATER_THAN_OR_EQUALS:
-                return static::greaterThanOrEquals($valueA, $valueB);
-
-            case static::LESSER_THAN:
-                return static::lesserThan($valueA, $valueB);
-
-            case static::LESSER_THAN_OR_EQUALS:
-                return static::lesserThanOrEquals($valueA, $valueB);
-
-            default:
-                return false;
+        if ($method) {
+            return call_user_func(array(get_called_class(), $method), $valueA, $valueB);
         }
+
+        return false;
+
     }
 
     /**
@@ -172,5 +159,55 @@ class Comparison
     public static function lesserThanOrEquals($valueA, $valueB)
     {
         return $valueA <= $valueB;
+    }
+
+    /**
+     * Get operator method. Returns false if metod not set.
+     *
+     * @param string $operator The current operator.
+     *
+     * @return string|bool
+     */
+    private static function getOperatorMethod($operator)
+    {
+        $operators = self::getOperators();
+
+        if (isset($operators[$operator])) {
+            return $operators[$operator];
+        }
+
+        return false;
+    }
+
+    /**
+     * Get operator method mapping.
+     *
+     * @return array
+     */
+    private static function getOperators()
+    {
+        if (!is_array(static::$operators)) {
+            $reflector = new \ReflectionClass(get_called_class());
+            $constants = $reflector->getConstants();
+            $operators = array();
+
+            foreach ($constants as $name => $operator) {
+                $parts = explode('_', $name);
+                $parts = array_map(function($item) {
+                        $item = strtolower($item);
+                        $item = ucfirst($item);
+
+                        return $item;
+                    },
+                    $parts
+                );
+
+                $operators[$operator] = lcfirst(implode('', $parts));
+            }
+
+            static::$operators = $operators;
+        }
+
+        return static::$operators;
     }
 }
