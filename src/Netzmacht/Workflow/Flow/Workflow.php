@@ -186,6 +186,7 @@ class Workflow extends Base
      */
     public function addRole(Role $role)
     {
+        $role->setWorkflowName($this->getName());
         $this->roles[] = $role;
 
         return $this;

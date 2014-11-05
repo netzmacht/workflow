@@ -93,6 +93,7 @@ class WorkflowSpec extends ObjectBehavior
     function it_adds_a_role(Role $role)
     {
         $role->getName()->willReturn('acl');
+        $role->setWorkflowName(static::NAME)->shouldBeCalled();
 
         $this->addRole($role)->shouldReturn($this);
         $this->getRole('acl')->shouldReturn($role);

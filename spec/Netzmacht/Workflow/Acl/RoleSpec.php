@@ -30,16 +30,22 @@ class RoleSpec extends ObjectBehavior
         $this->shouldHaveType('Netzmacht\Workflow\Base');
     }
 
+    function it_belongs_to_an_workflow()
+    {
+        $this->setWorkflowName('workflow')->shouldReturn($this);
+        $this->getFullName()->shouldReturn('workflow::' . static::NAME);
+    }
+
     function it_equals_to_identical_role(Role $role)
     {
-        $role->getName()->willReturn(static::NAME);
+        $role->getFullName()->willReturn(static::NAME);
 
         $this->equals($role);
     }
 
     function it_does_not_equal_to_different_role(Role $role)
     {
-        $role->getName()->willReturn('other_role');
+        $role->getFullName()->willReturn('other_role');
 
         $this->equals($role);
     }
