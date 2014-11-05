@@ -27,13 +27,6 @@ class BaseSpec extends ObjectBehavior
         $this->shouldHaveType('Netzmacht\Workflow\Base');
     }
 
-    function it_accepts_an_optional_model_id()
-    {
-        $this->beConstructedWith(static::NAME, null, array(), static::ID);
-        $this->getModelId()->shouldReturn(static::ID);
-    }
-
-
     function it_accepts_initial_config()
     {
         $this->beConstructedWith(static::NAME, null, array('config' => 'test'));

@@ -40,26 +40,17 @@ abstract class Base
     private $label;
 
     /**
-     * Identifier of database model.
-     *
-     * @var int
-     */
-    private $modelId;
-
-    /**
      * Construct.
      *
-     * @param string $name    Name of the element.
-     * @param string $label   Label of the element.
-     * @param array  $config  Configuration values.
-     * @param int    $modelId Optional database id.
+     * @param string $name   Name of the element.
+     * @param string $label  Label of the element.
+     * @param array  $config Configuration values.
      */
-    public function __construct($name, $label = null, array $config = array(), $modelId = null)
+    public function __construct($name, $label = null, array $config = array())
     {
         $this->name    = $name;
         $this->label   = $label ?: $name;
         $this->config  = $config;
-        $this->modelId = $modelId;
     }
 
     /**
@@ -94,16 +85,6 @@ abstract class Base
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Get the model id.
-     *
-     * @return int
-     */
-    public function getModelId()
-    {
-        return $this->modelId;
     }
 
     /**
