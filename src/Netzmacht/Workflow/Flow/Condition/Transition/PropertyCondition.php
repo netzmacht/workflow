@@ -118,13 +118,7 @@ class PropertyCondition extends AbstractCondition
     }
 
     /**
-     * Consider if condition matches for the given entity.
-     *
-     * @param Transition $transition The transition being in.
-     * @param Item       $item       The entity being transits.
-     * @param Context    $context    The transition context.
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function match(Transition $transition, Item $item, Context $context)
     {

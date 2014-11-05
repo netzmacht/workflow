@@ -36,7 +36,9 @@ interface Condition
     /**
      * Get latest error.
      *
-     * @return array
+     * Is false if no error isset.
+     *
+     * @return array|false
      */
     public function getError();
 }
