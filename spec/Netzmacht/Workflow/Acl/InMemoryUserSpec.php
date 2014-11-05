@@ -37,8 +37,9 @@ class InMemoryUserSpec extends ObjectBehavior
 
     function it_withdraws_access(Role $role)
     {
-        $this->isGranted($role)->shouldReturn(false);
         $this->grantAccess($role);
         $this->isGranted($role)->shouldReturn(true);
+        $this->withdrawAccess($role);
+        $this->isGranted($role)->shouldReturn(false);
     }
 }
