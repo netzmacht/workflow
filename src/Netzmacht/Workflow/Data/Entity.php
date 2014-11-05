@@ -20,7 +20,6 @@ namespace Netzmacht\Workflow\Data;
  */
 interface Entity extends \IteratorAggregate
 {
-
     /**
      * Copy this model, without the id.
      *

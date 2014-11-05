@@ -14,6 +14,8 @@ namespace Netzmacht\Workflow\Form;
 /**
  * Interface FormField describes an form field which can be added to transition form.
  *
+ * This interface is an reduced description of what contao-community-alliance/dc-general PropertyInterface describes.
+ *
  * @package Netzmacht\Workflow\Form
  */
 interface FormField

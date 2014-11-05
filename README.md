@@ -18,4 +18,6 @@ Credits
 -------
 
 This library is heavenly inspired by the great workflow implementation of [orocrm plattform](http://github.com/orocrm/plattform)
-and got some concepts from the [LexikWorkflowBundle](https://github.com/lexik/LexikWorkflowBundle)
+and got some concepts from the [LexikWorkflowBundle](https://github.com/lexik/LexikWorkflowBundle). Some API interfaces
+are heavenly influenced by the [DcGeneral](http://github.com/contao-community-alliance/dc-general) is it is used for
+some Contao implementation parts.
