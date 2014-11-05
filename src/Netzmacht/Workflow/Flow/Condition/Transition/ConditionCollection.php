@@ -12,6 +12,9 @@
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
 use Assert\Assertion;
+use Netzmacht\Workflow\Flow\Context;
+use Netzmacht\Workflow\Flow\Item;
+use Netzmacht\Workflow\Flow\Transition;
 
 /**
  * Class ConditionCollection contains child conditions which are called during match.
@@ -87,5 +90,26 @@ abstract class ConditionCollection implements Condition
         }
 
         return $this;
+    }
+
+    /**
+     * Describe errors of children.
+     *
+     * @param Transition $transition The transition being in.
+     * @param Item       $item       The entity being transits.
+     * @param Context    $context    The transition context.
+     *
+     * @return string
+     */
+    protected function describeChildConditionErrors(Transition $transition, Item $item, Context $context)
+    {
+        $children = array_map(
+            function (Condition $condition) use ($transition, $item, $context) {
+                return $condition->describeError($transition, $item, $context);
+            },
+            $this->conditions
+        );
+
+        return implode(', ', $children);
     }
 }

@@ -63,4 +63,13 @@ class TransitionPermissionConditionSpec extends ObjectBehavior
 
         $this->match($transition, $item, $context)->shouldReturn(false);
     }
+
+    function it_describes_the_error(
+        Transition $transition,
+        Item $item,
+        Context $context
+    )
+    {
+        $this->describeError($transition, $item, $context)->shouldBeArray();
+    }
 }

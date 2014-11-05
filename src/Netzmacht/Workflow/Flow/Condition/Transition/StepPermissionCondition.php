@@ -11,7 +11,9 @@
 
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
+use Netzmacht\Workflow\Acl\Role;
 use Netzmacht\Workflow\Flow\Context;
+use Netzmacht\Workflow\Flow\Exception\StepNotFoundException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
 
@@ -73,14 +75,60 @@ class StepPermissionCondition extends AbstractPermissionCondition
             return $this->allowStartTransition;
         }
 
+        $role = $this->getStepRole($transition, $item);
+
+        if ($role && $this->isGranted($role)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Describes an failed condition.
+     *
+     * It returns an array with 2 parameters. First one is the error message code. The second one are the params to
+     * be replaced in the message.
+     *
+     * Example return array('transition.condition.example', array('name', 'value'));
+     *
+     * @param Transition $transition The transition being in.
+     * @param Item       $item       The entity being transits.
+     * @param Context    $context    The transition context.
+     *
+     * @return array
+     */
+    public function describeError(Transition $transition, Item $item, Context $context)
+    {
+        $role = null;
+
+        if ($item->isWorkflowStarted()) {
+            $role = $this->getStepRole($transition, $item);
+        }
+
+        return array(
+            'transition.condition.step-permission',
+            array(
+                $item->getCurrentStepName(),
+                $role ? $role->getFullName() : '-'
+            )
+        );
+    }
+
+    /**
+     * Get role of current step.
+     *
+     * @param Transition $transition The transition being in.
+     * @param Item       $item       The entity being transits.
+     *
+     * @return Role|null
+     */
+    protected function getStepRole(Transition $transition, Item $item)
+    {
         $stepName = $item->getCurrentStepName();
         $step     = $transition->getWorkflow()->getStep($stepName);
         $role     = $step->getRole();
 
-        if ($role) {
-            return $this->isGranted($role);
-        }
-
-        return false;
+        return $role;
     }
 }

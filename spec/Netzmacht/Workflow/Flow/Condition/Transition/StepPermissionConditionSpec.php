@@ -87,4 +87,9 @@ class StepPermissionConditionSpec extends ObjectBehavior
 
         $this->match($transition, $item, $context)->shouldReturn(false);
     }
+
+    function it_creates_an_error_if_it_fails(Transition $transition, Item $item, Context $context, User $user, Role $role)
+    {
+        $this->describeError($transition, $item, $context)->shouldBeArray();
+    }
 }
