@@ -55,12 +55,11 @@ class EventDispatchingTransitionHandlerFactory implements TransitionHandlerFacto
      * @param TransactionHandler $transactionHandler Transaction handler being used during workflow transitions.
      * @param EventDispatcher    $eventDispatcher    The event dispatcher.
      */
-    function __construct(
+    public function __construct(
         EntityManager $entityManager,
         TransactionHandler $transactionHandler,
         EventDispatcher $eventDispatcher
-    )
-    {
+    ) {
         $this->transactionHandler = $transactionHandler;
         $this->eventDispatcher    = $eventDispatcher;
         $this->entityManager      = $entityManager;
