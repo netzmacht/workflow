@@ -48,9 +48,9 @@ abstract class Base
      */
     public function __construct($name, $label = null, array $config = array())
     {
-        $this->name    = $name;
-        $this->label   = $label ?: $name;
-        $this->config  = $config;
+        $this->name   = $name;
+        $this->label  = $label ?: $name;
+        $this->config = $config;
     }
 
     /**
