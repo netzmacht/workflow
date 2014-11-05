@@ -34,18 +34,9 @@ interface Condition
     public function match(Transition $transition, Item $item, Context $context);
 
     /**
-     * Describes an failed condition.
-     *
-     * It returns an array with 2 parameters. First one is the error message code. The second one are the params to
-     * be replaced in the message.
-     *
-     * Example return array('transition.condition.example', array('name', 'value'));
-     *
-     * @param Transition $transition The transition being in.
-     * @param Item       $item       The entity being transits.
-     * @param Context    $context    The transition context.
+     * Get latest error.
      *
      * @return array
      */
-    public function describeError(Transition $transition, Item $item, Context $context);
+    public function getError();
 }

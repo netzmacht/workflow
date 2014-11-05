@@ -52,6 +52,7 @@ class AndConditionSpec extends ObjectBehavior
     ) {
         $conditionA->match($transition, $item, $context)->willReturn(true);
         $conditionB->match($transition, $item, $context)->willReturn(false);
+        $conditionB->getError()->shouldBeCalled();
 
         $this->addCondition($conditionA);
         $this->addCondition($conditionB);

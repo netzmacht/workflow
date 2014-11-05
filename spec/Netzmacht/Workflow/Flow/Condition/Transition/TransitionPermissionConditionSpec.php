@@ -50,7 +50,7 @@ class TransitionPermissionConditionSpec extends ObjectBehavior
         $transition->getRoles()->willReturn(array($notGranted, $role));
 
         $this->match($transition, $item, $context)->shouldReturn(true);
-
+        $this->shouldNotHaveError();
     }
 
     function it_does_not_match_if_transition_has_no_role(
@@ -62,14 +62,6 @@ class TransitionPermissionConditionSpec extends ObjectBehavior
         $transition->getRoles()->willReturn(array());
 
         $this->match($transition, $item, $context)->shouldReturn(false);
-    }
-
-    function it_describes_the_error(
-        Transition $transition,
-        Item $item,
-        Context $context
-    )
-    {
-        $this->describeError($transition, $item, $context)->shouldBeArray();
+        $this->shouldHaveError();
     }
 }

@@ -21,7 +21,7 @@ use Netzmacht\Workflow\Flow\Transition;
  *
  * @package Netzmacht\Workflow\Flow\Transition\Condition
  */
-abstract class ConditionCollection implements Condition
+abstract class ConditionCollection extends AbstractCondition
 {
     /**
      * All child conditions of the collection.
@@ -29,6 +29,13 @@ abstract class ConditionCollection implements Condition
      * @var Condition[]
      */
     protected $conditions = array();
+
+    /**
+     * All child errors.
+     *
+     * @var array
+     */
+    protected $childErrors = array();
 
     /**
      * Add condition.
@@ -93,23 +100,50 @@ abstract class ConditionCollection implements Condition
     }
 
     /**
-     * Describe errors of children.
+     * Add error from a child condition.
      *
-     * @param Transition $transition The transition being in.
-     * @param Item       $item       The entity being transits.
-     * @param Context    $context    The transition context.
+     * @param Condition $condition Child condition.
      *
-     * @return string
+     * @return $this
      */
-    protected function describeChildConditionErrors(Transition $transition, Item $item, Context $context)
+    protected function addError(Condition $condition)
     {
-        $children = array_map(
-            function (Condition $condition) use ($transition, $item, $context) {
-                return $condition->describeError($transition, $item, $context);
-            },
-            $this->conditions
-        );
+        $this->childErrors[] = $condition->getError();
 
-        return implode(', ', $children);
+        return $this;
+    }
+
+    /**
+     * Check if errors exists.
+     *
+     * @return bool
+     */
+    protected function hasErrors()
+    {
+        return !empty($this->childErrors);
+    }
+
+    /**
+     * Reset error state.
+     *
+     * @return true
+     */
+    protected function pass()
+    {
+        $this->childErrors = array();
+
+        return parent::pass();
+    }
+
+    /**
+     * Add error message.
+     *
+     * @param string $error Message to be added.
+     *
+     * @return false
+     */
+    protected function fail($error)
+    {
+        return parent::fail($error, array($this->childErrors));
     }
 }

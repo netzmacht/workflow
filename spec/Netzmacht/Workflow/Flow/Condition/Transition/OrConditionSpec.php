@@ -35,12 +35,15 @@ class OrConditionSpec extends ObjectBehavior
         Context $context
     ) {
         $conditionA->match($transition, $item, $context)->willReturn(false);
+        $conditionA->getError()->shouldBeCalled();
+
         $conditionB->match($transition, $item, $context)->willReturn(true);
 
         $this->addCondition($conditionA);
         $this->addCondition($conditionB);
 
         $this->match($transition, $item, $context)->shouldReturn(true);
+        $this->shouldNotHaveError();
     }
 
     function it_does_not_match_if_all_children_does_not(
@@ -51,16 +54,21 @@ class OrConditionSpec extends ObjectBehavior
         Context $context
     ) {
         $conditionA->match($transition, $item, $context)->willReturn(false);
+        $conditionA->getError()->shouldBeCalled();
+
         $conditionB->match($transition, $item, $context)->willReturn(false);
+        $conditionB->getError()->shouldBeCalled();
 
         $this->addCondition($conditionA);
         $this->addCondition($conditionB);
 
         $this->match($transition, $item, $context)->shouldReturn(false);
+        $this->shouldHaveError();
     }
 
     function it_matches_if_no_children_exists(Transition $transition, Item $item, Context $context)
     {
         $this->match($transition, $item, $context)->shouldReturn(true);
+        $this->shouldNotHaveError();
     }
 }

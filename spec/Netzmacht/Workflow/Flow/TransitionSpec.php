@@ -103,6 +103,7 @@ class TransitionSpec extends ObjectBehavior
         Context $context
     ) {
         $condition->match($this, $item, $context)->willReturn(false);
+        $condition->getError()->shouldBeCalled();
 
         $this->addPreCondition($condition)->shouldReturn($this);
         $this->checkPreCondition($item, $context)->shouldReturn(false);
@@ -136,6 +137,7 @@ class TransitionSpec extends ObjectBehavior
         Context $context
     ) {
         $condition->match($this, $item, $context)->willReturn(false);
+        $condition->getError()->shouldBeCalled();
 
         $this->addCondition($condition)->shouldReturn($this);
         $this->checkCondition($item, $context)->shouldReturn(false);
@@ -164,6 +166,7 @@ class TransitionSpec extends ObjectBehavior
     ) {
         $condition->match($this, $item, $context)->willReturn(true);
         $preCondition->match($this, $item, $context)->willReturn(false);
+        $preCondition->getError()->shouldBeCalled();
 
         $this->addCondition($condition);
         $this->addPreCondition($preCondition);
@@ -178,6 +181,8 @@ class TransitionSpec extends ObjectBehavior
         Context $context
     ) {
         $condition->match($this, $item, $context)->willReturn(false);
+        $condition->getError()->shouldBeCalled();
+
         $preCondition->match($this, $item, $context)->willReturn(true);
 
         $this->addCondition($condition);
@@ -211,6 +216,8 @@ class TransitionSpec extends ObjectBehavior
             ->match($this, $item, $context)
             ->willReturn(false);
 
+        $condition->getError()->shouldBeCalled();
+
         $preCondition
             ->match($this, $item, $context)
             ->willReturn(true);
@@ -236,6 +243,8 @@ class TransitionSpec extends ObjectBehavior
         $preCondition
             ->match($this, $item, $context)
             ->willReturn(false);
+
+        $preCondition->getError()->shouldBeCalled();
 
         $this->addCondition($condition);
         $this->addPreCondition($preCondition);

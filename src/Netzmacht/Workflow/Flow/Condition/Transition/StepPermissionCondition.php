@@ -72,42 +72,21 @@ class StepPermissionCondition extends AbstractPermissionCondition
     {
         // workflow is not started, so no start step exists
         if (!$item->isWorkflowStarted()) {
-            return $this->allowStartTransition;
+            if ($this->allowStartTransition) {
+                return $this->pass();
+            }
+
+            return $this->fail('transition.condition.step.not-started', array($transition->getName()));
         }
 
         $role = $this->getStepRole($transition, $item);
 
         if ($role && $this->isGranted($role)) {
-            return true;
+            return $this->pass();
         }
 
-        return false;
-    }
-
-    /**
-     * Describes an failed condition.
-     *
-     * It returns an array with 2 parameters. First one is the error message code. The second one are the params to
-     * be replaced in the message.
-     *
-     * Example return array('transition.condition.example', array('name', 'value'));
-     *
-     * @param Transition $transition The transition being in.
-     * @param Item       $item       The entity being transits.
-     * @param Context    $context    The transition context.
-     *
-     * @return array
-     */
-    public function describeError(Transition $transition, Item $item, Context $context)
-    {
-        $role = null;
-
-        if ($item->isWorkflowStarted()) {
-            $role = $this->getStepRole($transition, $item);
-        }
-
-        return array(
-            'transition.condition.step-permission',
+        return $this->fail(
+            'transition.condition.step',
             array(
                 $item->getCurrentStepName(),
                 $role ? $role->getFullName() : '-'

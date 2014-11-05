@@ -22,7 +22,7 @@ use Netzmacht\Workflow\Util\Comparison;
  *
  * @package Netzmacht\Workflow\Flow\Condition\Transition
  */
-class PropertyCondition implements Condition
+class PropertyCondition extends AbstractCondition
 {
     /**
      * Name of the property.
@@ -131,31 +131,18 @@ class PropertyCondition implements Condition
         $value = $this->getEntityValue($item);
 
         if (Comparison::compare($value, $this->value, $this->operator)) {
-            return true;
+            return $this->pass();
         }
 
-        return false;
-    }
-
-    /**
-     * Describes an failed condition.
-     *
-     * It returns an array with 2 parameters. First one is the error message code. The second one are the params to
-     * be replaced in the message.
-     *
-     * Example return array('transition.condition.example', array('name', 'value'));
-     *
-     * @param Transition $transition The transition being in.
-     * @param Item       $item       The entity being transits.
-     * @param Context    $context    The transition context.
-     *
-     * @return array
-     */
-    public function describeError(Transition $transition, Item $item, Context $context)
-    {
-        $value = $this->getEntityValue($item);
-
-        return array('transition.condition.property', array($value, $this->value, $this->operator));
+        return $this->fail(
+            'transition.condition.property',
+            array(
+                $this->property,
+                $value,
+                $this->operator,
+                $this->value,
+            )
+        );
     }
 
     /**

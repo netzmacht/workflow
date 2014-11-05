@@ -52,20 +52,6 @@ class ConditionCollectionSpec extends ObjectBehavior
     {
         $this->shouldThrow('Assert\InvalidArgumentException')->duringAddConditions(array('test'));
     }
-
-    function it_provides_a_describe_child_condition_errors_method(Transition $transition, Item $item, Context $context, Condition $condition, Condition $condition2)
-    {
-        $this->addCondition($condition);
-        $this->addCondition($condition2);
-
-        $condition->describeError($transition, $item, $context)->shouldBeCalled();
-        $condition->describeError($transition, $item, $context)->willReturn('test');
-
-        $condition2->describeError($transition, $item, $context)->shouldBeCalled();
-        $condition2->describeError($transition, $item, $context)->willReturn('test2');
-
-        $this->describeChildConditionErrors($transition, $item, $context)->shouldReturn('test, test2');
-    }
 }
 
 class ConditionCollection extends AbstractConditionCollection
@@ -101,24 +87,5 @@ class ConditionCollection extends AbstractConditionCollection
     public function describeError(Transition $transition, Item $item, Context $context)
     {
         // TODO: Implement describeError() method.
-    }
-
-    /**
-     * Describes an failed condition.
-     *
-     * It returns an array with 2 parameters. First one is the error message code. The second one are the params to
-     * be replaced in the message.
-     *
-     * Example return array('transition.condition.example', array('name', 'value'));
-     *
-     * @param Transition $transition The transition being in.
-     * @param Item       $item       The entity being transits.
-     * @param Context    $context    The transition context.
-     *
-     * @return array
-     */
-    public function describeChildConditionErrors(Transition $transition, Item $item, Context $context)
-    {
-        return parent::describeChildConditionErrors($transition, $item, $context);
     }
 }

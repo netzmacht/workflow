@@ -34,39 +34,17 @@ class OrCondition extends ConditionCollection
     public function match(Transition $transition, Item $item, Context $context)
     {
         if (!$this->conditions) {
-            return true;
+            return $this->pass();
         }
 
         foreach ($this->conditions as $condition) {
             if ($condition->match($transition, $item, $context)) {
-                return true;
+                return $this->pass();
+            } else {
+                $this->addError($condition);
             }
         }
 
-        return false;
-    }
-
-    /**
-     * Describes an failed condition.
-     *
-     * It returns an array with 2 parameters. First one is the error message code. The second one are the params to
-     * be replaced in the message.
-     *
-     * Example return array('transition.condition.example', array('name', 'value'));
-     *
-     * @param Transition $transition The transition being in.
-     * @param Item       $item       The entity being transits.
-     * @param Context    $context    The transition context.
-     *
-     * @return array
-     */
-    public function describeError(Transition $transition, Item $item, Context $context)
-    {
-        return array(
-            'transition.condition.or',
-            array(
-                $this->describeChildConditionErrors()
-            ),
-        );
+        return $this->fail('transition.condition.or');
     }
 }

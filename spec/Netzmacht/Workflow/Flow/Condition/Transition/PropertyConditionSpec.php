@@ -56,11 +56,19 @@ class PropertyConditionSpec extends ObjectBehavior
         $entity->getProperty('test')->willReturn(10);
 
         $this->match($transition, $item, $context)->shouldReturn(true);
+        $this->shouldNotHaveError();
     }
 
-    function it_creates_an_error_if_it_fails(Transition $transition, Item $item, Context $context, Entity $entity)
+    function it_does_not_match_if_comparison_does(Transition $transition, Item $item, Context $context, Entity $entity)
     {
+        $this->setOperator(Comparison::LESSER_THAN);
+        $this->setProperty('test');
+        $this->setValue(5);
+
         $item->getEntity()->willReturn($entity);
-        $this->describeError($transition, $item, $context)->shouldBeArray();
+        $entity->getProperty('test')->willReturn(10);
+
+        $this->match($transition, $item, $context)->shouldReturn(false);
+        $this->shouldHaveError();
     }
 }

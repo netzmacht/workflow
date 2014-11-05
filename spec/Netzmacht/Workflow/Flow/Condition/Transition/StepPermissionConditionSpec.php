@@ -45,17 +45,22 @@ class StepPermissionConditionSpec extends ObjectBehavior
         $item->isWorkflowStarted()->willReturn(false);
 
         $this->match($transition, $item, $context)->shouldReturn(true);
+        $this->shouldNotHaveError();
     }
 
     function it_does_match_if_workflow_not_started_when_disabled(Transition $transition, Item $item, Context $context)
     {
+        $transition->getName()->shouldBeCalled();
+
         $item->isWorkflowStarted()->willReturn(false);
         $this->disallowStartTransition()->shouldReturn($this);
 
         $this->match($transition, $item, $context)->shouldReturn(false);
+        $this->getError()->shouldHaveCount(2);
 
         $this->allowStartTransition()->shouldReturn($this);
         $this->match($transition, $item, $context)->shouldReturn(true);
+        $this->shouldNotHaveError();
     }
 
     function it_matches_if_step_role_is_granted(Transition $transition, Item $item, Context $context, User $user, Role $role)
@@ -76,6 +81,7 @@ class StepPermissionConditionSpec extends ObjectBehavior
         $step->getRole()->willReturn(null);
 
         $this->match($transition, $item, $context)->shouldReturn(false);
+        $this->shouldHaveError();
     }
 
     function it_does_not_match_if_step_role_is_not_granted(Transition $transition, Item $item, Context $context, User $user, Role $role)
@@ -86,10 +92,6 @@ class StepPermissionConditionSpec extends ObjectBehavior
         $user->isGranted($role)->willReturn(false);
 
         $this->match($transition, $item, $context)->shouldReturn(false);
-    }
-
-    function it_creates_an_error_if_it_fails(Transition $transition, Item $item, Context $context, User $user, Role $role)
-    {
-        $this->describeError($transition, $item, $context)->shouldBeArray();
+        $this->shouldHaveError();
     }
 }

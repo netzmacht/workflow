@@ -22,7 +22,7 @@ use Netzmacht\Workflow\Acl\User;
  *
  * @package Netzmacht\Workflow\Flow\Condition\Transition
  */
-abstract class AbstractPermissionCondition implements Condition
+abstract class AbstractPermissionCondition extends AbstractCondition
 {
     /**
      * Security user instance.
