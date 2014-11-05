@@ -14,6 +14,8 @@ namespace Netzmacht\Workflow\Data;
 /**
  * Interface Entity describes the public interface of an data entity being processed in a workflow.
  *
+ * The entity is a reduced interface of the ModelInterface of the contao-community-alliance/dc-general.
+ *
  * @package Netzmacht\Workflow\Data
  */
 interface Entity extends \IteratorAggregate
@@ -52,15 +54,6 @@ interface Entity extends \IteratorAggregate
     public function getPropertiesAsArray();
 
     /**
-     * Fetch meta information from model.
-     *
-     * @param string $strMetaName The meta information to retrieve.
-     *
-     * @return mixed The set meta information or null if undefined.
-     */
-    public function getMeta($strMetaName);
-
-    /**
      * Update the property value in the model.
      *
      * @param string $strPropertyName The property name to be set.
@@ -79,17 +72,6 @@ interface Entity extends \IteratorAggregate
      * @return void
      */
     public function setPropertiesAsArray($arrProperties);
-
-    /**
-     * Update meta information in the model.
-     *
-     * @param string $strMetaName The meta information name.
-     *
-     * @param mixed  $varValue    The meta information value to store.
-     *
-     * @return void
-     */
-    public function setMeta($strMetaName, $varValue);
 
     /**
      * Check if this model have any properties.
