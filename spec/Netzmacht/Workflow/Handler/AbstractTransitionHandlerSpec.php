@@ -26,13 +26,14 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
 {
     const TRANSITION_NAME = 'transition_name';
 
+    const CONTEXT_CLASS = 'Netzmacht\Workflow\Flow\Context';
+
     function let(
         Item $item,
         Workflow $workflow,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
-        TransactionHandler $transactionHandler,
-        Context $context
+        TransactionHandler $transactionHandler
     ) {
         $this->beAnInstanceOf('spec\Netzmacht\Workflow\Handler\TransitionHandler');
         $this->beConstructedWith(
@@ -41,8 +42,7 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
             static::TRANSITION_NAME,
             $entityRepository,
             $stateRepository,
-            $transactionHandler,
-            $context
+            $transactionHandler
         );
     }
 
@@ -129,19 +129,19 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
         $this->requiresInputData()->shouldReturn(false);
     }
 
-    function it_gets_the_context(Context $context)
+    function it_gets_the_context()
     {
-        $this->getContext()->shouldReturn($context);
+        $this->getContext()->shouldHaveType(self::CONTEXT_CLASS);
     }
 
-    function it_validates(Form $form, Context $context, Workflow $workflow, Transition $transition, Item $item)
+    function it_validates(Form $form, Workflow $workflow, Transition $transition, Item $item)
     {
         $workflow->getStartTransition()->willReturn($transition);
         $transition->buildForm($form, $item)->shouldBeCalled();
         $transition->getName()->willReturn(static::TRANSITION_NAME);
         $transition->requiresInputData()->willReturn(true);
 
-        $form->validate($context)->shouldBeCalled()->willReturn(true);
+        $form->validate(Argument::type(self::CONTEXT_CLASS))->shouldBeCalled()->willReturn(true);
 
         $this->validate($form)->shouldReturn(true);
     }
@@ -164,7 +164,7 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
         $workflow->getStartTransition()->willReturn($transition);
         $workflow->start(
             Argument::type('Netzmacht\Workflow\Flow\Item'),
-            Argument::type('Netzmacht\Workflow\Flow\Context')
+            Argument::type(self::CONTEXT_CLASS)
         )
             ->willReturn($state);
 

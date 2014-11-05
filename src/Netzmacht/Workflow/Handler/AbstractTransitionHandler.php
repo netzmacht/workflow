@@ -103,7 +103,6 @@ abstract class AbstractTransitionHandler implements TransitionHandler
      * @param EntityRepository   $entityRepository   EntityRepository which stores changes.
      * @param StateRepository    $stateRepository    StateRepository which stores new states.
      * @param TransactionHandler $transactionHandler TransactionHandler take care of transactions.
-     * @param Context            $context            The context of the transition.
      */
     public function __construct(
         Item $item,
@@ -111,8 +110,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         $transitionName,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
-        TransactionHandler $transactionHandler,
-        Context $context
+        TransactionHandler $transactionHandler
     ) {
         $this->item               = $item;
         $this->workflow           = $workflow;
@@ -120,7 +118,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         $this->entityRepository   = $entityRepository;
         $this->stateRepository    = $stateRepository;
         $this->transactionHandler = $transactionHandler;
-        $this->context            = $context;
+        $this->context            = new Context();
     }
 
 

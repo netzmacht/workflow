@@ -29,6 +29,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface as EventDispatche
 class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
 {
     const TRANSITION_NAME = 'transition_name';
+    const CONTEXT_CLASS = 'Netzmacht\Workflow\Flow\Context';
 
     function let(
         Item $item,
@@ -36,7 +37,6 @@ class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
         StateRepository $stateRepository,
         EntityRepository $entityRepository,
         TransactionHandler $transactionHandler,
-        Context $context,
         EventDispatcher $eventDispatcher,
         Transition $transition,
         State $state,
@@ -49,12 +49,11 @@ class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
             $entityRepository,
             $stateRepository,
             $transactionHandler,
-            $context,
             $eventDispatcher
         );
 
         $workflow->getStartTransition()->willReturn($transition);
-        $workflow->start($item, $context)->willReturn($state);
+        $workflow->start($item, Argument::type(self::CONTEXT_CLASS))->willReturn($state);
 
         $item->getEntity()->willReturn($entity);
         $item->isWorkflowStarted()->willReturn(false);

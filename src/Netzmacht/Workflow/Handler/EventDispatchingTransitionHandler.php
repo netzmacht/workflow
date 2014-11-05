@@ -48,7 +48,6 @@ class EventDispatchingTransitionHandler extends AbstractTransitionHandler
      * @param EntityRepository   $entityRepository   EntityRepository which stores changes.
      * @param StateRepository    $stateRepository    StateRepository which stores new states.
      * @param TransactionHandler $transactionHandler TransactionHandler take care of transactions.
-     * @param Context            $context            The context of the transition.
      * @param EventDispatcher    $eventDispatcher    The event dispatcher.
      */
     public function __construct(
@@ -58,7 +57,6 @@ class EventDispatchingTransitionHandler extends AbstractTransitionHandler
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
         TransactionHandler $transactionHandler,
-        Context $context,
         EventDispatcher $eventDispatcher
     ) {
         parent::__construct(
@@ -67,8 +65,7 @@ class EventDispatchingTransitionHandler extends AbstractTransitionHandler
             $transitionName,
             $entityRepository,
             $stateRepository,
-            $transactionHandler,
-            $context
+            $transactionHandler
         );
 
         $this->eventDispatcher = $eventDispatcher;
