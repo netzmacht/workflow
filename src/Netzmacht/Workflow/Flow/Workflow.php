@@ -366,7 +366,9 @@ class Workflow extends Base
      *
      * @param Role $role Role to be a valid workflow role.
      *
-     * @throws InvalidArgumentException
+     * @return void
+     *
+     * @throws InvalidArgumentException If role is not the same workflow.
      */
     private function guardWorkflowRole(Role $role)
     {

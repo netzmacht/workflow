@@ -11,8 +11,6 @@
 
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
-
-use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
@@ -29,32 +27,15 @@ class TransitionPermissionCondition extends AbstractPermissionCondition
      */
     public function match(Transition $transition, Item $item, Context $context)
     {
-        if ($this->isGranted($transition->getRoles())) {
+        $permission = $transition->getPermission();
+
+        if ($permission && $this->user->hasPermission($permission)) {
             return $this->pass();
         }
 
         return $this->fail(
             'transition.condition.transition-permission',
-            array($this->describeRoles($transition->getRoles()))
+            array((string) $permission)
         );
-    }
-
-    /**
-     * Convert roles to an readable string.
-     *
-     * @param Role[] $roles Permission roles.
-     *
-     * @return string
-     */
-    private function describeRoles($roles)
-    {
-        $roles = array_map(
-            function (Role $role) {
-                return $role->getName();
-            },
-            $roles
-        );
-
-        return '[' . implode(', ', $roles) . ']';
     }
 }

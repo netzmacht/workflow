@@ -2,7 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Security\Role;
+use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Flow\Step;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -80,15 +80,17 @@ class StepSpec extends ObjectBehavior
         $this->isTransitionAllowed('test')->shouldReturn(false);
     }
 
-    function it_can_be_assigned_to_a_role(Role $role)
+    function it_have_a_permission(Permission $permission)
     {
-        $role->equals($role)->willReturn(true);
+        $permission->equals($permission)->willReturn(false);
 
-        $this->isAssignedTo($role)->shouldReturn(false);
-        $this->getRole()->shouldReturn(null);
+        $this->getPermission()->shouldReturn(null);
+        $this->hasPermission($permission)->shouldReturn(false);
 
-        $this->assignTo($role)->shouldReturn($this);
-        $this->isAssignedTo($role)->shouldReturn(true);
-        $this->getRole()->shouldReturn($role);
+        $permission->equals($permission)->willReturn(true);
+
+        $this->setPermission($permission)->shouldReturn($this);
+        $this->hasPermission($permission)->shouldReturn(true);
+        $this->getPermission()->shouldReturn($permission);
     }
 }

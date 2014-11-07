@@ -2,6 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
+use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Security\User;
 use Netzmacht\Workflow\Flow\Condition\Transition\TransitionPermissionCondition;
@@ -18,11 +19,11 @@ use Prophecy\Argument;
  */
 class TransitionPermissionConditionSpec extends ObjectBehavior
 {
-    function let(User $user, Transition $transition, Role $role)
+    function let(User $user, Transition $transition, Permission $permission)
     {
         $this->beConstructedWith($user);
 
-        $transition->getRoles()->willReturn(array($role));
+        $transition->getPermission()->willReturn($permission);
     }
 
     function it_is_initializable()
@@ -35,31 +36,41 @@ class TransitionPermissionConditionSpec extends ObjectBehavior
         $this->shouldImplement('Netzmacht\Workflow\Flow\Condition\Transition\Condition');
     }
 
-    function it_matches_if_transition_any_of_the_transition_roles_matches(
+    function it_matches_if_user_has_transition_permissions(
         Transition $transition,
         User $user,
-        Role $role,
-        Role $notGranted,
+        Permission $permission,
         Item $item,
         Context $context
-    )
-    {
-        $user->hasRole($role)->willReturn(true);
-        $user->hasRole($notGranted)->willReturn(false);
-
-        $transition->getRoles()->willReturn(array($notGranted, $role));
+    ) {
+        $user->hasPermission($permission)->willReturn(true);
 
         $this->match($transition, $item, $context)->shouldReturn(true);
         $this->shouldNotHaveError();
     }
 
-    function it_does_not_match_if_transition_has_no_role(
+    function it_does_not_match_if_user_has_not_transition_permissions(
+        Transition $transition,
+        User $user,
+        Permission $permission,
+        Item $item,
+        Context $context
+    ) {
+        $user->hasPermission($permission)->willReturn(false);
+
+        $permission->__toString()->willReturn('workflow/permission');
+
+        $this->match($transition, $item, $context)->shouldReturn(false);
+        $this->shouldHaveError();
+    }
+
+    function it_does_not_match_if_transition_has_no_permission(
         Transition $transition,
         Item $item,
         Context $context
     )
     {
-        $transition->getRoles()->willReturn(array());
+        $transition->getPermission()->willReturn(null);
 
         $this->match($transition, $item, $context)->shouldReturn(false);
         $this->shouldHaveError();

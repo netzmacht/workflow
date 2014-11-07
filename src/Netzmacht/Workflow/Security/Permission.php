@@ -78,6 +78,8 @@ class Permission
     }
 
     /**
+     * Get the permission id.
+     *
      * @return string
      */
     public function getPermissionId()
@@ -86,6 +88,8 @@ class Permission
     }
 
     /**
+     * Get the workflow name.
+     *
      * @return string
      */
     public function getWorkflowName()

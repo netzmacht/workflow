@@ -11,9 +11,8 @@
 
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
-use Netzmacht\Workflow\Security\Role;
+use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Flow\Context;
-use Netzmacht\Workflow\Flow\Exception\StepNotFoundException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
 
@@ -73,9 +72,9 @@ class StepPermissionCondition extends AbstractPermissionCondition
             return $this->fail('transition.condition.step.not-started', array($transition->getName()));
         }
 
-        $role = $this->getStepRole($transition, $item);
+        $permission = $this->getStepPermission($transition, $item);
 
-        if ($role && $this->isGranted($role)) {
+        if ($permission && $this->user->hasPermission($permission)) {
             return $this->pass();
         }
 
@@ -83,7 +82,7 @@ class StepPermissionCondition extends AbstractPermissionCondition
             'transition.condition.step',
             array(
                 $item->getCurrentStepName(),
-                $role ? $role->getFullName() : '-'
+                $permission ? ((string) $permission) : '-'
             )
         );
     }
@@ -94,14 +93,14 @@ class StepPermissionCondition extends AbstractPermissionCondition
      * @param Transition $transition The transition being in.
      * @param Item       $item       The entity being transits.
      *
-     * @return Role|null
+     * @return Permission|null
      */
-    protected function getStepRole(Transition $transition, Item $item)
+    protected function getStepPermission(Transition $transition, Item $item)
     {
-        $stepName = $item->getCurrentStepName();
-        $step     = $transition->getWorkflow()->getStep($stepName);
-        $role     = $step->getRole();
+        $stepName   = $item->getCurrentStepName();
+        $step       = $transition->getWorkflow()->getStep($stepName);
+        $permission = $step->getPermission();
 
-        return $role;
+        return $permission;
     }
 }

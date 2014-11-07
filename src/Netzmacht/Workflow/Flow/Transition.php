@@ -2,7 +2,7 @@
 
 namespace Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Security\Role;
+use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Base;
 use Netzmacht\Workflow\Flow\Condition\Transition\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
@@ -46,11 +46,11 @@ class Transition extends Base
     private $condition;
 
     /**
-     * A set of roles which can perform the transition.
+     * A set of permission being assigned to the transition.
      *
-     * @var Role[]
+     * @var Permission
      */
-    private $roles = array();
+    private $permission;
 
     /**
      * The corresponding workflow.
@@ -325,33 +325,43 @@ class Transition extends Base
     }
 
     /**
-     * Add a new role.
+     * Set a permission to the transition.
      *
-     * @param Role $role The role being added.
+     * @param Permission $permission Permission being assigned.
      *
      * @return $this
      */
-    public function addRole(Role $role)
+    public function setPermission(Permission $permission)
     {
-        foreach ($this->roles as $assignedRole) {
-            if ($assignedRole->equals($role)) {
-                return $this;
-            }
-        }
-
-        $this->roles[] = $role;
+        $this->permission = $permission;
 
         return $this;
     }
 
     /**
-     * Get all roles.
+     * Consider if permission is assigned to transition.
      *
-     * @return Role[]
+     * @param Permission $permission Permission being check.
+     *
+     * @return bool
      */
-    public function getRoles()
+    public function hasPermission(Permission $permission)
     {
-        return $this->roles;
+        if ($this->permission) {
+            return $this->permission->equals($permission);
+        }
+
+        return false;
+    }
+
+    /**
+     * Get assigned permission. Returns null if no transition is set.
+     *
+     * @return Permission|null
+     */
+    public function getPermission()
+    {
+        return $this->permission;
     }
 
     /**

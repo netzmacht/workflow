@@ -8,7 +8,7 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 /**
- * Class InMemoryUserSpec
+ * Class UserSpec
  * @package spec\Netzmacht\Workflow\Acl
  * @mixin User
  */

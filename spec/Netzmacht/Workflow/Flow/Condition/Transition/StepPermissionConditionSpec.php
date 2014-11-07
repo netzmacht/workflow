@@ -2,6 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
+use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Security\User;
 use Netzmacht\Workflow\Flow\Condition\Transition\StepPermissionCondition;
@@ -20,14 +21,14 @@ use Prophecy\Argument;
  */
 class StepPermissionConditionSpec extends ObjectBehavior
 {
-    function let(User $user, Transition $transition, Workflow $workflow, Step $step, Role $role)
+    function let(User $user, Transition $transition, Workflow $workflow, Step $step, Permission $permission)
     {
         $this->beConstructedWith($user);
 
         $transition->getWorkflow()->willReturn($workflow);
         $workflow->getStep('step')->willReturn($step);
 
-        $step->getRole()->willReturn($role);
+        $step->getPermission()->willReturn($permission);
     }
 
     function it_is_initializable()
@@ -63,12 +64,12 @@ class StepPermissionConditionSpec extends ObjectBehavior
         $this->shouldNotHaveError();
     }
 
-    function it_matches_if_step_role_is_granted(Transition $transition, Item $item, Context $context, User $user, Role $role)
+    function it_matches_if_step_permission_equals(Transition $transition, Item $item, Context $context, User $user, Permission $permission)
     {
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('step');
 
-        $user->hasRole($role)->willReturn(true);
+        $user->hasPermission($permission)->willReturn(true);
 
         $this->match($transition, $item, $context)->shouldReturn(true);
     }
@@ -78,18 +79,20 @@ class StepPermissionConditionSpec extends ObjectBehavior
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('step');
 
-        $step->getRole()->willReturn(null);
+        $step->getPermission()->willReturn(null);
 
         $this->match($transition, $item, $context)->shouldReturn(false);
         $this->shouldHaveError();
     }
 
-    function it_does_not_match_if_step_role_is_not_granted(Transition $transition, Item $item, Context $context, User $user, Role $role)
+    function it_does_not_match_if_step_role_is_not_granted(Transition $transition, Item $item, Context $context, User $user, Permission $permission)
     {
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('step');
 
-        $user->hasRole($role)->willReturn(false);
+        $permission->__toString()->willReturn('workflow/permission');
+
+        $user->hasPermission($permission)->willReturn(false);
 
         $this->match($transition, $item, $context)->shouldReturn(false);
         $this->shouldHaveError();

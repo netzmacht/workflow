@@ -12,6 +12,7 @@
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
 use Assert\Assertion;
+use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Security\User;
 
@@ -29,7 +30,7 @@ abstract class AbstractPermissionCondition extends AbstractCondition
      *
      * @var User
      */
-    private $user;
+    protected $user;
 
     /**
      * Construct.
@@ -49,42 +50,5 @@ abstract class AbstractPermissionCondition extends AbstractCondition
     public function getUser()
     {
         return $this->user;
-    }
-
-    /**
-     * Consider if role is granted.
-     *
-     * @param Role[]|Role $roles Permission roles.
-     *
-     * @return bool
-     */
-    public function isGranted($roles)
-    {
-        $roles = $this->unifyRolesArgument($roles);
-        Assertion::allIsInstanceOf($roles, 'Netzmacht\Workflow\Security\Role');
-
-        foreach ($roles as $role) {
-            if ($this->user->hasRole($role)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Always get roles as array.
-     *
-     * @param Role[]|Role $roles Permission roles.
-     *
-     * @return Role[]
-     */
-    protected function unifyRolesArgument($roles)
-    {
-        if (!is_array($roles)) {
-            $roles = array($roles);
-        }
-
-        return $roles;
     }
 }

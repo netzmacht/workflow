@@ -30,6 +30,7 @@ class Role extends Base
 
     /**
      * Array of permissions.
+     *
      * @var Permission[]
      */
     private $permissions = array();

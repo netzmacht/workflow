@@ -2,7 +2,7 @@
 
 namespace Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Security\Role;
+use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Base;
 
 /**
@@ -27,11 +27,11 @@ class Step extends Base
     private $final = false;
 
     /**
-     * Assigned role.
+     * Assigned permission.
      *
-     * @var Role|null
+     * @var Permission|null
      */
-    private $role;
+    private $permission;
 
     /**
      * Consider if step is final.
@@ -123,42 +123,42 @@ class Step extends Base
     }
 
     /**
-     * Assign step to a role.
+     * Consider if step has a specific permission.
      *
-     * @param Role $role Acl role.
-     *
-     * @return $this
-     */
-    public function assignTo(Role $role)
-    {
-        $this->role = $role;
-
-        return $this;
-    }
-
-    /**
-     * Consider if step is assigned to a specific role.
-     *
-     * @param Role $role The role to check.
+     * @param Permission $permission Permission to be checked.
      *
      * @return bool
      */
-    public function isAssignedTo(Role $role)
+    public function hasPermission(Permission $permission)
     {
-        if (!$this->role) {
-            return false;
+        if ($this->permission) {
+            return $this->permission->equals($permission);
         }
 
-        return $this->role->equals($role);
+        return false;
     }
 
     /**
-     * Get the assigned role. Returns null if no role is assigned.
+     * Get permission of the step. If none is assigned it returns null.
      *
-     * @return Role|null
+     * @return Permission|null
      */
-    public function getRole()
+    public function getPermission()
     {
-        return $this->role;
+        return $this->permission;
+    }
+
+    /**
+     * Set permission.
+     *
+     * @param Permission $permission Permission to be set.
+     *
+     * @return $this
+     */
+    public function setPermission(Permission $permission)
+    {
+        $this->permission = $permission;
+
+        return $this;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Security\Role;
+use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Data\Entity;
@@ -340,10 +340,19 @@ class TransitionSpec extends ObjectBehavior
         $this->transit($item, $context)->shouldBe($newState);
     }
 
-    function it_has_roles(Role $role)
+    function it_has_permission(Permission $permission)
     {
-        $this->addRole($role)->shouldReturn($this);
-        $this->getRoles()->shouldReturn(array($role));
+        $permission->equals($permission)->willReturn(true);
+
+        $this->setPermission($permission)->shouldReturn($this);
+        $this->hasPermission($permission)->shouldReturn(true);
+        $this->getPermission()->shouldReturn($permission);
+    }
+
+    function it_does_not_require_a_permission(Permission $permission)
+    {
+        $this->getPermission()->shouldReturn(null);
+        $this->hasPermission($permission)->shouldReturn(false);
     }
 }
 
@@ -379,6 +388,7 @@ class ThrowingAction implements Action
      * @param Item       $item       Workflow item.
      * @param Context    $context    Transition context.
      *
+     * @throws ActionFailedException
      * @return void
      */
     public function transit(Transition $transition, Item $item, Context $context)

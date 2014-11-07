@@ -2,6 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
+use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Security\User;
 use Netzmacht\Workflow\Flow\Condition\Transition\AbstractPermissionCondition;
@@ -18,7 +19,7 @@ use Prophecy\Argument;
  */
 class AbstractPermissionConditionSpec extends ObjectBehavior
 {
-    function let(User $user, Role $role)
+    function let(User $user, Permission $permission)
     {
         $this->beAnInstanceOf('spec\Netzmacht\Workflow\Flow\Condition\Transition\PermissionCondition');
         $this->beConstructedWith($user);
@@ -37,25 +38,6 @@ class AbstractPermissionConditionSpec extends ObjectBehavior
     function it_gets_the_user(User $user)
     {
         $this->getUser()->shouldReturn($user);
-    }
-
-    function it_grants_permission_for_a_single_role(User $user, Role $role)
-    {
-        $user->hasRole($role)->willReturn(true);
-        $this->isGranted($role)->shouldReturn(true);
-    }
-
-    function it_grants_permission_for_one_role_is_granted(User $user, Role $role, Role $anotherRole)
-    {
-        $user->hasRole($anotherRole)->willReturn(false);
-        $user->hasRole($role)->willReturn(true);
-
-        $this->isGranted(array($anotherRole, $role))->shouldReturn(true);
-    }
-
-    function it_does_not_grant_for_empty_roles()
-    {
-        $this->isGranted(array())->shouldReturn(false);
     }
 }
 
