@@ -2,7 +2,9 @@
 
 namespace Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Acl\Role;
+use Assert\Assertion;
+use Assert\InvalidArgumentException;
+use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Base;
 use Netzmacht\Workflow\Flow\Exception\RoleNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\StepNotFoundException;
@@ -186,7 +188,8 @@ class Workflow extends Base
      */
     public function addRole(Role $role)
     {
-        $role->setWorkflowName($this->getName());
+        $this->guardWorkflowRole($role);
+
         $this->roles[] = $role;
 
         return $this;
@@ -356,5 +359,17 @@ class Workflow extends Base
                 sprintf('Transition "%s" is not allowed for step "%s"', $transitionName, $currentStep->getName())
             );
         }
+    }
+
+    /**
+     * Gard that role belongs to the workflow.
+     *
+     * @param Role $role Role to be a valid workflow role.
+     *
+     * @throws InvalidArgumentException
+     */
+    private function guardWorkflowRole(Role $role)
+    {
+        Assertion::eq($role->getWorkflowName(), $this->getName());
     }
 }

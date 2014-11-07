@@ -33,9 +33,9 @@ abstract class AbstractCondition implements Condition
     protected $errorParams = array();
 
     /**
-     * Reset error data when condition is passed.
+     * Reset error data when condition is passed. Always returns true.
      *
-     * @return true
+     * @return bool
      */
     protected function pass()
     {
@@ -46,12 +46,12 @@ abstract class AbstractCondition implements Condition
     }
 
     /**
-     * Set error on failing.
+     * Set error on failing. Always returns false.
      *
      * @param string $error  Error message code.
      * @param array  $params Error params.
      *
-     * @return false
+     * @return bool
      */
     protected function fail($error, array $params = array())
     {
@@ -64,7 +64,7 @@ abstract class AbstractCondition implements Condition
     /**
      * Describes get latest error.
      *
-     * @return array|false
+     * @return array|bool
      */
     public function getError()
     {

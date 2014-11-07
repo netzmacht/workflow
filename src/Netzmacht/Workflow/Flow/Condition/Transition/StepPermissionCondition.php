@@ -11,7 +11,7 @@
 
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
-use Netzmacht\Workflow\Acl\Role;
+use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Exception\StepNotFoundException;
 use Netzmacht\Workflow\Flow\Item;

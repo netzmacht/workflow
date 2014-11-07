@@ -2,8 +2,8 @@
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
-use Netzmacht\Workflow\Acl\Role;
-use Netzmacht\Workflow\Acl\User;
+use Netzmacht\Workflow\Security\Role;
+use Netzmacht\Workflow\Security\User;
 use Netzmacht\Workflow\Flow\Condition\Transition\TransitionPermissionCondition;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
@@ -44,8 +44,8 @@ class TransitionPermissionConditionSpec extends ObjectBehavior
         Context $context
     )
     {
-        $user->isGranted($role)->willReturn(true);
-        $user->isGranted($notGranted)->willReturn(false);
+        $user->hasRole($role)->willReturn(true);
+        $user->hasRole($notGranted)->willReturn(false);
 
         $transition->getRoles()->willReturn(array($notGranted, $role));
 

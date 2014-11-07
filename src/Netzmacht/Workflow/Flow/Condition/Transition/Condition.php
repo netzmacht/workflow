@@ -38,7 +38,7 @@ interface Condition
      *
      * Is false if no error isset.
      *
-     * @return array|false
+     * @return array|bool
      */
     public function getError();
 }

@@ -2,8 +2,8 @@
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
-use Netzmacht\Workflow\Acl\Role;
-use Netzmacht\Workflow\Acl\User;
+use Netzmacht\Workflow\Security\Role;
+use Netzmacht\Workflow\Security\User;
 use Netzmacht\Workflow\Flow\Condition\Transition\StepPermissionCondition;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
@@ -68,7 +68,7 @@ class StepPermissionConditionSpec extends ObjectBehavior
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('step');
 
-        $user->isGranted($role)->willReturn(true);
+        $user->hasRole($role)->willReturn(true);
 
         $this->match($transition, $item, $context)->shouldReturn(true);
     }
@@ -89,7 +89,7 @@ class StepPermissionConditionSpec extends ObjectBehavior
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('step');
 
-        $user->isGranted($role)->willReturn(false);
+        $user->hasRole($role)->willReturn(false);
 
         $this->match($transition, $item, $context)->shouldReturn(false);
         $this->shouldHaveError();

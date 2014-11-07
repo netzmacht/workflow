@@ -2,7 +2,7 @@
 
 namespace Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Acl\Role;
+use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Base;
 
 /**

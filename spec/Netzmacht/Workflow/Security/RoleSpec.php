@@ -1,8 +1,8 @@
 <?php
 
-namespace spec\Netzmacht\Workflow\Acl;
+namespace spec\Netzmacht\Workflow\Security;
 
-use Netzmacht\Workflow\Acl\Role;
+use Netzmacht\Workflow\Security\Role;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -14,15 +14,16 @@ use Prophecy\Argument;
 class RoleSpec extends ObjectBehavior
 {
     const NAME = 'role';
+    const WORKFLOW = 'workflow';
 
     function let()
     {
-        $this->beConstructedWith(static::NAME);
+        $this->beConstructedWith(static::NAME, static::WORKFLOW);
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Acl\Role');
+        $this->shouldHaveType('Netzmacht\Workflow\Security\Role');
     }
 
     function it_behaves_like_base()
@@ -32,8 +33,8 @@ class RoleSpec extends ObjectBehavior
 
     function it_belongs_to_an_workflow()
     {
-        $this->setWorkflowName('workflow')->shouldReturn($this);
-        $this->getFullName()->shouldReturn('workflow::' . static::NAME);
+        $this->getWorkflowName()->shouldReturn(static::WORKFLOW);
+        $this->getFullName()->shouldReturn(static::WORKFLOW . ':' . static::NAME);
     }
 
     function it_equals_to_identical_role(Role $role)

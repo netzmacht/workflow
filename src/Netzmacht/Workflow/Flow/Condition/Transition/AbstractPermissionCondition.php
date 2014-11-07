@@ -12,8 +12,8 @@
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
 use Assert\Assertion;
-use Netzmacht\Workflow\Acl\Role;
-use Netzmacht\Workflow\Acl\User;
+use Netzmacht\Workflow\Security\Role;
+use Netzmacht\Workflow\Security\User;
 
 /**
  * Class AbstractPermissionCondition is the base class for permission related conditions.
@@ -61,10 +61,10 @@ abstract class AbstractPermissionCondition extends AbstractCondition
     public function isGranted($roles)
     {
         $roles = $this->unifyRolesArgument($roles);
-        Assertion::allIsInstanceOf($roles, 'Netzmacht\Workflow\Acl\Role');
+        Assertion::allIsInstanceOf($roles, 'Netzmacht\Workflow\Security\Role');
 
         foreach ($roles as $role) {
-            if ($this->user->isGranted($role)) {
+            if ($this->user->hasRole($role)) {
                 return true;
             }
         }

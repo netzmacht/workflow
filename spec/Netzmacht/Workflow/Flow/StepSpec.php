@@ -2,7 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Acl\Role;
+use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Flow\Step;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;

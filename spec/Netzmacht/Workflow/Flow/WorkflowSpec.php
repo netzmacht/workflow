@@ -4,7 +4,7 @@ namespace spec\Netzmacht\Workflow\Flow;
 
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Item;
-use Netzmacht\Workflow\Acl\Role;
+use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
 use Netzmacht\Workflow\Flow\Context;
@@ -30,9 +30,10 @@ class WorkflowSpec extends ObjectBehavior
 
         $transition->getName()->willReturn('start');
         $transition->setStepTo($transitionStep);
-        $transition->setWorkflow(Argument::type('Netzmacht\Workflow\Flow\Workflow'))->shouldBeCalled();
 
         $this->beConstructedWith(static::NAME, static::PROVIDER);
+
+        $transition->setWorkflow($this)->shouldBeCalled();
 
         $this->addStep($transitionStep);
         $this->addTransition($transition, true);
@@ -93,7 +94,7 @@ class WorkflowSpec extends ObjectBehavior
     function it_adds_a_role(Role $role)
     {
         $role->getName()->willReturn('acl');
-        $role->setWorkflowName(static::NAME)->shouldBeCalled();
+        $role->getWorkflowName()->willReturn(static::NAME);
 
         $this->addRole($role)->shouldReturn($this);
         $this->getRole('acl')->shouldReturn($role);

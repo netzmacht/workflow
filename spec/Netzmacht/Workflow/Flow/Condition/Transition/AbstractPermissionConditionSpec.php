@@ -2,8 +2,8 @@
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
-use Netzmacht\Workflow\Acl\Role;
-use Netzmacht\Workflow\Acl\User;
+use Netzmacht\Workflow\Security\Role;
+use Netzmacht\Workflow\Security\User;
 use Netzmacht\Workflow\Flow\Condition\Transition\AbstractPermissionCondition;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
@@ -41,14 +41,14 @@ class AbstractPermissionConditionSpec extends ObjectBehavior
 
     function it_grants_permission_for_a_single_role(User $user, Role $role)
     {
-        $user->isGranted($role)->willReturn(true);
+        $user->hasRole($role)->willReturn(true);
         $this->isGranted($role)->shouldReturn(true);
     }
 
     function it_grants_permission_for_one_role_is_granted(User $user, Role $role, Role $anotherRole)
     {
-        $user->isGranted($anotherRole)->willReturn(false);
-        $user->isGranted($role)->willReturn(true);
+        $user->hasRole($anotherRole)->willReturn(false);
+        $user->hasRole($role)->willReturn(true);
 
         $this->isGranted(array($anotherRole, $role))->shouldReturn(true);
     }
