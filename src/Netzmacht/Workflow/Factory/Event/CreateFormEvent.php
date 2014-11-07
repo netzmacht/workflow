@@ -11,33 +11,45 @@
 
 namespace Netzmacht\Workflow\Event\Factory;
 
-
 use Netzmacht\Workflow\Form\Form;
 use Symfony\Component\EventDispatcher\Event;
 
+/**
+ * Class CreateFormEvent is dispatched when creating a new form instance.
+ *
+ * @package Netzmacht\Workflow\Event\Factory
+ */
 class CreateFormEvent extends Event
 {
     const NAME = 'workflow.factory.create-form';
 
     /**
+     * The form instance.
+     *
      * @var Form
      */
     private $form;
 
     /**
+     * The form type.
+     *
      * @var string
      */
     private $type;
 
     /**
-     * @param $type
+     * Construct.
+     *
+     * @param string $type Form type.
      */
-    function __construct($type)
+    public function __construct($type)
     {
         $this->type = $type;
     }
 
     /**
+     * Get the form instance.
+     *
      * @return Form
      */
     public function getForm()
@@ -46,7 +58,9 @@ class CreateFormEvent extends Event
     }
 
     /**
-     * @param Form $form
+     * Set the form instance.
+     *
+     * @param Form $form Form instance.
      *
      * @return $this
      */
@@ -58,6 +72,8 @@ class CreateFormEvent extends Event
     }
 
     /**
+     * Get the form type.
+     *
      * @return string
      */
     public function getType()

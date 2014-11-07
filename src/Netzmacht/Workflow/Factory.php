@@ -21,17 +21,26 @@ use Netzmacht\Workflow\Security\User;
 use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface as EventDispatcher;
 
+/**
+ * Class Factory dispatches events which the implementation can subscribe to create the instances.
+ *
+ * @package Netzmacht\Workflow
+ */
 class Factory
 {
     /**
+     * The event dispatcher.
+     *
      * @var EventDispatcher
      */
     private $eventDispatcher;
 
     /**
-     * @param EventDispatcher $eventDispatcher
+     * Construct.
+     *
+     * @param EventDispatcher $eventDispatcher The event dispatcher.
      */
-    function __construct(EventDispatcher $eventDispatcher)
+    public function __construct(EventDispatcher $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
     }
@@ -43,6 +52,8 @@ class Factory
      * @param string|null $type         Optional workflow type limitation. Is passed to the factory event.
      *
      * @return Manager
+     *
+     * @throws RuntimeException If manager was not created.
      */
     public function createManager($providerName, $type = null)
     {
@@ -65,7 +76,7 @@ class Factory
      * @param mixed       $model Create an workflow entity.
      * @param string|null $table Table name is required for Contao results or array rows.
      *
-     * @throws \RuntimeException If no entity could be created.
+     * @throws RuntimeException If no entity could be created.
      *
      * @return Entity
      */
@@ -75,7 +86,7 @@ class Factory
         $this->eventDispatcher->dispatch($event::NAME, $event);
 
         if (!$event->getEntity()) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf('No entity were created during dispatching event "%s"', $event::NAME)
             );
         }
@@ -84,9 +95,13 @@ class Factory
     }
 
     /**
-     * @param $type
+     * Create a form.
+     *
+     * @param string $type The form type.
      *
      * @return Form
+     *
+     * @throws RuntimeException If form was not created.
      */
     public function createForm($type)
     {
@@ -94,7 +109,7 @@ class Factory
         $this->eventDispatcher->dispatch($event::NAME, $event);
 
         if (!$event->getForm()) {
-            throw new \RuntimeException(sprintf('Could not create form type "%s"', $type));
+            throw new RuntimeException(sprintf('Could not create form type "%s"', $type));
         }
 
         return $event->getForm();
@@ -104,6 +119,8 @@ class Factory
      * Create user instance.
      *
      * @return User
+     *
+     * @throws RuntimeException If user was not created.
      */
     public function createUser()
     {
@@ -111,7 +128,7 @@ class Factory
         $this->eventDispatcher->dispatch($event::NAME, $event);
 
         if (!$event->getUser()) {
-            throw new \RuntimeException('Could not create user instance');
+            throw new RuntimeException('Could not create user instance');
         }
 
         return $event->getUser();

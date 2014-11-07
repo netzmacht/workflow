@@ -39,6 +39,7 @@ class CreateManagerEvent extends Event
 
     /**
      * Name of the provider.
+     *
      * @var string
      */
     private $providerName;
