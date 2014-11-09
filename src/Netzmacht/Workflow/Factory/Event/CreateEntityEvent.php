@@ -9,7 +9,7 @@
  *
  */
 
-namespace Netzmacht\Workflow\Event\Factory;
+namespace Netzmacht\Workflow\Factory\Event;
 
 use Netzmacht\Workflow\Data\Entity;
 use Symfony\Component\EventDispatcher\Event;
@@ -38,22 +38,22 @@ class CreateEntityEvent extends Event
     private $model;
 
     /**
-     * Optional table name.
+     * Optional provider name. Usually database table name.
      *
      * @var string|null
      */
-    private $table;
+    private $provider;
 
     /**
      * Construct.
      *
-     * @param mixed       $model The data model.
-     * @param string|null $table The table name.
+     * @param mixed       $model    The data model.
+     * @param string|null $provider The proivder name.
      */
-    public function __construct($model, $table = null)
+    public function __construct($model, $provider = null)
     {
-        $this->model = $model;
-        $this->table = $table;
+        $this->model    = $model;
+        $this->provider = $provider;
     }
 
     /**
@@ -71,9 +71,9 @@ class CreateEntityEvent extends Event
      *
      * @return null|string
      */
-    public function getTable()
+    public function getProviderName()
     {
-        return $this->table;
+        return $this->provider;
     }
 
     /**

@@ -32,6 +32,17 @@ class CreateUserEvent extends Event
     private $user;
 
     /**
+     * Construct.
+     *
+     * @param User $user User instance.
+     */
+    public function __construct(User $user)
+    {
+        $this->user = $user;
+    }
+
+
+    /**
      * Get the user.
      *
      * @return User
