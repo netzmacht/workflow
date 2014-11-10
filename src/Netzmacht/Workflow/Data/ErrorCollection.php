@@ -16,7 +16,7 @@ namespace Netzmacht\Workflow\Data;
  *
  * @package Netzmacht\Workflow
  */
-class ErrorCollection
+class ErrorCollection implements \IteratorAggregate
 {
     /**
      * Stored errors.
@@ -127,5 +127,13 @@ class ErrorCollection
     public function getErrors()
     {
         return $this->errors;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->errors);
     }
 }

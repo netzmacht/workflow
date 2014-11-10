@@ -71,4 +71,10 @@ class ErrorCollectionSpec extends ObjectBehavior
         $this->countErrors()->shouldReturn(3);
         $this->getErrors()->shouldReturn($allErrors);
     }
+
+    function it_iterates_over_errors()
+    {
+        $this->shouldHaveType('IteratorAggregate');
+        $this->getIterator()->shouldHaveType('Traversable');
+    }
 }
