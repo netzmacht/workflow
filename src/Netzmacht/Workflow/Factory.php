@@ -119,18 +119,12 @@ class Factory
      * Create user instance.
      *
      * @return User
-     *
-     * @throws RuntimeException If user was not created.
      */
     public function createUser()
     {
         $user  = new User();
         $event = new CreateUserEvent($user);
         $this->eventDispatcher->dispatch($event::NAME, $event);
-
-        if (!$event->getUser()) {
-            throw new RuntimeException('Could not create user instance');
-        }
 
         return $event->getUser();
     }
