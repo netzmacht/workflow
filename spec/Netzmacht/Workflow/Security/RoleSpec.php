@@ -2,6 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Security;
 
+use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Security\Role;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -49,5 +50,31 @@ class RoleSpec extends ObjectBehavior
         $role->getFullName()->willReturn('other_role');
 
         $this->equals($role);
+    }
+
+    function it_contains_permission(Permission $permission)
+    {
+        $permission->equals($permission)->willReturn(true);
+
+        $this->hasPermission($permission)->shouldReturn(false);
+        $this->hasPermissions(array($permission))->shouldReturn(false);
+
+        $this->addPermission($permission)->shouldReturn($this);
+
+        $this->hasPermission($permission)->shouldReturn(true);
+        $this->hasPermissions(array($permission))->shouldReturn(true);
+
+        $this->getPermissions()->shouldReturn(array($permission));
+    }
+
+    function it_removes_condition(Permission $permission)
+    {
+        $permission->equals($permission)->willReturn(true);
+
+        $this->addPermission($permission);
+        $this->hasPermission($permission)->shouldReturn(true);
+
+        $this->removePermission($permission)->shouldReturn($this);
+        $this->hasPermission($permission)->shouldReturn(false);
     }
 }

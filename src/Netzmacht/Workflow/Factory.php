@@ -12,9 +12,9 @@
 namespace Netzmacht\Workflow;
 
 use Netzmacht\Workflow\Data\Entity;
-use Netzmacht\Workflow\Event\Factory\CreateEntityEvent;
-use Netzmacht\Workflow\Event\Factory\CreateFormEvent;
-use Netzmacht\Workflow\Event\Factory\CreateManagerEvent;
+use Netzmacht\Workflow\Factory\Event\CreateEntityEvent;
+use Netzmacht\Workflow\Factory\Event\CreateFormEvent;
+use Netzmacht\Workflow\Factory\Event\CreateManagerEvent;
 use Netzmacht\Workflow\Factory\Event\CreateUserEvent;
 use Netzmacht\Workflow\Form\Form;
 use Netzmacht\Workflow\Security\User;
@@ -124,7 +124,8 @@ class Factory
      */
     public function createUser()
     {
-        $event = new CreateUserEvent();
+        $user  = new User();
+        $event = new CreateUserEvent($user);
         $this->eventDispatcher->dispatch($event::NAME, $event);
 
         if (!$event->getUser()) {
