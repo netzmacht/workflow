@@ -11,6 +11,7 @@
 
 namespace Netzmacht\Workflow\Handler;
 
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Exception\TransitionNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
@@ -84,6 +85,13 @@ interface TransitionHandler
      * @return Context
      */
     public function getContext();
+
+    /**
+     * Get the error collection.
+     *
+     * @return ErrorCollection
+     */
+    public function getErrorCollection();
 
     /**
      * Validate the input.

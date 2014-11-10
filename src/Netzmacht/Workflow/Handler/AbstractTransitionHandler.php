@@ -14,9 +14,7 @@ namespace Netzmacht\Workflow\Handler;
 use Netzmacht\Workflow\Data\EntityRepository;
 use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context;
-use Netzmacht\Workflow\Flow\Exception\TransitionNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
-use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Workflow;
@@ -132,9 +130,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
 
 
     /**
-     * Get the workflow.
-     *
-     * @return Workflow
+     * {@inheritdoc}
      */
     public function getWorkflow()
     {
@@ -142,9 +138,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     }
 
     /**
-     * Get the item.
-     *
-     * @return Item
+     * {@inheritdoc}
      */
     public function getItem()
     {
@@ -152,9 +146,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     }
 
     /**
-     * Get the input form.
-     *
-     * @return Form
+     * {@inheritdoc}
      */
     public function getForm()
     {
@@ -162,11 +154,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     }
 
     /**
-     * Get the transition.
-     *
-     * @return \Netzmacht\Workflow\Flow\Transition
-     *
-     * @throws TransitionNotFoundException If transition was not found.
+     * {@inheritdoc}
      */
     public function getTransition()
     {
@@ -178,9 +166,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     }
 
     /**
-     * Get current step. Will return null if workflow is not started yet.
-     *
-     * @return Step|null
+     * {@inheritdoc}
      */
     public function getCurrentStep()
     {
@@ -194,9 +180,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     }
 
     /**
-     * Consider if it handles a start transition.
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function isWorkflowStarted()
     {
@@ -204,9 +188,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     }
 
     /**
-     * Consider if input is required.
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function requiresInputData()
     {
@@ -214,9 +196,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     }
 
     /**
-     * Get the context.
-     *
-     * @return Context
+     * {@inheritdoc}
      */
     public function getContext()
     {
@@ -224,11 +204,15 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     }
 
     /**
-     * Validate the input.
-     *
-     * @param Form $form The transition form.
-     *
-     * @return bool
+     * {@inheritdoc}
+     */
+    public function getErrorCollection()
+    {
+        return $this->errorCollection;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function validate(Form $form)
     {
@@ -246,12 +230,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     }
 
     /**
-     * Transit to next step.
-     *
-     * @throws WorkflowException If an invalid transition was requested.
-     * @throws \Exception        If some actions throws an unknown exception.
-     *
-     * @return State
+     * {@inheritdoc}
      */
     public function transit()
     {
@@ -275,12 +254,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     }
 
     /**
-     * Start a transition.
-     *
-     * @return \Netzmacht\Workflow\Flow\State
-     *
-     * @throws WorkflowException If an invalid transition was requested.
-     * @throws \Exception        If some actions throws an unknown exception.
+     * {@inheritdoc}
      */
     private function start()
     {

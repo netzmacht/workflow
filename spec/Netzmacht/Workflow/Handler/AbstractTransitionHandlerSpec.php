@@ -135,6 +135,11 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
         $this->getContext()->shouldHaveType(self::CONTEXT_CLASS);
     }
 
+    function it_gets_the_error_collection()
+    {
+        $this->getErrorCollection()->shouldHaveType(self::ERROR_COLLECTION_CLASS);
+    }
+
     function it_validates(Form $form, Workflow $workflow, Transition $transition, Item $item)
     {
         $workflow->getStartTransition()->willReturn($transition);
