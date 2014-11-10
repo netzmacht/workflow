@@ -19,6 +19,8 @@ use Netzmacht\Workflow\Form\Form;
 /**
  * Class ValidateTransitionEvent is dispatched when validating a transition.
  *
+ * Is is raised after the validation was made and contains the current validation state.
+ *
  * @package Netzmacht\Workflow\Handler\Event
  */
 class ValidateTransitionEvent extends AbstractFlowEvent
