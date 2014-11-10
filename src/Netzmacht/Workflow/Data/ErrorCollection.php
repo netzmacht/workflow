@@ -38,14 +38,15 @@ class ErrorCollection
     /**
      * Add a new error.
      *
-     * @param string $message Error message.
-     * @param array  $params  Params for the error message.
+     * @param string          $message    Error message.
+     * @param array           $params     Params for the error message.
+     * @param ErrorCollection $collection Option. Child collection of the error.
      *
      * @return $this
      */
-    public function addError($message, array $params = array())
+    public function addError($message, array $params = array(), ErrorCollection $collection = null)
     {
-        $this->errors[] = array($message, $params);
+        $this->errors[] = array($message, $params, $collection);
 
         return $this;
     }
@@ -110,8 +111,9 @@ class ErrorCollection
     public function addErrors(array $errors)
     {
         foreach ($errors as $error) {
-            list($message, $params) = (array) $error;
-            $this->addError($message, $params);
+            list($message, $params, $collection) = (array) $error;
+
+            $this->addError($message, $params, $collection);
         }
 
         return $this;

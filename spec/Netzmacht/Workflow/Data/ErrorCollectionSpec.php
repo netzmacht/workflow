@@ -2,7 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Data;
 
-use Netzmacht\Contao\Workflow\ErrorCollection;
+use Netzmacht\Workflow\Data\ErrorCollection;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -20,7 +20,7 @@ class ErrorCollectionSpec extends ObjectBehavior
     function it_adds_error()
     {
         $this->addError(static::MESSAGE, static::$params)->shouldReturn($this);
-        $this->getErrors()->shouldContain(array(static::MESSAGE, static::$params));
+        $this->getErrors()->shouldContain(array(static::MESSAGE, static::$params, null));
     }
 
     function it_counts_errors()
@@ -35,7 +35,7 @@ class ErrorCollectionSpec extends ObjectBehavior
     function it_gets_error_by_index()
     {
         $this->addError(static::MESSAGE, static::$params);
-        $this->getError(0)->shouldReturn(array(static::MESSAGE, static::$params));
+        $this->getError(0)->shouldReturn(array(static::MESSAGE, static::$params, null));
     }
 
     function it_throws_when_unknown_error_index_given()
@@ -51,17 +51,17 @@ class ErrorCollectionSpec extends ObjectBehavior
         $this->hasErrors()->shouldReturn(false);
     }
 
-    function it_adds_multiple_errors()
+    function it_adds_multiple_errors(ErrorCollection $errorCollection)
     {
         $errors = array(
-            array(static::MESSAGE, static::$params),
-            array(static::MESSAGE, static::$params),
+            array(static::MESSAGE, static::$params, null),
+            array(static::MESSAGE, static::$params, $errorCollection),
         );
 
         $allErrors = array(
-            array(static::MESSAGE, static::$params),
-            array(static::MESSAGE, static::$params),
-            array(static::MESSAGE, static::$params),
+            array(static::MESSAGE, static::$params, null),
+            array(static::MESSAGE, static::$params, null),
+            array(static::MESSAGE, static::$params, $errorCollection),
         );
 
         // make sure it does not override
