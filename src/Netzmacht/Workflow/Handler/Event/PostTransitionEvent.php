@@ -27,7 +27,7 @@ class PostTransitionEvent extends AbstractFlowEvent
     const NAME = 'workflow.transition.handler.post-transition';
 
     /**
-     * Workflow item state.
+     * Workflow item state which was created during transition.
      *
      * @var State
      */
