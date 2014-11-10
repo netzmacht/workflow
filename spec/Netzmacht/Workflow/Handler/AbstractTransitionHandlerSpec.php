@@ -2,6 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Handler;
 
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Data\EntityRepository;
@@ -26,8 +27,9 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
 {
     const TRANSITION_NAME = 'transition_name';
 
-    const CONTEXT_CLASS = 'Netzmacht\Workflow\Flow\Context';
     const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Data\ErrorCollection';
+
+    const CONTEXT_CLASS = 'Netzmacht\Workflow\Flow\Context';
 
     function let(
         Item $item,
@@ -150,6 +152,36 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
         $form->validate(Argument::type(self::CONTEXT_CLASS))->shouldBeCalled()->willReturn(true);
 
         $this->validate($form)->shouldReturn(true);
+    }
+
+    function it_adds_form_errors_to_error_collection_when_validates_failes(
+        Form $form,
+        Workflow $workflow,
+        Transition $transition,
+        Item $item,
+        ErrorCollection $formErrorCollection
+    ) {
+        $workflow->getStartTransition()->willReturn($transition);
+        $transition->buildForm($form, $item)->shouldBeCalled();
+        $transition->getName()->willReturn(static::TRANSITION_NAME);
+        $transition->requiresInputData()->willReturn(true);
+
+        $form->validate(Argument::type(self::CONTEXT_CLASS))->shouldBeCalled()->willReturn(false);
+        $form->getErrorCollection()->shouldBeCalled()->willReturn($formErrorCollection);
+
+        $this->validate($form)->shouldReturn(false);
+
+
+        $this->getErrorCollection()->getErrors()->shouldReturn(
+            array(
+                array(
+                    'transition.validate.form.failed',
+                    array(),
+                    $formErrorCollection
+                )
+            )
+        );
+
     }
 
     function it_throws_during_transits_if_not_validated(Workflow $workflow, Transition $transition)

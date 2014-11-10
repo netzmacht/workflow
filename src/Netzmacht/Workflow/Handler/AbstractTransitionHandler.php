@@ -221,6 +221,14 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         if (!$this->validated) {
             if ($this->requiresInputData()) {
                 $this->validated = $this->getForm()->validate($this->context);
+
+                if (!$this->validated) {
+                    $this->errorCollection->addError(
+                        'transition.validate.form.failed',
+                        array(),
+                        $form->getErrorCollection()
+                    );
+                }
             } else {
                 $this->validated = true;
             }

@@ -11,6 +11,7 @@
 
 namespace Netzmacht\Workflow\Form;
 
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context;
 
 /**
@@ -75,4 +76,11 @@ interface Form
      * @return array
      */
     public function getData();
+
+    /**
+     * Get errors of form.
+     *
+     * @return ErrorCollection
+     */
+    public function getErrorCollection();
 }
