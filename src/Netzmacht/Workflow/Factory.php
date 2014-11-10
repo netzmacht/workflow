@@ -60,11 +60,10 @@ class Factory
         $event = new CreateManagerEvent($providerName, $type);
         $this->eventDispatcher->dispatch($event::NAME, $event);
 
-        if (!$event->getManager()) {
-            throw new RuntimeException(
-                sprintf('No workflow manager were created during dispatching event "%s"', $event::NAME)
-            );
-        }
+        $this->guardCreated(
+            $event->getManager(),
+            sprintf('No workflow manager were created during dispatching event "%s"', $event::NAME)
+        );
 
         return $event->getManager();
     }
@@ -85,11 +84,10 @@ class Factory
         $event = new CreateEntityEvent($model, $table);
         $this->eventDispatcher->dispatch($event::NAME, $event);
 
-        if (!$event->getEntity()) {
-            throw new RuntimeException(
-                sprintf('No entity were created during dispatching event "%s"', $event::NAME)
-            );
-        }
+        $this->guardCreated(
+            $event->getEntity(),
+            sprintf('No entity were created during dispatching event "%s"', $event::NAME)
+        );
 
         return $event->getEntity();
     }
@@ -108,9 +106,7 @@ class Factory
         $event = new CreateFormEvent($type);
         $this->eventDispatcher->dispatch($event::NAME, $event);
 
-        if (!$event->getForm()) {
-            throw new RuntimeException(sprintf('Could not create form type "%s"', $type));
-        }
+        $this->guardCreated($event->getForm(), sprintf('Could not create form type "%s"', $type));
 
         return $event->getForm();
     }
@@ -127,5 +123,22 @@ class Factory
         $this->eventDispatcher->dispatch($event::NAME, $event);
 
         return $event->getUser();
+    }
+
+    /**
+     * Guard that result was created.
+     *
+     * @param mixed  $result  Result of the event dispatched factory.
+     * @param string $message The error message.
+     *
+     * @return void
+     *
+     * @throws RuntimeException If result was not created.
+     */
+    private function guardCreated($result, $message)
+    {
+        if (!$result) {
+            throw new RuntimeException($message);
+        }
     }
 }

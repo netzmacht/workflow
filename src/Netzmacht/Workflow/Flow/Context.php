@@ -2,8 +2,6 @@
 
 namespace Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Data\ErrorCollection;
-
 /**
  * Class Context provides extra information for a transition.
  *
@@ -38,8 +36,8 @@ class Context
      */
     public function __construct(array $properties = array(), array $params = array())
     {
-        $this->properties      = $properties;
-        $this->params          = $params;
+        $this->properties = $properties;
+        $this->params     = $params;
     }
 
     /**
