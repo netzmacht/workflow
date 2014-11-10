@@ -11,6 +11,7 @@
 
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Item;
@@ -25,20 +26,22 @@ class OrCondition extends ConditionCollection
     /**
      * {@inheritdoc}
      */
-    public function match(Transition $transition, Item $item, Context $context)
+    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection)
     {
         if (!$this->conditions) {
-            return $this->pass();
+            return true;
         }
 
+        $errors = new ErrorCollection();
+
         foreach ($this->conditions as $condition) {
-            if ($condition->match($transition, $item, $context)) {
-                return $this->pass();
-            } else {
-                $this->addError($condition);
+            if ($condition->match($transition, $item, $context, $errors)) {
+                return true;
             }
         }
 
-        return $this->fail('transition.condition.or');
+        $errorCollection->addError('transition.condition.or.failed', array(), $errors);
+
+        return false;
     }
 }

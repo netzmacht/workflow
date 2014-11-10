@@ -12,16 +12,13 @@
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
 use Assert\Assertion;
-use Netzmacht\Workflow\Flow\Context;
-use Netzmacht\Workflow\Flow\Item;
-use Netzmacht\Workflow\Flow\Transition;
 
 /**
  * Class ConditionCollection contains child conditions which are called during match.
  *
  * @package Netzmacht\Workflow\Flow\Transition\Condition
  */
-abstract class ConditionCollection extends AbstractCondition
+abstract class ConditionCollection implements Condition
 {
     /**
      * All child conditions of the collection.
@@ -29,13 +26,6 @@ abstract class ConditionCollection extends AbstractCondition
      * @var Condition[]
      */
     protected $conditions = array();
-
-    /**
-     * All child errors.
-     *
-     * @var array
-     */
-    protected $childErrors = array();
 
     /**
      * Add condition.
@@ -97,53 +87,5 @@ abstract class ConditionCollection extends AbstractCondition
         }
 
         return $this;
-    }
-
-    /**
-     * Add error from a child condition.
-     *
-     * @param Condition $condition Child condition.
-     *
-     * @return $this
-     */
-    protected function addError(Condition $condition)
-    {
-        $this->childErrors[] = $condition->getError();
-
-        return $this;
-    }
-
-    /**
-     * Check if errors exists.
-     *
-     * @return bool
-     */
-    protected function hasErrors()
-    {
-        return !empty($this->childErrors);
-    }
-
-    /**
-     * Reset error state.
-     *
-     * @return true
-     */
-    protected function pass()
-    {
-        $this->childErrors = array();
-
-        return parent::pass();
-    }
-
-    /**
-     * Add error message.
-     *
-     * @param string $error Message to be added.
-     *
-     * @return false
-     */
-    protected function fail($error)
-    {
-        return parent::fail($error, array($this->childErrors));
     }
 }

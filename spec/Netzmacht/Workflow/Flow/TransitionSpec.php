@@ -16,6 +16,7 @@ use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Form\Form;
+use PDepend\Util\Type;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -27,6 +28,8 @@ use Prophecy\Argument;
 class TransitionSpec extends ObjectBehavior
 {
     const NAME = 'transition_name';
+
+    const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Data\ErrorCollection';
 
     function let()
     {
@@ -89,24 +92,25 @@ class TransitionSpec extends ObjectBehavior
         $this->requiresInputData()->shouldReturn(true);
     }
 
-    function it_checks_a_precondition(Condition $condition, Item $item, Context $context)
+    function it_checks_a_precondition(Condition $condition, Item $item, Context $context, ErrorCollection $errorCollection)
     {
-        $condition->match($this, $item, $context)->willReturn(true);
+        $condition->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(true);
 
         $this->addPreCondition($condition)->shouldReturn($this);
-        $this->checkPreCondition($item, $context)->shouldReturn(true);
+        $this->checkPreCondition($item, $context, $errorCollection)->shouldReturn(true);
     }
 
     function it_checks_a_precondition_failing(
         Condition $condition,
         Item $item,
-        Context $context
+        Context $context,
+        ErrorCollection $errorCollection
     ) {
-        $condition->match($this, $item, $context)->willReturn(false);
-        $condition->getError()->shouldBeCalled();
+        $condition->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(false);
+        $errorCollection->addError(Argument::cetera())->shouldBeCalled();
 
         $this->addPreCondition($condition)->shouldReturn($this);
-        $this->checkPreCondition($item, $context)->shouldReturn(false);
+        $this->checkPreCondition($item, $context, $errorCollection)->shouldReturn(false);
     }
 
     function it_gets_condition(Condition $condition)
@@ -123,110 +127,117 @@ class TransitionSpec extends ObjectBehavior
         $this->getPreCondition()->shouldHaveType('Netzmacht\Workflow\Flow\Condition\Transition\AndCondition');
     }
 
-    function it_checks_a_condition(Condition $condition, Item $item, Context $context)
+    function it_checks_a_condition(Condition $condition, Item $item, Context $context, ErrorCollection $errorCollection)
     {
-        $condition->match($this, $item, $context)->willReturn(true);
+        $condition->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(true);
 
         $this->addCondition($condition)->shouldReturn($this);
-        $this->checkCondition($item, $context)->shouldReturn(true);
+        $this->checkCondition($item, $context, $errorCollection)->shouldReturn(true);
     }
 
     function it_checks_a_condition_failing(
         Condition $condition,
         Item $item,
-        Context $context
+        Context $context,
+        ErrorCollection $errorCollection
     ) {
-        $condition->match($this, $item, $context)->willReturn(false);
-        $condition->getError()->shouldBeCalled();
+        $condition->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(false);
+        $errorCollection->addError(Argument::cetera())->shouldBeCalled();
 
         $this->addCondition($condition)->shouldReturn($this);
-        $this->checkCondition($item, $context)->shouldReturn(false);
+        $this->checkCondition($item, $context, $errorCollection)->shouldReturn(false);
     }
 
     function it_is_allowed_by_conditions(
         Condition $preCondition,
         Condition $condition,
         Item $item,
-        Context $context
+        Context $context,
+        ErrorCollection $errorCollection
     ) {
-        $condition->match($this, $item, $context)->willReturn(true);
-        $preCondition->match($this, $item, $context)->willReturn(true);
+        $condition->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(true);
+        $preCondition->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(true);
 
         $this->addCondition($condition);
         $this->addPreCondition($condition);
 
-        $this->isAllowed($item, $context)->shouldReturn(true);
+        $this->isAllowed($item, $context, $errorCollection)->shouldReturn(true);
     }
 
     function it_is_not_allowed_by_failing_pre_condition(
         Condition $preCondition,
         Condition $condition,
         Item $item,
-        Context $context
+        Context $context,
+        ErrorCollection $errorCollection
     ) {
-        $condition->match($this, $item, $context)->willReturn(true);
-        $preCondition->match($this, $item, $context)->willReturn(false);
-        $preCondition->getError()->shouldBeCalled();
+        $condition->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(true);
+        $preCondition->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(false);
+
+        $errorCollection->addError(Argument::cetera())->shouldBeCalled();
 
         $this->addCondition($condition);
         $this->addPreCondition($preCondition);
 
-        $this->isAllowed($item, $context)->shouldReturn(false);
+        $this->isAllowed($item, $context, $errorCollection)->shouldReturn(false);
     }
 
     function it_is_not_allowed_by_failing_condition(
         Condition $preCondition,
         Condition $condition,
         Item $item,
-        Context $context
+        Context $context,
+        ErrorCollection $errorCollection
     ) {
-        $condition->match($this, $item, $context)->willReturn(false);
-        $condition->getError()->shouldBeCalled();
+        $condition->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(false);
+        $preCondition->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(true);
 
-        $preCondition->match($this, $item, $context)->willReturn(true);
+        $errorCollection->addError(Argument::cetera())->shouldBeCalled();
 
         $this->addCondition($condition);
         $this->addPreCondition($preCondition);
 
-        $this->isAllowed($item, $context)->shouldReturn(false);
+        $this->isAllowed($item, $context, $errorCollection)->shouldReturn(false);
     }
 
     function it_is_available_when_passing_conditions(
         Condition $preCondition,
         Condition $condition,
         Item $item,
-        Context $context
+        Context $context,
+        ErrorCollection $errorCollection
     ) {
-        $condition->match($this, $item, $context)->willReturn(true);
-        $preCondition->match($this, $item, $context)->willReturn(true);
+        $condition->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(true);
+        $preCondition->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(true);
 
         $this->addCondition($condition);
         $this->addPreCondition($preCondition);
 
-        $this->isAvailable($item, $context)->shouldReturn(true);
+        $this->isAvailable($item, $context, $errorCollection)->shouldReturn(true);
     }
 
     function it_is_not_available_when_condition_fails(
         Condition $preCondition,
         Condition $condition,
         Item $item,
-        Context $context
+        Context $context,
+        ErrorCollection $errorCollection
     ) {
         $condition
-            ->match($this, $item, $context)
+            ->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))
             ->willReturn(false);
 
-        $condition->getError()->shouldBeCalled();
+        $errorCollection->addError(Argument::cetera())->shouldBeCalled();
 
         $preCondition
-            ->match($this, $item, $context)
+            ->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))
             ->willReturn(true);
 
         $this->addCondition($condition);
         $this->addPreCondition($preCondition);
 
         $this
-            ->isAvailable($item, $context)
+            ->isAvailable($item, $context, $errorCollection)
             ->shouldReturn(false);
     }
 
@@ -234,23 +245,24 @@ class TransitionSpec extends ObjectBehavior
         Condition $preCondition,
         Condition $condition,
         Item $item,
-        Context $context
+        Context $context,
+        ErrorCollection $errorCollection
     ) {
         $condition
-            ->match($this, $item, $context)
+            ->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))
             ->willReturn(true);
 
         $preCondition
-            ->match($this, $item, $context)
+            ->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))
             ->willReturn(false);
 
-        $preCondition->getError()->shouldBeCalled();
+        $errorCollection->addError(Argument::cetera())->shouldBeCalled();
 
         $this->addCondition($condition);
         $this->addPreCondition($preCondition);
 
         $this
-            ->isAvailable($item, $context)
+            ->isAvailable($item, $context, $errorCollection)
             ->shouldReturn(false);
     }
 
@@ -259,14 +271,15 @@ class TransitionSpec extends ObjectBehavior
         Condition $condition,
         Item $item,
         Context $context,
+        ErrorCollection $errorCollection,
         Action $action
     ) {
         $preCondition
-            ->match($this, $item, $context)
+            ->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))
             ->willReturn(true);
 
         $condition
-            ->match($this, $item, $context)
+            ->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))
             ->willReturn(false);
 
         $action->requiresInputData()->willReturn(true);
@@ -276,7 +289,7 @@ class TransitionSpec extends ObjectBehavior
         $this->addCondition($condition);
         $this->addPreCondition($preCondition);
 
-        $this->isAvailable($item, $context)->shouldReturn(true);
+        $this->isAvailable($item, $context, $errorCollection)->shouldReturn(true);
     }
 
     function it_starts_an_workflow(
@@ -291,7 +304,6 @@ class TransitionSpec extends ObjectBehavior
         $item->isWorkflowStarted()->willReturn(false);
         $item->getEntity()->willReturn($entity);
 
-        $context->getErrorCollection()->willReturn($errorCollection);
         $context->getProperties()->willReturn(array());
 
         $entity->getEntityId()->willReturn($entityId);
@@ -301,43 +313,45 @@ class TransitionSpec extends ObjectBehavior
         $this->setWorkflow($workflow);
         $this->setStepTo($step);
 
-        $this->start($item, $context)->shouldHaveType('Netzmacht\Workflow\FLow\State');
+        $this->start($item, $context, $errorCollection)->shouldHaveType('Netzmacht\Workflow\FLow\State');
     }
 
     function it_transits_an_item(
         Item $item,
         Context $context,
+        ErrorCollection $errorCollection,
         State $state,
         State $newState
     ) {
         $item->getLatestState()->willReturn($state);
         $item->transit($newState)->shouldBeCalled();
 
-        $state->transit($this, $context, true)->willReturn($newState);
+        $state->transit($this, $context, $errorCollection, true)->willReturn($newState);
 
         $context->getProperties()->willReturn(array());
 
-        $this->transit($item, $context)->shouldBe($newState);
+        $this->transit($item, $context, $errorCollection)->shouldBe($newState);
     }
 
     function it_catches_action_failed_exceptions_during_action_execution(
         Item $item,
         Context $context,
+        ErrorCollection $errorCollection,
         State $state,
         State $newState
     ) {
         $item->getLatestState()->willReturn($state);
         $item->transit($newState)->shouldBeCalled();
 
-        $state->transit($this, $context, false)->willReturn($newState);
+        $state->transit($this, $context, $errorCollection, false)->willReturn($newState);
 
-        $this->isAllowed($item, $context)->shouldReturn(true);
+        $this->isAllowed($item, $context, $errorCollection)->shouldReturn(true);
         $this->addAction(new ThrowingAction());
 
-        $context->addError(Argument::type('string'), Argument::type('array'))->shouldBeCalled();
+        $errorCollection->addError(Argument::type('string'), Argument::type('array'))->shouldBeCalled();
         $context->getProperties()->willReturn(array());
 
-        $this->transit($item, $context)->shouldBe($newState);
+        $this->transit($item, $context, $errorCollection)->shouldBe($newState);
     }
 
     function it_has_permission(Permission $permission)

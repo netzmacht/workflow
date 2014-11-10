@@ -11,6 +11,7 @@
 
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
@@ -25,17 +26,19 @@ class TransitionPermissionCondition extends AbstractPermissionCondition
     /**
      * {@inheritdoc}
      */
-    public function match(Transition $transition, Item $item, Context $context)
+    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection)
     {
         $permission = $transition->getPermission();
 
         if ($permission && $this->user->hasPermission($permission)) {
-            return $this->pass();
+            return true;
         }
 
-        return $this->fail(
+        $errorCollection->addError(
             'transition.condition.transition-permission',
             array((string) $permission)
         );
+
+        return false;
     }
 }

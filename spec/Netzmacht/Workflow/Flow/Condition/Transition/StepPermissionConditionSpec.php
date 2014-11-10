@@ -2,8 +2,8 @@
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Security\Permission;
-use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Security\User;
 use Netzmacht\Workflow\Flow\Condition\Transition\StepPermissionCondition;
 use Netzmacht\Workflow\Flow\Context;
@@ -41,52 +41,76 @@ class StepPermissionConditionSpec extends ObjectBehavior
         $this->shouldImplement('Netzmacht\Workflow\Flow\Condition\Transition\Condition');
     }
 
-    function it_matches_if_workflow_not_started_by_default(Transition $transition, Item $item, Context $context)
-    {
+    function it_matches_if_workflow_not_started_by_default(
+        Transition $transition,
+        Item $item,
+        Context $context,
+        ErrorCollection $errorCollection
+    ) {
         $item->isWorkflowStarted()->willReturn(false);
 
-        $this->match($transition, $item, $context)->shouldReturn(true);
-        $this->shouldNotHaveError();
+        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(true);
     }
 
-    function it_does_match_if_workflow_not_started_when_disabled(Transition $transition, Item $item, Context $context)
-    {
-        $transition->getName()->shouldBeCalled();
-
+    function it_does_match_if_workflow_not_started_is_explicit_allowed(
+        Transition $transition,
+        Item $item,
+        Context $context,
+        ErrorCollection $errorCollection
+    ) {
         $item->isWorkflowStarted()->willReturn(false);
         $this->disallowStartTransition()->shouldReturn($this);
 
-        $this->match($transition, $item, $context)->shouldReturn(false);
-        $this->getError()->shouldHaveCount(2);
+        $errorCollection->addError(Argument::cetera())->shouldBeCalled();
+
+        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(false);
 
         $this->allowStartTransition()->shouldReturn($this);
-        $this->match($transition, $item, $context)->shouldReturn(true);
-        $this->shouldNotHaveError();
+        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(true);
     }
 
-    function it_matches_if_step_permission_equals(Transition $transition, Item $item, Context $context, User $user, Permission $permission)
+    function it_matches_if_step_permission_equals(
+        Transition $transition,
+        Item $item,
+        Context $context,
+        User $user,
+        Permission $permission,
+        ErrorCollection $errorCollection
+    )
     {
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('step');
 
         $user->hasPermission($permission)->willReturn(true);
 
-        $this->match($transition, $item, $context)->shouldReturn(true);
+        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(true);
     }
 
-    function it_does_not_match_if_step_has_no_assigned_role(Transition $transition, Item $item, Context $context, Step $step)
-    {
+    function it_does_not_match_if_step_has_no_assigned_role(
+        Transition $transition,
+        Item $item,
+        Context $context,
+        Step $step,
+        ErrorCollection $errorCollection
+    ) {
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('step');
 
         $step->getPermission()->willReturn(null);
 
-        $this->match($transition, $item, $context)->shouldReturn(false);
-        $this->shouldHaveError();
+        $errorCollection->addError(Argument::cetera())->shouldBeCalled();
+
+        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(false);
     }
 
-    function it_does_not_match_if_step_role_is_not_granted(Transition $transition, Item $item, Context $context, User $user, Permission $permission)
-    {
+    function it_does_not_match_if_step_role_is_not_granted(
+        Transition $transition,
+        Item $item,
+        Context $context,
+        User $user,
+        Permission $permission,
+        ErrorCollection $errorCollection
+    ) {
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('step');
 
@@ -94,7 +118,8 @@ class StepPermissionConditionSpec extends ObjectBehavior
 
         $user->hasPermission($permission)->willReturn(false);
 
-        $this->match($transition, $item, $context)->shouldReturn(false);
-        $this->shouldHaveError();
+        $errorCollection->addError(Argument::cetera())->shouldBeCalled();
+
+        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(false);
     }
 }

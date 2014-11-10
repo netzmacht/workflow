@@ -41,7 +41,6 @@ class CreateUserEvent extends Event
         $this->user = $user;
     }
 
-
     /**
      * Get the user.
      *
@@ -50,17 +49,5 @@ class CreateUserEvent extends Event
     public function getUser()
     {
         return $this->user;
-    }
-
-    /**
-     * Set the user.
-     *
-     * @param User $user The user instance.
-     *
-     * @return void
-     */
-    public function setUser(User $user)
-    {
-        $this->user = $user;
     }
 }

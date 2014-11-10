@@ -4,6 +4,7 @@ namespace Netzmacht\Workflow\Flow;
 
 use Assert\Assertion;
 use Assert\InvalidArgumentException;
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Base;
 use Netzmacht\Workflow\Flow\Exception\RoleNotFoundException;
@@ -282,15 +283,16 @@ class Workflow extends Base
     /**
      * Transit the entity to a new state.
      *
-     * @param Item    $item           The item.
-     * @param string  $transitionName The transition name.
-     * @param Context $context        The context of the transition.
+     * @param Item            $item            The item.
+     * @param string          $transitionName  The transition name.
+     * @param Context         $context         The context of the transition.
+     * @param ErrorCollection $errorCollection The error collection.
      *
      * @throws StepNotFoundException         If a workflow related issue occurs.
      *
      * @return State
      */
-    public function transit(Item $item, $transitionName, Context $context)
+    public function transit(Item $item, $transitionName, Context $context, ErrorCollection $errorCollection)
     {
         $this->guardWorkflowStarted($item);
 
@@ -300,7 +302,7 @@ class Workflow extends Base
 
         $transition = $this->getTransition($transitionName);
 
-        return $transition->transit($item, $context);
+        return $transition->transit($item, $context, $errorCollection);
     }
 
     /**
@@ -308,12 +310,13 @@ class Workflow extends Base
      *
      * If the workflow is already started, nothing happens.
      *
-     * @param Item    $item    The entity.
-     * @param Context $context The transition context.
+     * @param Item            $item            The entity.
+     * @param Context         $context         The transition context.
+     * @param ErrorCollection $errorCollection The error collection.
      *
      * @return State
      */
-    public function start(Item $item, Context $context)
+    public function start(Item $item, Context $context, ErrorCollection $errorCollection)
     {
         if ($item->isWorkflowStarted()) {
             return $item->getLatestState();
@@ -321,7 +324,7 @@ class Workflow extends Base
 
         $transition = $this->getStartTransition();
 
-        return $transition->start($item, $context);
+        return $transition->start($item, $context, $errorCollection);
     }
 
     /**

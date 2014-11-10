@@ -14,6 +14,7 @@ namespace Netzmacht\Workflow\Flow;
 use DateTime;
 use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Data\EntityId;
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Transition;
 
@@ -127,15 +128,21 @@ class State
     /**
      * Create an initial state.
      *
-     * @param Entity     $entity     The entity.
-     * @param Transition $transition The current executed transition.
-     * @param Context    $context    The context.
-     * @param bool       $success    Success state.
+     * @param Entity          $entity          The entity.
+     * @param Transition      $transition      The current executed transition.
+     * @param Context         $context         The context.
+     * @param ErrorCollection $errorCollection The error collection.
+     * @param bool            $success         Success state.
      *
      * @return State
      */
-    public static function start(Entity $entity, Transition $transition, Context $context, $success)
-    {
+    public static function start(
+        Entity $entity,
+        Transition $transition,
+        Context $context,
+        ErrorCollection $errorCollection,
+        $success
+    ) {
         $state = new State(
             $entity->getEntityId(),
             $transition->getWorkflow()->getName(),
@@ -144,7 +151,7 @@ class State
             $success,
             $context->getProperties(),
             new \DateTime(),
-            $context->getErrorCollection()->getErrors()
+            $errorCollection->getErrors()
         );
 
         return $state;
@@ -243,13 +250,14 @@ class State
     /**
      * Transit to a new state.
      *
-     * @param Transition $transition The transition being performed.
-     * @param Context    $context    The transition context.
-     * @param bool       $success    The success state.
+     * @param Transition      $transition      The transition being performed.
+     * @param Context         $context         The transition context.
+     * @param ErrorCollection $errorCollection The error collection.
+     * @param bool            $success         The success state.
      *
      * @return static
      */
-    public function transit(Transition $transition, Context $context, $success = true)
+    public function transit(Transition $transition, Context $context, ErrorCollection $errorCollection, $success = true)
     {
         $dateTime = new DateTime();
         $stepName = $success ? $transition->getStepTo()->getName() : $this->stepName;
@@ -262,7 +270,7 @@ class State
             $success,
             $context->getProperties(),
             $dateTime,
-            $context->getErrorCollection()->getErrors()
+            $errorCollection->getErrors()
         );
     }
 }

@@ -30,6 +30,7 @@ class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
 {
     const TRANSITION_NAME = 'transition_name';
     const CONTEXT_CLASS = 'Netzmacht\Workflow\Flow\Context';
+    const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Data\ErrorCollection';
 
     function let(
         Item $item,
@@ -53,7 +54,11 @@ class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
         );
 
         $workflow->getStartTransition()->willReturn($transition);
-        $workflow->start($item, Argument::type(self::CONTEXT_CLASS))->willReturn($state);
+        $workflow->start(
+            $item,
+            Argument::type(self::CONTEXT_CLASS),
+            Argument::type(self::ERROR_COLLECTION_CLASS)
+        )->willReturn($state);
 
         $item->getEntity()->willReturn($entity);
         $item->isWorkflowStarted()->willReturn(false);

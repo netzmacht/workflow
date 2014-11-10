@@ -104,16 +104,4 @@ class ContextSpec extends ObjectBehavior
     {
         $this->getParams()->shouldBeArray();
     }
-
-    function it_add_an_errors()
-    {
-        $this->hasErrors()->shouldReturn(false);
-        $this->addError('error', array('param' => 'foo'))->shouldReturn($this);
-        $this->hasErrors()->shouldReturn(true);
-    }
-
-    function it_gets_error_collection()
-    {
-        $this->getErrorCollection()->shouldBeAnInstanceOf('Netzmacht\Workflow\Data\ErrorCollection');
-    }
 }

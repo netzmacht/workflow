@@ -2,6 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Security\User;
@@ -43,17 +44,7 @@ class AbstractPermissionConditionSpec extends ObjectBehavior
 
 class PermissionCondition extends AbstractPermissionCondition
 {
-    /**
-     * Consider if condition matches for the given entity.
-     *
-     * @param Transition $transition The transition being in.
-     * @param Item       $item       The entity being transits.
-     * @param Context    $context    The transition context.
-     *
-     * @return bool
-     */
-    public function match(Transition $transition, Item $item, Context $context)
+    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection)
     {
-        // TODO: Implement match() method.
     }
 }

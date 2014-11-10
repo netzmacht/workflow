@@ -27,6 +27,7 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
     const TRANSITION_NAME = 'transition_name';
 
     const CONTEXT_CLASS = 'Netzmacht\Workflow\Flow\Context';
+    const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Data\ErrorCollection';
 
     function let(
         Item $item,
@@ -164,7 +165,8 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
         $workflow->getStartTransition()->willReturn($transition);
         $workflow->start(
             Argument::type('Netzmacht\Workflow\Flow\Item'),
-            Argument::type(self::CONTEXT_CLASS)
+            Argument::type(self::CONTEXT_CLASS),
+            Argument::type(self::ERROR_COLLECTION_CLASS)
         )
             ->willReturn($state);
 

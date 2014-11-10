@@ -2,6 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
@@ -17,6 +18,8 @@ use Prophecy\Argument;
  */
 class OrConditionSpec extends ObjectBehavior
 {
+    const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Data\ErrorCollection';
+
     function it_is_initializable()
     {
         $this->shouldHaveType('Netzmacht\Workflow\Flow\Condition\Transition\OrCondition');
@@ -32,18 +35,16 @@ class OrConditionSpec extends ObjectBehavior
         Condition $conditionB,
         Transition $transition,
         Item $item,
-        Context $context
+        Context $context,
+        ErrorCollection $errorCollection
     ) {
-        $conditionA->match($transition, $item, $context)->willReturn(false);
-        $conditionA->getError()->shouldBeCalled();
-
-        $conditionB->match($transition, $item, $context)->willReturn(true);
+        $conditionA->match($transition, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(false);
+        $conditionB->match($transition, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(true);
 
         $this->addCondition($conditionA);
         $this->addCondition($conditionB);
 
-        $this->match($transition, $item, $context)->shouldReturn(true);
-        $this->shouldNotHaveError();
+        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(true);
     }
 
     function it_does_not_match_if_all_children_does_not(
@@ -51,24 +52,26 @@ class OrConditionSpec extends ObjectBehavior
         Condition $conditionB,
         Transition $transition,
         Item $item,
-        Context $context
+        Context $context,
+        ErrorCollection $errorCollection
     ) {
-        $conditionA->match($transition, $item, $context)->willReturn(false);
-        $conditionA->getError()->shouldBeCalled();
-
-        $conditionB->match($transition, $item, $context)->willReturn(false);
-        $conditionB->getError()->shouldBeCalled();
+        $conditionA->match($transition, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(false);
+        $conditionB->match($transition, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(false);
 
         $this->addCondition($conditionA);
         $this->addCondition($conditionB);
 
-        $this->match($transition, $item, $context)->shouldReturn(false);
-        $this->shouldHaveError();
+        $errorCollection->addError(Argument::cetera())->shouldBeCalled();
+
+        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(false);
     }
 
-    function it_matches_if_no_children_exists(Transition $transition, Item $item, Context $context)
-    {
-        $this->match($transition, $item, $context)->shouldReturn(true);
-        $this->shouldNotHaveError();
+    function it_matches_if_no_children_exists(
+        Transition $transition,
+        Item $item,
+        Context $context,
+        ErrorCollection $errorCollection
+    ) {
+        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(true);
     }
 }

@@ -11,6 +11,7 @@
 
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
@@ -61,30 +62,36 @@ class StepPermissionCondition extends AbstractPermissionCondition
     /**
      * {@inheritdoc}
      */
-    public function match(Transition $transition, Item $item, Context $context)
+    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection)
     {
         // workflow is not started, so no start step exists
         if (!$item->isWorkflowStarted()) {
             if ($this->allowStartTransition) {
-                return $this->pass();
+                return true;
             }
 
-            return $this->fail('transition.condition.step.not-started', array($transition->getName()));
+            $errorCollection->addError(
+                'transition.condition.step.failed.not-started'
+            );
+
+            return false;
         }
 
         $permission = $this->getStepPermission($transition, $item);
 
         if ($permission && $this->user->hasPermission($permission)) {
-            return $this->pass();
+            return true;
         }
 
-        return $this->fail(
-            'transition.condition.step',
+        $errorCollection->addError(
+            'transition.condition.step.failed',
             array(
                 $item->getCurrentStepName(),
                 $permission ? ((string) $permission) : '-'
             )
         );
+
+        return false;
     }
 
     /**

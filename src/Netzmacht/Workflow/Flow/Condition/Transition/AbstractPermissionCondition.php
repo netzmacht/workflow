@@ -11,9 +11,6 @@
 
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
-use Assert\Assertion;
-use Netzmacht\Workflow\Security\Permission;
-use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Security\User;
 
 /**
@@ -23,7 +20,7 @@ use Netzmacht\Workflow\Security\User;
  *
  * @package Netzmacht\Workflow\Flow\Condition\Transition
  */
-abstract class AbstractPermissionCondition extends AbstractCondition
+abstract class AbstractPermissionCondition implements Condition
 {
     /**
      * Security user instance.

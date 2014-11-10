@@ -2,6 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
@@ -56,36 +57,7 @@ class ConditionCollectionSpec extends ObjectBehavior
 
 class ConditionCollection extends AbstractConditionCollection
 {
-    /**
-     * Consider if condition matches for the given entity.
-     *
-     * @param \Netzmacht\Workflow\Flow\Transition                       $transition The transition being in.
-     * @param Item                             $item       The entity being transits.
-     * @param \Netzmacht\Workflow\Flow\Context $context    The transition context.
-     *
-     * @return bool
-     */
-    public function match(Transition $transition, Item $item, Context $context)
+    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection)
     {
-        // TODO: Implement match() method.
-    }
-
-    /**
-     * Describes an failed condition.
-     *
-     * It returns an array with 2 parameters. First one is the error message code. The second one are the params to
-     * be replaced in the message.
-     *
-     * Example return array('transition.condition.example', array('name', 'value'));
-     *
-     * @param Transition $transition The transition being in.
-     * @param Item       $item       The entity being transits.
-     * @param Context    $context    The transition context.
-     *
-     * @return array
-     */
-    public function describeError(Transition $transition, Item $item, Context $context)
-    {
-        // TODO: Implement describeError() method.
     }
 }

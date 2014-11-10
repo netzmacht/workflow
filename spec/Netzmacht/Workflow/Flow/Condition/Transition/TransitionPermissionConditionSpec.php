@@ -2,8 +2,8 @@
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Security\Permission;
-use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Security\User;
 use Netzmacht\Workflow\Flow\Condition\Transition\TransitionPermissionCondition;
 use Netzmacht\Workflow\Flow\Context;
@@ -19,6 +19,8 @@ use Prophecy\Argument;
  */
 class TransitionPermissionConditionSpec extends ObjectBehavior
 {
+    const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Data\ErrorCollection';
+
     function let(User $user, Transition $transition, Permission $permission)
     {
         $this->beConstructedWith($user);
@@ -41,12 +43,12 @@ class TransitionPermissionConditionSpec extends ObjectBehavior
         User $user,
         Permission $permission,
         Item $item,
-        Context $context
+        Context $context,
+        ErrorCollection $errorCollection
     ) {
         $user->hasPermission($permission)->willReturn(true);
 
-        $this->match($transition, $item, $context)->shouldReturn(true);
-        $this->shouldNotHaveError();
+        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(true);
     }
 
     function it_does_not_match_if_user_has_not_transition_permissions(
@@ -54,25 +56,29 @@ class TransitionPermissionConditionSpec extends ObjectBehavior
         User $user,
         Permission $permission,
         Item $item,
-        Context $context
+        Context $context,
+        ErrorCollection $errorCollection
     ) {
         $user->hasPermission($permission)->willReturn(false);
 
         $permission->__toString()->willReturn('workflow/permission');
 
-        $this->match($transition, $item, $context)->shouldReturn(false);
-        $this->shouldHaveError();
+        $errorCollection->addError(Argument::cetera())->shouldBeCalled();
+
+        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(false);
     }
 
     function it_does_not_match_if_transition_has_no_permission(
         Transition $transition,
         Item $item,
-        Context $context
+        Context $context,
+        ErrorCollection $errorCollection
     )
     {
         $transition->getPermission()->willReturn(null);
 
-        $this->match($transition, $item, $context)->shouldReturn(false);
-        $this->shouldHaveError();
+        $errorCollection->addError(Argument::cetera())->shouldBeCalled();
+
+        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(false);
     }
 }

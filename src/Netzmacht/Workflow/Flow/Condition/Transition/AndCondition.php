@@ -11,6 +11,7 @@
 
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Item;
@@ -25,18 +26,21 @@ class AndCondition extends ConditionCollection
     /**
      * {@inheritdoc}
      */
-    public function match(Transition $transition, Item $item, Context $context)
+    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection)
     {
+        $errors  = new ErrorCollection();
+        $success = true;
+
         foreach ($this->conditions as $condition) {
-            if (!$condition->match($transition, $item, $context)) {
-                $this->addError($condition);
+            if (!$condition->match($transition, $item, $context, $errors)) {
+                $success = false;
             }
         }
 
-        if ($this->hasErrors()) {
-            return $this->fail('transition.condition.and');
+        if (!$success) {
+            $errorCollection->addError('transition.condition.and.failed', array(), $errors);
         }
 
-        return $this->pass();
+        return $success;
     }
 }

@@ -12,6 +12,7 @@
 namespace Netzmacht\Workflow\Handler;
 
 use Netzmacht\Workflow\Data\EntityRepository;
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Exception\TransitionNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
@@ -89,9 +90,16 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * The transition context.
      *
-     * @var \Netzmacht\Workflow\Flow\Context
+     * @var Context
      */
     private $context;
+
+    /**
+     * Error collection of errors occurred during transition handling.
+     *
+     * @var ErrorCollection
+     */
+    private $errorCollection;
 
 
     /**
@@ -119,6 +127,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         $this->stateRepository    = $stateRepository;
         $this->transactionHandler = $transactionHandler;
         $this->context            = new Context();
+        $this->errorCollection    = new ErrorCollection();
     }
 
 
@@ -257,8 +266,10 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         $transitionName = $this->transitionName;
 
         return $this->doStateTransition(
-            function (Workflow $workflow, Item $item, Context $context) use ($transitionName) {
-                return $workflow->transit($item, $transitionName, $context);
+            function (Workflow $workflow, Item $item, Context $context, ErrorCollection $errorCollection) use (
+                $transitionName
+            ) {
+                return $workflow->transit($item, $transitionName, $context, $errorCollection);
             }
         );
     }
@@ -274,8 +285,8 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     private function start()
     {
         return $this->doStateTransition(
-            function (Workflow $workflow, Item $item, Context $context) {
-                return $workflow->start($item, $context);
+            function (Workflow $workflow, Item $item, Context $context, ErrorCollection $errorCollection) {
+                return $workflow->start($item, $context, $errorCollection);
             }
         );
     }
@@ -297,7 +308,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         try {
             $this->dispatchPreTransit($this->workflow, $this->item, $this->context, $this->getTransition()->getName());
 
-            $state = call_user_func($processor, $this->workflow, $this->item, $this->context);
+            $state = call_user_func($processor, $this->workflow, $this->item, $this->context, $this->errorCollection);
 
             $this->dispatchPostTransit($this->workflow, $this->item, $this->context, $state);
 

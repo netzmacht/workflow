@@ -12,6 +12,7 @@
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
 
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
@@ -22,7 +23,7 @@ use Netzmacht\Workflow\Util\Comparison;
  *
  * @package Netzmacht\Workflow\Flow\Condition\Transition
  */
-class PropertyCondition extends AbstractCondition
+class PropertyCondition implements Condition
 {
     /**
      * Name of the property.
@@ -120,16 +121,16 @@ class PropertyCondition extends AbstractCondition
     /**
      * {@inheritdoc}
      */
-    public function match(Transition $transition, Item $item, Context $context)
+    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection)
     {
         $value = $this->getEntityValue($item);
 
         if (Comparison::compare($value, $this->value, $this->operator)) {
-            return $this->pass();
+            return true;
         }
 
-        return $this->fail(
-            'transition.condition.property',
+        $errorCollection->addError(
+            'transition.condition.property.failed',
             array(
                 $this->property,
                 $value,
@@ -137,6 +138,8 @@ class PropertyCondition extends AbstractCondition
                 $this->value,
             )
         );
+
+        return false;
     }
 
     /**

@@ -48,7 +48,7 @@ class CreateEntityEvent extends Event
      * Construct.
      *
      * @param mixed       $model    The data model.
-     * @param string|null $provider The proivder name.
+     * @param string|null $provider The $provider name.
      */
     public function __construct($model, $provider = null)
     {

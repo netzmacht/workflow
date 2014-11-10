@@ -87,9 +87,8 @@ class StateSpec extends ObjectBehavior
     function it_transits_to_next_state(Transition $transition, Context $context, ErrorCollection $errorCollection)
     {
         $context->getProperties()->willReturn(array());
-        $context->getErrorCollection()->willReturn($errorCollection);
         $errorCollection->getErrors()->willReturn(array());
 
-        $this->transit($transition, $context, false)->shouldBeAnInstanceOf('Netzmacht\Workflow\Flow\State');
+        $this->transit($transition, $context, $errorCollection, false)->shouldBeAnInstanceOf('Netzmacht\Workflow\Flow\State');
     }
 }

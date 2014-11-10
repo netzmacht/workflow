@@ -2,6 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow;
 
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Security\Role;
@@ -137,16 +138,23 @@ class WorkflowSpec extends ObjectBehavior
         $this->match($entity)->shouldReturn(false);
     }
 
-    function it_starts_a_workflow(Item $item, Context $context, Transition $transition, State $state)
+    function it_starts_a_workflow(
+        Item $item,
+        Context $context,
+        ErrorCollection $errorCollection,
+        Transition $transition,
+        State $state
+    )
     {
-        $transition->start($item, $context)->willReturn($state);
+        $transition->start($item, $context, $errorCollection)->willReturn($state);
 
-        $this->start($item, $context)->shouldReturn($state);
+        $this->start($item, $context, $errorCollection)->shouldReturn($state);
     }
 
     function it_transits_to_a_new_step(
         Item $item,
         Context $context,
+        ErrorCollection $errorCollection,
         State $state,
         \Netzmacht\Workflow\Flow\Transition $anotherTransition,
         Step $transitionStep
@@ -161,8 +169,8 @@ class WorkflowSpec extends ObjectBehavior
 
         $transitionStep->isTransitionAllowed('another')->willReturn(true);
 
-        $anotherTransition->transit($item, $context)->willReturn($state);
+        $anotherTransition->transit($item, $context, $errorCollection)->willReturn($state);
 
-        $this->transit($item, 'another', $context)->shouldReturn($state);
+        $this->transit($item, 'another', $context, $errorCollection)->shouldReturn($state);
     }
 }

@@ -3,6 +3,7 @@
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
 use Netzmacht\Workflow\Data\Entity;
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Condition\Transition\PropertyCondition;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
@@ -46,8 +47,13 @@ class PropertyConditionSpec extends ObjectBehavior
         $this->getValue()->shouldReturn(10);
     }
 
-    function it_matches_if_comparison_is_true(Transition $transition, Item $item, Context $context, Entity $entity)
-    {
+    function it_matches_if_comparison_is_true(
+        Transition $transition,
+        Item $item,
+        Entity $entity,
+        Context $context,
+        ErrorCollection $errorCollection
+    ) {
         $this->setOperator(Comparison::GREATER_THAN);
         $this->setProperty('test');
         $this->setValue(5);
@@ -55,12 +61,16 @@ class PropertyConditionSpec extends ObjectBehavior
         $item->getEntity()->willReturn($entity);
         $entity->getProperty('test')->willReturn(10);
 
-        $this->match($transition, $item, $context)->shouldReturn(true);
-        $this->shouldNotHaveError();
+        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(true);
     }
 
-    function it_does_not_match_if_comparison_does(Transition $transition, Item $item, Context $context, Entity $entity)
-    {
+    function it_does_not_match_if_comparison_does(
+        Transition $transition,
+        Item $item,
+        Entity $entity,
+        Context $context,
+        ErrorCollection $errorCollection
+    ) {
         $this->setOperator(Comparison::LESSER_THAN);
         $this->setProperty('test');
         $this->setValue(5);
@@ -68,7 +78,8 @@ class PropertyConditionSpec extends ObjectBehavior
         $item->getEntity()->willReturn($entity);
         $entity->getProperty('test')->willReturn(10);
 
-        $this->match($transition, $item, $context)->shouldReturn(false);
-        $this->shouldHaveError();
+        $errorCollection->addError(Argument::cetera())->shouldBeCalled();
+
+        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(false);
     }
 }

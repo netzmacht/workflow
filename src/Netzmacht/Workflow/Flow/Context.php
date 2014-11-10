@@ -127,31 +127,6 @@ class Context
     }
 
     /**
-     * Add a new error message.
-     *
-     * @param string $message The message.
-     * @param array  $params  Message parameters.
-     *
-     * @return $this
-     */
-    public function addError($message, array $params = array())
-    {
-        $this->errorCollection->addError($message, $params);
-
-        return $this;
-    }
-
-    /**
-     * Get the error collection.
-     *
-     * @return ErrorCollection
-     */
-    public function getErrorCollection()
-    {
-        return $this->errorCollection;
-    }
-
-    /**
      * Set a parameter.
      *
      * @param string $name  Param name.
