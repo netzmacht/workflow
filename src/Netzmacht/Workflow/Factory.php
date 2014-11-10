@@ -60,36 +60,32 @@ class Factory
         $event = new CreateManagerEvent($providerName, $type);
         $this->eventDispatcher->dispatch($event::NAME, $event);
 
-        $this->guardCreated(
+        return $this->guardCreated(
             $event->getManager(),
-            sprintf('No workflow manager were created during dispatching event "%s"', $event::NAME)
+            sprintf('Could not create manager for provider "%s" and type "%s" ', $providerName, $type)
         );
-
-        return $event->getManager();
     }
 
 
     /**
      * Create a new entity for a model.
      *
-     * @param mixed       $model Create an workflow entity.
-     * @param string|null $table Table name is required for Contao results or array rows.
+     * @param mixed       $model        Create an workflow entity.
+     * @param string|null $providerName Provider name if it cannot be extracted from the model.
      *
      * @throws RuntimeException If no entity could be created.
      *
      * @return Entity
      */
-    public function createEntity($model, $table = null)
+    public function createEntity($model, $providerName = null)
     {
-        $event = new CreateEntityEvent($model, $table);
+        $event = new CreateEntityEvent($model, $providerName);
         $this->eventDispatcher->dispatch($event::NAME, $event);
 
-        $this->guardCreated(
+        return $this->guardCreated(
             $event->getEntity(),
-            sprintf('No entity were created during dispatching event "%s"', $event::NAME)
+            sprintf('Could not create entity for model "%s (%s)"', gettype($model), $providerName)
         );
-
-        return $event->getEntity();
     }
 
     /**
@@ -106,9 +102,7 @@ class Factory
         $event = new CreateFormEvent($type);
         $this->eventDispatcher->dispatch($event::NAME, $event);
 
-        $this->guardCreated($event->getForm(), sprintf('Could not create form type "%s"', $type));
-
-        return $event->getForm();
+        return $this->guardCreated($event->getForm(), sprintf('Could not create form type "%s"', $type));
     }
 
     /**
@@ -118,8 +112,7 @@ class Factory
      */
     public function createUser()
     {
-        $user  = new User();
-        $event = new CreateUserEvent($user);
+        $event = new CreateUserEvent(new User());
         $this->eventDispatcher->dispatch($event::NAME, $event);
 
         return $event->getUser();
@@ -131,7 +124,7 @@ class Factory
      * @param mixed  $result  Result of the event dispatched factory.
      * @param string $message The error message.
      *
-     * @return void
+     * @return mixed
      *
      * @throws RuntimeException If result was not created.
      */
@@ -140,5 +133,7 @@ class Factory
         if (!$result) {
             throw new RuntimeException($message);
         }
+
+        return $result;
     }
 }
