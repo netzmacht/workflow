@@ -41,6 +41,11 @@ class ContextSpec extends ObjectBehavior
         $this->getProperty('prop')->shouldReturn('val');
     }
 
+    function it_gets_null_if_property_not_set()
+    {
+        $this->getProperty('test')->shouldReturn(null);
+    }
+
     function it_knows_if_property_exists()
     {
         $this->hasProperty('prop')->shouldReturn(false);
@@ -51,6 +56,11 @@ class ContextSpec extends ObjectBehavior
     function it_gets_properties_as_array()
     {
         $this->getProperties()->shouldBeArray();
+    }
+
+    function it_gets_empty_array_if_namespaced_properties_not_set()
+    {
+        $this->getProperties('namepsaced')->shouldReturn(array());
     }
 
 

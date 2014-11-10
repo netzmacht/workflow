@@ -23,13 +23,6 @@ class Context
     private $properties = array();
 
     /**
-     * Errors being raised during transition.
-     *
-     * @var ErrorCollection
-     */
-    private $errorCollection;
-
-    /**
      * Params being passed.
      *
      * @var array
@@ -47,7 +40,6 @@ class Context
     {
         $this->properties      = $properties;
         $this->params          = $params;
-        $this->errorCollection = new ErrorCollection();
     }
 
     /**
@@ -114,16 +106,6 @@ class Context
         }
 
         return array();
-    }
-
-    /**
-     * Consider if an error isset.
-     *
-     * @return bool
-     */
-    public function hasErrors()
-    {
-        return $this->errorCollection->hasErrors();
     }
 
     /**
