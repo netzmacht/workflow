@@ -406,7 +406,7 @@ class Transition extends Base
      * @param Condition|null  $condition       Condition to be checked.
      * @param Item            $item            Workflow item.
      * @param Context         $context         Condition context.
-     * @param ErrorCollection $errorCollection Error collection
+     * @param ErrorCollection $errorCollection Error collection.
      *
      * @return bool
      */

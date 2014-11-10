@@ -35,11 +35,6 @@ class AbstractPermissionConditionSpec extends ObjectBehavior
     {
         $this->shouldImplement('Netzmacht\Workflow\Flow\Condition\Transition\Condition');
     }
-
-    function it_gets_the_user(User $user)
-    {
-        $this->getUser()->shouldReturn($user);
-    }
 }
 
 class PermissionCondition extends AbstractPermissionCondition

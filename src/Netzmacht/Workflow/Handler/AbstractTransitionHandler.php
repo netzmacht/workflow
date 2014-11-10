@@ -245,9 +245,12 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         $transitionName = $this->transitionName;
 
         return $this->doStateTransition(
-            function (Workflow $workflow, Item $item, Context $context, ErrorCollection $errorCollection) use (
-                $transitionName
-            ) {
+            function (
+                Workflow $workflow,
+                Item $item,
+                Context $context,
+                ErrorCollection $errorCollection
+            ) use ($transitionName) {
                 return $workflow->transit($item, $transitionName, $context, $errorCollection);
             }
         );

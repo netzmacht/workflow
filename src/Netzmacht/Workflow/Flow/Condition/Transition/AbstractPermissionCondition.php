@@ -38,14 +38,4 @@ abstract class AbstractPermissionCondition implements Condition
     {
         $this->user = $user;
     }
-
-    /**
-     * Get security user instance.
-     *
-     * @return User
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
 }
