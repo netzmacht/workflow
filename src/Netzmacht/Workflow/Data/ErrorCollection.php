@@ -136,4 +136,25 @@ class ErrorCollection implements \IteratorAggregate
     {
         return new \ArrayIterator($this->errors);
     }
+
+    /**
+     * Convert error collection to an array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return array_map(
+            function ($error) {
+                if ($error[2]) {
+                    /** @var ErrorCollection $collection */
+                    $collection = $error[2];
+                    $error[2]   = $collection->toArray();
+                }
+
+                return $error;
+            },
+            $this->errors
+        );
+    }
 }

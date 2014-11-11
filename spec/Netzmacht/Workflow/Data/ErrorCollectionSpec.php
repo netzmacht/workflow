@@ -77,4 +77,27 @@ class ErrorCollectionSpec extends ObjectBehavior
         $this->shouldHaveType('IteratorAggregate');
         $this->getIterator()->shouldHaveType('Traversable');
     }
+
+    function it_converts_to_array(ErrorCollection $errorCollection)
+    {
+        $errors = array(
+            array(static::MESSAGE, static::$params, null),
+            array(static::MESSAGE, static::$params, $errorCollection),
+        );
+
+        $errorCollection->toArray()
+            ->shouldBeCalled()
+            ->willReturn(array(array(static::MESSAGE, static::$params, null)));
+
+        $this->addErrors($errors)->shouldReturn($this);
+
+        $this->toArray()->shouldReturn(
+            array(
+                array(static::MESSAGE, static::$params, null),
+                array(static::MESSAGE, static::$params, array(
+                    array(static::MESSAGE, static::$params, null)
+                )),
+            )
+        );
+    }
 }
