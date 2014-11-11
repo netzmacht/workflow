@@ -107,7 +107,7 @@ class Item
      *
      * @return State
      *
-     * @throws WorkflowException
+     * @throws WorkflowException If workflow is already started.
      */
     public function start(
         Transition $transition,
@@ -131,7 +131,7 @@ class Item
      * @param ErrorCollection $errorCollection The error collection.
      * @param bool            $success         The transition success.
      *
-     * @throws WorkflowException
+     * @throws WorkflowException If workflow is not started.
      *
      * @return State
      */
@@ -226,6 +226,8 @@ class Item
     /**
      * Guard that workflow of item was not already started.
      *
+     * @return void
+     *
      * @throws WorkflowException If item workflow process was already started.
      */
     private function guardNotStarted()
@@ -237,6 +239,8 @@ class Item
 
     /**
      * Guard that workflow of item is started.
+     *
+     * @return void
      *
      * @throws WorkflowException If item workflow process was not started.
      */
@@ -251,7 +255,9 @@ class Item
     /**
      * Apply a new state.
      *
-     * @param State $state
+     * @param State $state The state being assigned.
+     *
+     * @return void
      */
     private function apply(State $state)
     {
@@ -259,9 +265,8 @@ class Item
         if ($state->isSuccessful()) {
             $this->currentStepName = $state->getStepName();
             $this->workflowName    = $state->getWorkflowName();
-        }
-        elseif (!$this->isWorkflowStarted()) {
-            $this->workflowName    = $state->getWorkflowName();
+        } elseif (!$this->isWorkflowStarted()) {
+            $this->workflowName = $state->getWorkflowName();
         }
 
         $this->stateHistory[] = $state;

@@ -3,10 +3,12 @@
 namespace spec\Netzmacht\Workflow\Handler;
 
 use Netzmacht\Workflow\Data\Entity;
+use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\EntityRepository;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
+use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Data\StateRepository;
@@ -31,6 +33,8 @@ class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
     const TRANSITION_NAME = 'transition_name';
     const CONTEXT_CLASS = 'Netzmacht\Workflow\Flow\Context';
     const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Data\ErrorCollection';
+    const WORKFLOW_NAME = 'workflow_name';
+    const STEP_NAME = 'step_name';
 
     function let(
         Item $item,
@@ -41,8 +45,32 @@ class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
         EventDispatcher $eventDispatcher,
         Transition $transition,
         State $state,
-        Entity $entity
+        Entity $entity,
+        EntityId $entityId,
+        Step $step
     )  {
+        $workflow->getStep(static::STEP_NAME)->willReturn($step);
+        $workflow->getStartTransition()->willReturn($transition);
+        $workflow->getName()->willReturn(static::WORKFLOW_NAME);
+
+        $step->isTransitionAllowed(static::TRANSITION_NAME)->willReturn(true);
+        $workflow->getTransition(static::TRANSITION_NAME)->willReturn($transition);
+
+        $transition->getName()->willReturn(static::TRANSITION_NAME);
+        $transition->requiresInputData()->willReturn(false);
+        $transition->transit(
+            $item,
+            Argument::type(static::CONTEXT_CLASS),
+            Argument::type(static::ERROR_COLLECTION_CLASS)
+        )->willReturn($state);
+
+        $item->isWorkflowStarted()->willReturn(true);
+        $item->getCurrentStepName()->willReturn(static::STEP_NAME);
+        $item->getEntity()->willReturn($entity);
+
+        $entity->getEntityId()->willReturn($entityId);
+        $entityId->__toString()->willReturn('entity::2');
+
         $this->beConstructedWith(
             $item,
             $workflow,
@@ -52,16 +80,6 @@ class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
             $transactionHandler,
             $eventDispatcher
         );
-
-        $workflow->getStartTransition()->willReturn($transition);
-        $workflow->start(
-            $item,
-            Argument::type(self::CONTEXT_CLASS),
-            Argument::type(self::ERROR_COLLECTION_CLASS)
-        )->willReturn($state);
-
-        $item->getEntity()->willReturn($entity);
-        $item->isWorkflowStarted()->willReturn(false);
     }
 
     function it_is_initializable()
@@ -69,8 +87,14 @@ class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
         $this->shouldHaveType('Netzmacht\Workflow\Handler\EventDispatchingTransitionHandler');
     }
 
-    function it_dispatches_build_form_event_during_validate(Form $form, EventDispatcher $eventDispatcher)
-    {
+    function it_dispatches_build_form_event_during_validate(
+        Form $form,
+        Transition $transition,
+        Item $item,
+        EventDispatcher $eventDispatcher
+    ) {
+        $transition->buildForm($form, $item)->shouldBeCalled();
+
         $this->validate($form);
 
         $eventDispatcher->dispatch(
@@ -80,8 +104,13 @@ class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
             ->shouldHaveBeenCalled();
     }
 
-    function it_dispatches_validate_event_during_validate(Form $form, EventDispatcher $eventDispatcher)
-    {
+    function it_dispatches_validate_event_during_validate(
+        Form $form,
+        Transition $transition,
+        Item $item,
+        EventDispatcher $eventDispatcher
+    ) {
+        $transition->buildForm($form, $item)->shouldBeCalled();
         $this->validate($form);
 
         $eventDispatcher->dispatch(
@@ -91,8 +120,13 @@ class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
             ->shouldHaveBeenCalled();
     }
 
-    function it_dispatches_pre_transition_event(Form $form, EventDispatcher $eventDispatcher)
-    {
+    function it_dispatches_pre_transition_event(
+        Form $form,
+        Transition $transition,
+        Item $item,
+        EventDispatcher $eventDispatcher
+    ) {
+        $transition->buildForm($form, $item)->shouldBeCalled();
         $this->validate($form);
         $this->transit();
 
@@ -103,8 +137,13 @@ class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
             ->shouldHaveBeenCalled();
     }
 
-    function it_dispatches_post_transition_event(Form $form, EventDispatcher $eventDispatcher)
-    {
+    function it_dispatches_post_transition_event(
+        Form $form,
+        Transition $transition,
+        Item $item,
+        EventDispatcher $eventDispatcher
+    ) {
+        $transition->buildForm($form, $item)->shouldBeCalled();
         $this->validate($form);
         $this->transit();
 

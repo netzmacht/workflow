@@ -137,40 +137,4 @@ class WorkflowSpec extends ObjectBehavior
         $this->addCondition($condition);
         $this->match($entity)->shouldReturn(false);
     }
-
-    function it_starts_a_workflow(
-        Item $item,
-        Context $context,
-        ErrorCollection $errorCollection,
-        Transition $transition,
-        State $state
-    )
-    {
-        $transition->start($item, $context, $errorCollection)->willReturn($state);
-
-        $this->start($item, $context, $errorCollection)->shouldReturn($state);
-    }
-
-    function it_transits_to_a_new_step(
-        Item $item,
-        Context $context,
-        ErrorCollection $errorCollection,
-        State $state,
-        \Netzmacht\Workflow\Flow\Transition $anotherTransition,
-        Step $transitionStep
-    ) {
-        $item->isWorkflowStarted()->willReturn(true);
-        $item->getCurrentStepName()->willReturn(static::START_STEP);
-
-        $anotherTransition->getName()->willReturn('another');
-        $anotherTransition->setWorkflow($this)->shouldBeCalled();
-
-        $this->addTransition($anotherTransition);
-
-        $transitionStep->isTransitionAllowed('another')->willReturn(true);
-
-        $anotherTransition->transit($item, $context, $errorCollection)->willReturn($state);
-
-        $this->transit($item, 'another', $context, $errorCollection)->shouldReturn($state);
-    }
 }

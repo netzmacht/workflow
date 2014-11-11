@@ -126,6 +126,8 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         $this->transactionHandler = $transactionHandler;
         $this->context            = new Context();
         $this->errorCollection    = new ErrorCollection();
+
+        $this->guardAllowedTransition($transitionName);
     }
 
 
@@ -239,61 +241,19 @@ abstract class AbstractTransitionHandler implements TransitionHandler
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \Exception If something went wrong during action execution.
      */
     public function transit()
     {
         $this->guardValidated();
 
-        // it's a start transition.
-        if (!$this->isWorkflowStarted()) {
-            return $this->start();
-        }
-
-        $this->guardAllowedTransition($this->transitionName);
-        $transitionName = $this->transitionName;
-
-        return $this->doStateTransition(
-            function (
-                Workflow $workflow,
-                Item $item,
-                Context $context,
-                ErrorCollection $errorCollection
-            ) use ($transitionName) {
-                return $workflow->transit($item, $transitionName, $context, $errorCollection);
-            }
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    private function start()
-    {
-        return $this->doStateTransition(
-            function (Workflow $workflow, Item $item, Context $context, ErrorCollection $errorCollection) {
-                return $workflow->start($item, $context, $errorCollection);
-            }
-        );
-    }
-
-    /**
-     * Execute a state transition. Transition will be handled as an transaction.
-     *
-     * @param callable $processor The processor being called to transist.
-     *
-     * @return State
-     *
-     * @throws WorkflowException If an invalid transition was requested.
-     * @throws \Exception        If some actions throws an unknown exception.
-     */
-    private function doStateTransition($processor)
-    {
         $this->transactionHandler->begin();
 
         try {
             $this->dispatchPreTransit($this->workflow, $this->item, $this->context, $this->getTransition()->getName());
 
-            $state = call_user_func($processor, $this->workflow, $this->item, $this->context, $this->errorCollection);
+            $state = $this->executeTransition();
 
             $this->dispatchPostTransit($this->workflow, $this->item, $this->context, $state);
 
@@ -308,6 +268,22 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         $this->transactionHandler->commit();
 
         return $state;
+    }
+
+    /**
+     * Execute the transition.
+     *
+     * @return State
+     */
+    private function executeTransition()
+    {
+        $transition = $this->getTransition();
+
+        if ($this->isWorkflowStarted()) {
+            return $transition->transit($this->item, $this->context, $this->errorCollection);
+        }
+
+        return $transition->start($this->item, $this->context, $this->errorCollection);
     }
 
     /**
@@ -353,6 +329,10 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     private function guardAllowedTransition($transitionName)
     {
         if (!$this->isWorkflowStarted()) {
+            if (!$transitionName) {
+                return;
+            }
+
             throw new WorkflowException(
                 sprintf(
                     'Not allowed to process transition "%s". Workflow "%s" not started for item "%s"',

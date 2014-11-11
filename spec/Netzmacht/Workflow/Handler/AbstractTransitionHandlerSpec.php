@@ -2,6 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Handler;
 
+use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Data\Entity;
@@ -30,14 +31,43 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
     const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Data\ErrorCollection';
 
     const CONTEXT_CLASS = 'Netzmacht\Workflow\Flow\Context';
+    const STEP_NAME = 'step_name';
+    const WORKFLOW_NAME = 'workflow_name';
 
     function let(
         Item $item,
+        Entity $entity,
+        EntityId $entityId,
         Workflow $workflow,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
-        TransactionHandler $transactionHandler
+        TransactionHandler $transactionHandler,
+        Step $step,
+        Transition $transition,
+        State $state
     ) {
+        $workflow->getStep(static::STEP_NAME)->willReturn($step);
+        $workflow->getStartTransition()->willReturn($transition);
+        $workflow->getName()->willReturn(static::WORKFLOW_NAME);
+
+        $step->isTransitionAllowed(static::TRANSITION_NAME)->willReturn(true);
+        $workflow->getTransition(static::TRANSITION_NAME)->willReturn($transition);
+
+        $transition->getName()->willReturn(static::TRANSITION_NAME);
+        $transition->requiresInputData()->willReturn(false);
+        $transition->transit(
+            $item,
+            Argument::type(static::CONTEXT_CLASS),
+            Argument::type(static::ERROR_COLLECTION_CLASS)
+        )->willReturn($state);
+
+        $item->isWorkflowStarted()->willReturn(true);
+        $item->getCurrentStepName()->willReturn(static::STEP_NAME);
+        $item->getEntity()->willReturn($entity);
+
+        $entity->getEntityId()->willReturn($entityId);
+        $entityId->__toString()->willReturn('entity::2');
+
         $this->beAnInstanceOf('spec\Netzmacht\Workflow\Handler\TransitionHandler');
         $this->beConstructedWith(
             $item,
@@ -81,8 +111,10 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
         $this->getItem()->shouldReturn($item);
     }
 
-    function it_gets_form_after_validation(Form $form, Workflow $workflow, Transition $transition)
+    function it_gets_form_after_validation(Form $form, Workflow $workflow, Transition $transition, Item $item)
     {
+        $transition->buildForm($form, $item)->shouldBeCalled();
+
         $workflow->getStartTransition()->willReturn($transition);
 
         $this->getForm()->shouldReturn(null);
@@ -100,8 +132,24 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
         $this->getCurrentStep()->shouldReturn($step);
     }
 
-    function it_gets_null_instead_of_step_if_not_started()
-    {
+    function it_gets_null_instead_of_step_if_not_started(
+        Item $item,
+        Workflow $workflow,
+        EntityRepository $entityRepository,
+        StateRepository $stateRepository,
+        TransactionHandler $transactionHandler
+    ) {
+        $this->beConstructedWith(
+            $item,
+            $workflow,
+            null,
+            $entityRepository,
+            $stateRepository,
+            $transactionHandler
+        );
+
+        $item->isWorkflowStarted()->willReturn(false);
+
         $this->getCurrentStep()->shouldBeNull();
     }
 
@@ -111,8 +159,22 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
         $this->isWorkflowStarted()->shouldReturn(true);
     }
 
-    function it_checks_if_workflow_is_not_started(Item $item)
-    {
+    function it_checks_if_workflow_is_not_started(
+        Item $item,
+        Workflow $workflow,
+        EntityRepository $entityRepository,
+        StateRepository $stateRepository,
+        TransactionHandler $transactionHandler
+    ) {
+        $this->beConstructedWith(
+            $item,
+            $workflow,
+            null,
+            $entityRepository,
+            $stateRepository,
+            $transactionHandler
+        );
+
         $item->isWorkflowStarted()->willReturn(false);
         $this->isWorkflowStarted()->shouldReturn(false);
     }
@@ -192,27 +254,10 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
     }
 
     function it_transits_to_next_state(
-        Workflow $workflow,
-        Transition $transition,
-        Form $form,
-        State $state,
-        Item $item,
-        Entity $entity
+        Form $form, Transition $transition, Item $item
     ) {
-        $workflow->getStartTransition()->willReturn($transition);
-        $workflow->start(
-            Argument::type('Netzmacht\Workflow\Flow\Item'),
-            Argument::type(self::CONTEXT_CLASS),
-            Argument::type(self::ERROR_COLLECTION_CLASS)
-        )
-            ->willReturn($state);
-
-        $item->isWorkflowStarted()->willReturn(false);
-        $item->getEntity()->willReturn($entity);
-
+        $transition->buildForm($form, $item)->shouldBeCalled();
         $this->validate($form);
-
-
         $this->transit()->shouldHaveType('Netzmacht\Workflow\Flow\State');
     }
 }

@@ -2,6 +2,8 @@
 
 namespace spec\Netzmacht\Workflow\Factory;
 
+use Netzmacht\Workflow\Data\Entity;
+use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\EntityManager;
 use Netzmacht\Workflow\Data\EntityRepository;
 use Netzmacht\Workflow\Data\StateRepository;
@@ -51,15 +53,20 @@ class EventDispatchingTransitionHandlerFactorySpec extends ObjectBehavior
         Workflow $workflow,
         StateRepository $stateRepository,
         EntityManager $entityManager,
-        EntityRepository $entityRepository
-    )
-    {
+        EntityRepository $entityRepository,
+        Entity $entity,
+        EntityId $entityId
+    ) {
         $entityManager->getRepository('test')->willReturn($entityRepository);
+
+        $item->isWorkflowStarted()->willReturn(false);
+        $item->getEntity()->willReturn($entity);
+        $entity->getEntityId()->willReturn($entityId);
 
         $this->createTransitionHandler(
             $item,
             $workflow,
-            'start',
+            null,
             'test',
             $stateRepository
         )

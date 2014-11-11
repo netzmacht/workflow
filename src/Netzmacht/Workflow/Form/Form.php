@@ -52,13 +52,14 @@ interface Form
     /**
      * Create a form field.
      *
-     * @param string $name  Form field name.
-     * @param string $type  Form field type.
-     * @param array  $extra Form field extra configuration.
+     * @param string      $name     Form field name.
+     * @param string      $type     Form field type.
+     * @param array       $extra    Form field extra configuration.
+     * @param string|null $fieldset Optional define a fieldset where to add the field. If null it's just created.
      *
      * @return FormField
      */
-    public function createField($name, $type = 'text', array $extra = array());
+    public function createField($name, $type = 'text', array $extra = array(), $fieldset = null);
 
     /**
      * Add a field to the form.
