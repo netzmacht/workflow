@@ -11,7 +11,10 @@
 
 namespace Netzmacht\Workflow\Flow;
 
+use Assert\Assertion;
 use Netzmacht\Workflow\Data\Entity;
+use Netzmacht\Workflow\Data\ErrorCollection;
+use Netzmacht\Workflow\Flow\Exception\WorkflowException;
 
 /**
  * Class Item stores workflow related data of an entity. It knows the state history and the current state.
@@ -59,13 +62,15 @@ class Item
     }
 
     /**
-     * Start a new workflow.
+     * Initialize a new workflow item.
+     *
+     * It is called before the workflow is started.
      *
      * @param Entity $entity The entity for which the workflow is started.
      *
      * @return Item
      */
-    public static function start(Entity $entity)
+    public static function initialize(Entity $entity)
     {
         return new Item($entity);
     }
@@ -80,34 +85,70 @@ class Item
      */
     public static function reconstitute(Entity $entity, array $stateHistory)
     {
-        $item = self::start($entity);
+        Assertion::allIsInstanceOf($stateHistory, 'Netzmacht\Workflow\Flow\State');
+
+        $item = self::initialize($entity);
 
         // replay states
         foreach ($stateHistory as $state) {
-            $item->transit($state);
+            $item->apply($state);
         }
 
         return $item;
     }
 
     /**
-     * Transits to a new state.
+     * Start an item and return current state.
      *
-     * @param State $state The state being created.
+     * @param Transition      $transition      The transition being executed.
+     * @param Context         $context         The transition context.
+     * @param ErrorCollection $errorCollection The error collection.
+     * @param bool            $success         The transition success.
      *
-     * @return $this
+     * @return State
+     *
+     * @throws WorkflowException
      */
-    public function transit(State $state)
-    {
-        // only change current step if transition was successful
-        if ($state->isSuccessful()) {
-            $this->currentStepName = $state->getStepName();
-            $this->workflowName    = $state->getWorkflowName();
-        }
+    public function start(
+        Transition $transition,
+        Context $context,
+        ErrorCollection $errorCollection,
+        $success
+    ) {
+        $this->guardNotStarted();
 
-        $this->stateHistory[] = $state;
+        $state = State::start($this->entity, $transition, $context, $errorCollection, $success);
+        $this->apply($state);
 
         return $this;
+    }
+
+    /**
+     * Transits to a new state and return it.
+     *
+     * @param Transition      $transition      The transition being executed.
+     * @param Context         $context         The transition context.
+     * @param ErrorCollection $errorCollection The error collection.
+     * @param bool            $success         The transition success.
+     *
+     * @throws WorkflowException
+     *
+     * @return State
+     */
+    public function transit(
+        Transition $transition,
+        Context $context,
+        ErrorCollection $errorCollection,
+        $success
+    ) {
+        $this->guardStarted();
+
+        $state = $this->getLatestState();
+        $state = $state->transit($transition, $context, $errorCollection, $success);
+
+        $this->apply($state);
+
+        return $state;
     }
 
     /**
@@ -180,5 +221,49 @@ class Item
     public function isWorkflowStarted()
     {
         return !empty($this->currentStepName);
+    }
+
+    /**
+     * Guard that workflow of item was not already started.
+     *
+     * @throws WorkflowException If item workflow process was already started.
+     */
+    private function guardNotStarted()
+    {
+        if ($this->isWorkflowStarted()) {
+            throw new WorkflowException('Item is already started.');
+        }
+    }
+
+    /**
+     * Guard that workflow of item is started.
+     *
+     * @throws WorkflowException If item workflow process was not started.
+     */
+    private function guardStarted()
+    {
+        if (!$this->isWorkflowStarted()) {
+            throw new WorkflowException('Item has not started yet.');
+        }
+    }
+
+
+    /**
+     * Apply a new state.
+     *
+     * @param State $state
+     */
+    private function apply(State $state)
+    {
+        // only change current step if transition was successful
+        if ($state->isSuccessful()) {
+            $this->currentStepName = $state->getStepName();
+            $this->workflowName    = $state->getWorkflowName();
+        }
+        elseif (!$this->isWorkflowStarted()) {
+            $this->workflowName    = $state->getWorkflowName();
+        }
+
+        $this->stateHistory[] = $state;
     }
 }

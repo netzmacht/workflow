@@ -267,7 +267,7 @@ class Transition extends Base
      * @param Context         $context         The transition context.
      * @param ErrorCollection $errorCollection The error collection.
      *
-     * @return bool|State
+     * @return State
      */
     public function start(Item $item, Context $context, ErrorCollection $errorCollection)
     {
@@ -276,7 +276,7 @@ class Transition extends Base
         }
 
         $success = $this->executeActions($item, $context, $errorCollection);
-        $state   = State::start($item->getEntity(), $this, $context, $errorCollection, $success);
+        $state   = $item->start($this, $context, $errorCollection, $success);
 
         return $state;
     }
@@ -290,15 +290,12 @@ class Transition extends Base
      *
      * @throws WorkflowException If process was not started yet.
      *
-     * @return \Netzmacht\Workflow\Flow\State
+     * @return State
      */
     public function transit(Item $item, Context $context, ErrorCollection $errorCollection)
     {
-        $state   = $item->getLatestState();
         $success = $this->executeActions($item, $context, $errorCollection);
-        $state   = $state->transit($this, $context, $errorCollection, $success);
-
-        $item->transit($state);
+        $state   = $item->transit($this, $context, $errorCollection, $success);
 
         return $state;
     }

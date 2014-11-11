@@ -18,7 +18,7 @@ class ItemSpec extends ObjectBehavior
 {
     function let(Entity $entity)
     {
-        $this->beConstructedThrough('start', array($entity));
+        $this->beConstructedThrough('initialize', array($entity));
     }
 
     function it_is_initializable()
@@ -70,7 +70,7 @@ class ItemSpec extends ObjectBehavior
         $state->getStepName()->willReturn('start');
         $state->getWorkflowName()->shouldBeCalled();
 
-        $this->beConstructedThrough('reconstitute', array($entity, array($failedState, $state)));
+        $this->beConstructedThrough('reconstitute', array($entity, array($state, $failedState)));
 
         $this->getCurrentStepName()->shouldReturn('start');
         $this->getLatestState()->shouldReturn($state);

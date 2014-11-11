@@ -299,10 +299,14 @@ class TransitionSpec extends ObjectBehavior
         Workflow $workflow,
         Step $step,
         ErrorCollection $errorCollection,
-        EntityId $entityId
+        EntityId $entityId,
+        State $state
     ) {
         $item->isWorkflowStarted()->willReturn(false);
         $item->getEntity()->willReturn($entity);
+        $item->start($this, $context, $errorCollection, true)
+            ->shouldBeCalled()
+            ->willReturn($state);
 
         $context->getProperties()->willReturn(array());
 
@@ -313,7 +317,7 @@ class TransitionSpec extends ObjectBehavior
         $this->setWorkflow($workflow);
         $this->setStepTo($step);
 
-        $this->start($item, $context, $errorCollection)->shouldHaveType('Netzmacht\Workflow\FLow\State');
+        $this->start($item, $context, $errorCollection)->shouldReturn($state);
     }
 
     function it_transits_an_item(
@@ -324,7 +328,9 @@ class TransitionSpec extends ObjectBehavior
         State $newState
     ) {
         $item->getLatestState()->willReturn($state);
-        $item->transit($newState)->shouldBeCalled();
+        $item->transit($this, $context, $errorCollection, true)
+            ->shouldBeCalled()
+            ->willReturn($newState);
 
         $state->transit($this, $context, $errorCollection, true)->willReturn($newState);
 
@@ -341,9 +347,9 @@ class TransitionSpec extends ObjectBehavior
         State $newState
     ) {
         $item->getLatestState()->willReturn($state);
-        $item->transit($newState)->shouldBeCalled();
-
-        $state->transit($this, $context, $errorCollection, false)->willReturn($newState);
+        $item->transit($this, $context, $errorCollection, false)
+            ->shouldBeCalled()
+            ->willReturn($newState);
 
         $this->isAllowed($item, $context, $errorCollection)->shouldReturn(true);
         $this->addAction(new ThrowingAction());

@@ -255,7 +255,7 @@ class State
      * @param ErrorCollection $errorCollection The error collection.
      * @param bool            $success         The success state.
      *
-     * @return static
+     * @return State
      */
     public function transit(Transition $transition, Context $context, ErrorCollection $errorCollection, $success = true)
     {
