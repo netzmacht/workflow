@@ -54,11 +54,11 @@ abstract class ConditionCollection implements Condition
     /**
      * Add multiple conditions.
      *
-     * @param array $conditions Array of conditions.
+     * @param Condition[] $conditions Array of conditions.
      *
      * @return $this
      */
-    public function addConditions(array $conditions)
+    public function addConditions($conditions)
     {
         Assertion::allIsInstanceOf($conditions, 'Netzmacht\Workflow\Flow\Condition\Workflow\Condition');
 

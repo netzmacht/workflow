@@ -4,7 +4,6 @@ namespace Netzmacht\Workflow\Flow;
 
 use Assert\Assertion;
 use Assert\InvalidArgumentException;
-use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Base;
 use Netzmacht\Workflow\Flow\Exception\RoleNotFoundException;
@@ -13,7 +12,6 @@ use Netzmacht\Workflow\Flow\Exception\TransitionNotFoundException;
 use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
 use Netzmacht\Workflow\Flow\Condition\Workflow\AndCondition;
-use Netzmacht\Workflow\Flow\Exception\WorkflowException;
 
 /**
  * Class Workflow stores all information of a step processing workflow.

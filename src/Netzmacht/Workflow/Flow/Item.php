@@ -78,12 +78,12 @@ class Item
     /**
      * Restore an existing item.
      *
-     * @param Entity        $entity       The entity.
-     * @param State[]|array $stateHistory Set or already passed states.
+     * @param Entity  $entity       The entity.
+     * @param State[] $stateHistory Set or already passed states.
      *
      * @return Item
      */
-    public static function reconstitute(Entity $entity, array $stateHistory)
+    public static function reconstitute(Entity $entity, $stateHistory)
     {
         Assertion::allIsInstanceOf($stateHistory, 'Netzmacht\Workflow\Flow\State');
 
@@ -120,7 +120,7 @@ class Item
         $state = State::start($this->entity, $transition, $context, $errorCollection, $success);
         $this->apply($state);
 
-        return $this;
+        return $state;
     }
 
     /**

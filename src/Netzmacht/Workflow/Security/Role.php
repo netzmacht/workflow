@@ -107,7 +107,7 @@ class Role extends Base
     /**
      * Get all permissions.
      *
-     * @return array
+     * @return Permission[]
      */
     public function getPermissions()
     {

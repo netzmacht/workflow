@@ -49,7 +49,7 @@ class Transition extends Base
     /**
      * A set of permission being assigned to the transition.
      *
-     * @var Permission
+     * @var Permission|null
      */
     private $permission;
 

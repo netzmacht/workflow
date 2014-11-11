@@ -50,7 +50,7 @@ class User
      *
      * @param Permission $permission Permission which is required.
      *
-     * @return mixed
+     * @return bool
      */
     public function hasPermission(Permission $permission)
     {
