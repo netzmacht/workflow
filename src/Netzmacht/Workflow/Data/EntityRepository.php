@@ -30,9 +30,9 @@ interface EntityRepository
     /**
      * Add an entity to the repository.
      *
-     * @param Entity $entity The new entity.
+     * @param mixed $entity The new entity.
      *
      * @return void
      */
-    public function add(Entity $entity);
+    public function add($entity);
 }

@@ -25,7 +25,7 @@ class AndCondition extends ConditionCollection
     /**
      * {@inheritdoc}
      */
-    public function match(Workflow $workflow, EntityId $entityId, Entity $entity)
+    public function match(Workflow $workflow, EntityId $entityId, $entity)
     {
         foreach ($this->conditions as $condition) {
             if (!$condition->match($workflow, $entityId, $entity)) {

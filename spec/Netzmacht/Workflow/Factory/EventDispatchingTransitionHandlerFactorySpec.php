@@ -2,7 +2,6 @@
 
 namespace spec\Netzmacht\Workflow\Factory;
 
-use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\EntityManager;
 use Netzmacht\Workflow\Data\EntityRepository;
@@ -10,7 +9,6 @@ use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Factory\EventDispatchingTransitionHandlerFactory;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
-use Netzmacht\Workflow\Handler\TransitionHandler;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -23,6 +21,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface as EventDispatche
  */
 class EventDispatchingTransitionHandlerFactorySpec extends ObjectBehavior
 {
+    protected static $entity = array('id' => 5);
+
     function let(EventDispatcher $eventDispatcher, TransactionHandler $transactionHandler, EntityManager $entityManager)
     {
         $this->beConstructedWith($entityManager, $transactionHandler, $eventDispatcher);
@@ -54,14 +54,12 @@ class EventDispatchingTransitionHandlerFactorySpec extends ObjectBehavior
         StateRepository $stateRepository,
         EntityManager $entityManager,
         EntityRepository $entityRepository,
-        Entity $entity,
         EntityId $entityId
     ) {
         $entityManager->getRepository('test')->willReturn($entityRepository);
 
         $item->isWorkflowStarted()->willReturn(false);
-        $item->getEntity()->willReturn($entity);
-        $entity->getEntityId()->willReturn($entityId);
+        $item->getEntity()->willReturn(static::$entity);
 
         $this->createTransitionHandler(
             $item,

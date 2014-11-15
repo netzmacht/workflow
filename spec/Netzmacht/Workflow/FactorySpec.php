@@ -2,9 +2,7 @@
 
 namespace spec\Netzmacht\Workflow;
 
-use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Factory;
-use Netzmacht\Workflow\Factory\Event\CreateEntityEvent;
 use Netzmacht\Workflow\Factory\Event\CreateFormEvent;
 use Netzmacht\Workflow\Factory\Event\CreateManagerEvent;
 use Netzmacht\Workflow\Factory\Event\CreateUserEvent;
@@ -55,32 +53,6 @@ class FactorySpec extends ObjectBehavior
         )->shouldBeCalled();
 
         $this->shouldThrow('RuntimeException')->duringCreateManager('provider_name', 'type_name');
-    }
-
-    function it_creates_entity(EventDispatcher $eventDispatcher, Entity $entity)
-    {
-        $eventDispatcher->dispatch(
-            CreateEntityEvent::NAME,
-            Argument::type('Netzmacht\Workflow\Factory\Event\CreateEntityEvent')
-        )->will(
-            function ($arguments) use ($entity) {
-                /** @var CreateEntityEvent $event */
-                $event = $arguments[1];
-                $event->setEntity($entity->getWrappedObject());
-            }
-        );
-
-        $this->createEntity(array('id' => 4), 'provider_name')->shouldReturn($entity);
-    }
-
-    function it_throws_if_no_entity_is_created(EventDispatcher $eventDispatcher)
-    {
-        $eventDispatcher->dispatch(
-            CreateEntityEvent::NAME,
-            Argument::type('Netzmacht\Workflow\Factory\Event\CreateEntityEvent')
-        )->shouldBeCalled();
-
-        $this->shouldThrow('RuntimeException')->duringCreateEntity(array('id' => 4), 'provider_name');
     }
 
     function it_creates_form(EventDispatcher $eventDispatcher, Form $form)

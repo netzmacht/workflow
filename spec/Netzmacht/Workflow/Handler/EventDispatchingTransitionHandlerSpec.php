@@ -2,10 +2,8 @@
 
 namespace spec\Netzmacht\Workflow\Handler;
 
-use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\EntityRepository;
-use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
@@ -36,6 +34,8 @@ class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
     const WORKFLOW_NAME = 'workflow_name';
     const STEP_NAME = 'step_name';
 
+    protected static $entity = array('id' => 5);
+
     function let(
         Item $item,
         Workflow $workflow,
@@ -45,7 +45,6 @@ class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
         EventDispatcher $eventDispatcher,
         Transition $transition,
         State $state,
-        Entity $entity,
         EntityId $entityId,
         Step $step
     )  {
@@ -66,9 +65,8 @@ class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
 
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn(static::STEP_NAME);
-        $item->getEntity()->willReturn($entity);
+        $item->getEntity()->willReturn(static::$entity);
 
-        $entity->getEntityId()->willReturn($entityId);
         $entityId->__toString()->willReturn('entity::2');
 
         $this->beConstructedWith(

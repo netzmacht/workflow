@@ -5,7 +5,6 @@ namespace spec\Netzmacht\Workflow\Flow;
 use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
 use Netzmacht\Workflow\Flow\Item;
-use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Action;
@@ -16,7 +15,6 @@ use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Form\Form;
-use PDepend\Util\Type;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -30,6 +28,8 @@ class TransitionSpec extends ObjectBehavior
     const NAME = 'transition_name';
 
     const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Data\ErrorCollection';
+
+    protected static $entity = array('id' => 5);
 
     function let()
     {
@@ -294,7 +294,6 @@ class TransitionSpec extends ObjectBehavior
 
     function it_starts_an_workflow(
         Item $item,
-        Entity $entity,
         Context $context,
         Workflow $workflow,
         Step $step,
@@ -303,15 +302,12 @@ class TransitionSpec extends ObjectBehavior
         State $state
     ) {
         $item->isWorkflowStarted()->willReturn(false);
-        $item->getEntity()->willReturn($entity);
+        $item->getEntity()->willReturn(static::$entity);
         $item->start($this, $context, $errorCollection, true)
             ->shouldBeCalled()
             ->willReturn($state);
 
         $context->getProperties()->willReturn(array());
-
-        $entity->getEntityId()->willReturn($entityId);
-
         $errorCollection->getErrors()->willReturn(array());
 
         $this->setWorkflow($workflow);

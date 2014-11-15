@@ -4,15 +4,14 @@ namespace Netzmacht\Workflow\Flow;
 
 use Assert\Assertion;
 use Assert\InvalidArgumentException;
-use Netzmacht\Workflow\Data\EntityId;
-use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Base;
+use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Exception\RoleNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\StepNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\TransitionNotFoundException;
-use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
 use Netzmacht\Workflow\Flow\Condition\Workflow\AndCondition;
+use Netzmacht\Workflow\Security\Role;
 
 /**
  * Class Workflow stores all information of a step processing workflow.
@@ -266,11 +265,11 @@ class Workflow extends Base
      * Consider if workflow is responsible for the entity.
      *
      * @param EntityId $entityId The entity id.
-     * @param Entity   $entity   The entity.
+     * @param mixed    $entity   The entity.
      *
      * @return bool
      */
-    public function match(EntityId $entityId, Entity $entity)
+    public function match(EntityId $entityId, $entity)
     {
         if (!$this->condition) {
             return true;

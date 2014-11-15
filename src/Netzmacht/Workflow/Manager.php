@@ -3,7 +3,6 @@
 namespace Netzmacht\Workflow;
 
 use Assert\Assertion;
-use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Factory\TransitionHandlerFactory;
@@ -115,11 +114,11 @@ class Manager
      * Get a workflow for the given entity.
      *
      * @param EntityId $entityId The entity id.
-     * @param Entity   $entity   The entity.
+     * @param mixed    $entity   The entity.
      *
      * @return Workflow|bool
      */
-    public function getWorkflow(EntityId $entityId, Entity $entity)
+    public function getWorkflow(EntityId $entityId, $entity)
     {
         foreach ($this->workflows as $workflow) {
             if ($workflow->match($entityId, $entity)) {
@@ -152,11 +151,11 @@ class Manager
      * Consider if entity has an workflow.
      *
      * @param EntityId $entityId The entity id.
-     * @param Entity   $entity   The entity.
+     * @param mixed    $entity   The entity.
      *
      * @return bool
      */
-    public function hasWorkflow(EntityId $entityId, Entity $entity)
+    public function hasWorkflow(EntityId $entityId, $entity)
     {
         foreach ($this->workflows as $workflow) {
             if ($workflow->match($entityId, $entity)) {
@@ -181,11 +180,11 @@ class Manager
      * Create the item for an entity.
      *
      * @param EntityId $entityId The entity id.
-     * @param Entity   $entity   Current entity.
+     * @param mixed    $entity   Current entity.
      *
      * @return Item
      */
-    public function createItem(EntityId $entityId, Entity $entity)
+    public function createItem(EntityId $entityId, $entity)
     {
         $stateHistory = $this->stateRepository->find($entityId);
 

@@ -5,7 +5,6 @@ namespace spec\Netzmacht\Workflow\Handler;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Data\StateRepository;
-use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Data\EntityRepository;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
@@ -34,9 +33,10 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
     const STEP_NAME = 'step_name';
     const WORKFLOW_NAME = 'workflow_name';
 
+    protected static $entity = array('id' => 5);
+
     function let(
         Item $item,
-        Entity $entity,
         EntityId $entityId,
         Workflow $workflow,
         EntityRepository $entityRepository,
@@ -63,9 +63,8 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
 
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn(static::STEP_NAME);
-        $item->getEntity()->willReturn($entity);
+        $item->getEntity()->willReturn(static::$entity);
 
-        $entity->getEntityId()->willReturn($entityId);
         $entityId->__toString()->willReturn('entity::2');
 
         $this->beAnInstanceOf('spec\Netzmacht\Workflow\Handler\TransitionHandler');

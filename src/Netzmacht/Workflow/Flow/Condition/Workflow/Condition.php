@@ -27,9 +27,9 @@ interface Condition
      *
      * @param Workflow $workflow The current workflow.
      * @param EntityId $entityId The entity id.
-     * @param Entity   $entity   The entity.
+     * @param mixed    $entity   The entity.
      *
      * @return bool
      */
-    public function match(Workflow $workflow, EntityId $entityId, Entity $entity);
+    public function match(Workflow $workflow, EntityId $entityId, $entity);
 }

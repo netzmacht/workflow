@@ -4,7 +4,6 @@ namespace spec\Netzmacht\Workflow\Flow\Condition\Workflow;
 
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Workflow;
-use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
 use Netzmacht\Workflow\Flow\Condition\Workflow\ConditionCollection as AbstractConditionCollection;
 use PhpSpec\ObjectBehavior;
@@ -55,7 +54,7 @@ class ConditionCollectionSpec extends ObjectBehavior
 
 class ConditionCollection extends AbstractConditionCollection
 {
-    public function match(Workflow $workflow, EntityId $entityId, Entity $entity)
+    public function match(Workflow $workflow, EntityId $entityId, $entity)
     {
     }
 }

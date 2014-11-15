@@ -66,28 +66,6 @@ class Factory
         );
     }
 
-
-    /**
-     * Create a new entity for a model.
-     *
-     * @param mixed       $model        Create an workflow entity.
-     * @param string|null $providerName Provider name if it cannot be extracted from the model.
-     *
-     * @throws RuntimeException If no entity could be created.
-     *
-     * @return Entity
-     */
-    public function createEntity($model, $providerName = null)
-    {
-        $event = new CreateEntityEvent($model, $providerName);
-        $this->eventDispatcher->dispatch($event::NAME, $event);
-
-        return $this->guardCreated(
-            $event->getEntity(),
-            sprintf('Could not create entity for model "%s (%s)"', gettype($model), $providerName)
-        );
-    }
-
     /**
      * Create a form.
      *

@@ -12,7 +12,6 @@
 namespace Netzmacht\Workflow\Flow;
 
 use Assert\Assertion;
-use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
@@ -48,7 +47,7 @@ class Item
     /**
      * Workflow entity.
      *
-     * @var Entity
+     * @var mixed
      */
     private $entity;
 
@@ -63,9 +62,9 @@ class Item
      * Construct. Do not used constructor. Use named constructor static methods.
      *
      * @param EntityId $entityId The entity id.
-     * @param Entity   $entity   The entity for which the workflow is started.
+     * @param mixed    $entity   The entity for which the workflow is started.
      */
-    protected function __construct(EntityId $entityId, Entity $entity)
+    protected function __construct(EntityId $entityId, $entity)
     {
         $this->entityId = $entityId;
         $this->entity   = $entity;
@@ -77,11 +76,11 @@ class Item
      * It is called before the workflow is started.
      *
      * @param EntityId $entityId The entity id for the containing entity.
-     * @param Entity   $entity   The entity for which the workflow is started.
+     * @param mixed    $entity   The entity for which the workflow is started.
      *
      * @return Item
      */
-    public static function initialize(EntityId $entityId, Entity $entity)
+    public static function initialize(EntityId $entityId, $entity)
     {
         return new Item($entityId, $entity);
     }
@@ -90,12 +89,12 @@ class Item
      * Restore an existing item.
      *
      * @param EntityId $entityId     The entity id.
-     * @param Entity   $entity       The entity.
+     * @param mixed    $entity       The entity.
      * @param State[]  $stateHistory Set or already passed states.
      *
      * @return Item
      */
-    public static function reconstitute(EntityId $entityId, Entity $entity, $stateHistory)
+    public static function reconstitute(EntityId $entityId, $entity, $stateHistory)
     {
         Assertion::allIsInstanceOf($stateHistory, 'Netzmacht\Workflow\Flow\State');
 
@@ -186,7 +185,7 @@ class Item
     /**
      * Get the entity.
      *
-     * @return Entity
+     * @return mixed
      */
     public function getEntity()
     {

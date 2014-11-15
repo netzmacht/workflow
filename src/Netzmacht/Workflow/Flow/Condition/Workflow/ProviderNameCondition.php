@@ -56,7 +56,7 @@ class ProviderNameCondition implements Condition
     /**
      * {@inheritdoc}
      */
-    public function match(Workflow $workflow, EntityId $entityId, Entity $entity)
+    public function match(Workflow $workflow, EntityId $entityId, $entity)
     {
         if ($this->providerName) {
             return $entityId->getProviderName() == $this->providerName;

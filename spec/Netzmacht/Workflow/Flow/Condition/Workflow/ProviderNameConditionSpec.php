@@ -3,7 +3,6 @@
 namespace spec\Netzmacht\Workflow\Flow\Condition\Workflow;
 
 use Netzmacht\Workflow\Flow\Workflow;
-use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Condition\Workflow\ProviderNameCondition;
 use PhpSpec\ObjectBehavior;
@@ -16,6 +15,8 @@ use Prophecy\Argument;
  */
 class ProviderNameConditionSpec extends ObjectBehavior
 {
+    protected static $entity = array('id' => 5);
+
     function it_is_initializable()
     {
         $this->shouldHaveType('Netzmacht\Workflow\Flow\Condition\Workflow\ProviderNameCondition');
@@ -28,26 +29,23 @@ class ProviderNameConditionSpec extends ObjectBehavior
         $this->getProviderName()->shouldReturn('test');
     }
 
-    function it_matches_against_configurabled_provider_name(Workflow $workflow, Entity $entity, EntityId $entityId)
+    function it_matches_against_configurabled_provider_name(Workflow $workflow, EntityId $entityId)
     {
         $this->setProviderName('test');
 
-        $entity->getEntityId()->willReturn($entityId);
         $entityId->getProviderName()->willReturn('test');
 
-        $this->match($workflow, $entityId, $entity)->shouldReturn(true);
+        $this->match($workflow, $entityId, static::$entity)->shouldReturn(true);
 
         $this->setProviderName('test2');
-        $this->match($workflow, $entityId, $entity)->shouldReturn(false);
+        $this->match($workflow, $entityId, static::$entity)->shouldReturn(false);
     }
 
-    function it_matches_against_workflow_provider_name(Workflow $workflow, Entity $entity, EntityId $entityId)
+    function it_matches_against_workflow_provider_name(Workflow $workflow, EntityId $entityId)
     {
         $workflow->getProviderName()->willReturn('test');
-
-        $entity->getEntityId()->willReturn($entityId);
         $entityId->getProviderName()->willReturn('test');
 
-        $this->match($workflow, $entityId, $entity)->shouldReturn(true);
+        $this->match($workflow, $entityId, static::$entity)->shouldReturn(true);
     }
 }
