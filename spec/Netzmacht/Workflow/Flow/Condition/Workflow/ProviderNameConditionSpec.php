@@ -35,10 +35,10 @@ class ProviderNameConditionSpec extends ObjectBehavior
         $entity->getEntityId()->willReturn($entityId);
         $entityId->getProviderName()->willReturn('test');
 
-        $this->match($workflow, $entity)->shouldReturn(true);
+        $this->match($workflow, $entityId, $entity)->shouldReturn(true);
 
         $this->setProviderName('test2');
-        $this->match($workflow, $entity)->shouldReturn(false);
+        $this->match($workflow, $entityId, $entity)->shouldReturn(false);
     }
 
     function it_matches_against_workflow_provider_name(Workflow $workflow, Entity $entity, EntityId $entityId)
@@ -48,6 +48,6 @@ class ProviderNameConditionSpec extends ObjectBehavior
         $entity->getEntityId()->willReturn($entityId);
         $entityId->getProviderName()->willReturn('test');
 
-        $this->match($workflow, $entity)->shouldReturn(true);
+        $this->match($workflow, $entityId, $entity)->shouldReturn(true);
     }
 }

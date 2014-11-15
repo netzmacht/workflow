@@ -338,7 +338,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
                     'Not allowed to process transition "%s". Workflow "%s" not started for item "%s"',
                     $transitionName,
                     $this->workflow->getName(),
-                    $this->item->getEntity()->getEntityId()
+                    $this->item->getEntityId()
                 )
             );
         }

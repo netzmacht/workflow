@@ -2,6 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Workflow;
 
+use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
@@ -54,16 +55,7 @@ class ConditionCollectionSpec extends ObjectBehavior
 
 class ConditionCollection extends AbstractConditionCollection
 {
-    /**
-     * Consider if workflow matches to the entity.
-     *
-     * @param Workflow $workflow The current workflow.
-     * @param Entity   $entity   The entity.
-     *
-     * @return bool
-     */
-    public function match(Workflow $workflow, Entity $entity)
+    public function match(Workflow $workflow, EntityId $entityId, Entity $entity)
     {
-        // TODO: Implement match() method.
     }
 }

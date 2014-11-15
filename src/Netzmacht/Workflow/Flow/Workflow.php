@@ -4,6 +4,7 @@ namespace Netzmacht\Workflow\Flow;
 
 use Assert\Assertion;
 use Assert\InvalidArgumentException;
+use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Base;
 use Netzmacht\Workflow\Flow\Exception\RoleNotFoundException;
@@ -264,17 +265,18 @@ class Workflow extends Base
     /**
      * Consider if workflow is responsible for the entity.
      *
-     * @param Entity $entity The entity.
+     * @param EntityId $entityId The entity id.
+     * @param Entity   $entity   The entity.
      *
      * @return bool
      */
-    public function match(Entity $entity)
+    public function match(EntityId $entityId, Entity $entity)
     {
         if (!$this->condition) {
             return true;
         }
 
-        return $this->condition->match($this, $entity);
+        return $this->condition->match($this, $entityId, $entity);
     }
 
     /**

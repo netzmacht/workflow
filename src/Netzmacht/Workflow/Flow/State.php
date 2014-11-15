@@ -128,7 +128,7 @@ class State
     /**
      * Create an initial state.
      *
-     * @param Entity          $entity          The entity.
+     * @param EntityId        $entityId        The entity id.
      * @param Transition      $transition      The current executed transition.
      * @param Context         $context         The context.
      * @param ErrorCollection $errorCollection The error collection.
@@ -137,14 +137,14 @@ class State
      * @return State
      */
     public static function start(
-        Entity $entity,
+        EntityId $entityId,
         Transition $transition,
         Context $context,
         ErrorCollection $errorCollection,
         $success
     ) {
         $state = new State(
-            $entity->getEntityId(),
+            $entityId,
             $transition->getWorkflow()->getName(),
             $transition->getName(),
             $transition->getStepTo()->getName(),

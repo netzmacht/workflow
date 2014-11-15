@@ -13,6 +13,7 @@ namespace Netzmacht\Workflow\Flow;
 
 use Assert\Assertion;
 use Netzmacht\Workflow\Data\Entity;
+use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
 
@@ -52,13 +53,22 @@ class Item
     private $entity;
 
     /**
+     * Entity id.
+     *
+     * @var EntityId
+     */
+    private $entityId;
+
+    /**
      * Construct. Do not used constructor. Use named constructor static methods.
      *
-     * @param Entity $entity The entity for which the workflow is started.
+     * @param EntityId $entityId The entity id.
+     * @param Entity   $entity   The entity for which the workflow is started.
      */
-    protected function __construct(Entity $entity)
+    protected function __construct(EntityId $entityId, Entity $entity)
     {
-        $this->entity = $entity;
+        $this->entityId = $entityId;
+        $this->entity   = $entity;
     }
 
     /**
@@ -66,28 +76,30 @@ class Item
      *
      * It is called before the workflow is started.
      *
-     * @param Entity $entity The entity for which the workflow is started.
+     * @param EntityId $entityId The entity id for the containing entity.
+     * @param Entity   $entity   The entity for which the workflow is started.
      *
      * @return Item
      */
-    public static function initialize(Entity $entity)
+    public static function initialize(EntityId $entityId, Entity $entity)
     {
-        return new Item($entity);
+        return new Item($entityId, $entity);
     }
 
     /**
      * Restore an existing item.
      *
-     * @param Entity  $entity       The entity.
-     * @param State[] $stateHistory Set or already passed states.
+     * @param EntityId $entityId     The entity id.
+     * @param Entity   $entity       The entity.
+     * @param State[]  $stateHistory Set or already passed states.
      *
      * @return Item
      */
-    public static function reconstitute(Entity $entity, $stateHistory)
+    public static function reconstitute(EntityId $entityId, Entity $entity, $stateHistory)
     {
         Assertion::allIsInstanceOf($stateHistory, 'Netzmacht\Workflow\Flow\State');
 
-        $item = self::initialize($entity);
+        $item = self::initialize($entityId, $entity);
 
         // replay states
         foreach ($stateHistory as $state) {
@@ -159,6 +171,16 @@ class Item
     public function getCurrentStepName()
     {
         return $this->currentStepName;
+    }
+
+    /**
+     * Get the entity id.
+     *
+     * @return EntityId
+     */
+    public function getEntityId()
+    {
+        return $this->entityId;
     }
 
     /**

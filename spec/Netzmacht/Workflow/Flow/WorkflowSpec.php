@@ -2,6 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow;
 
+use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Item;
@@ -117,24 +118,24 @@ class WorkflowSpec extends ObjectBehavior
         $this->getProviderName()->shouldReturn(static::PROVIDER);
     }
 
-    function it_matches_if_no_condition_is_set(Entity $entity)
+    function it_matches_if_no_condition_is_set(EntityId $entityId, Entity $entity)
     {
-        $this->match($entity)->shouldReturn(true);
+        $this->match($entityId, $entity)->shouldReturn(true);
     }
 
-    function it_matches_if_condition_does(Condition $condition, Entity $entity)
+    function it_matches_if_condition_does(Condition $condition, EntityId $entityId, Entity $entity)
     {
-        $condition->match($this, $entity)->willReturn(true);
+        $condition->match($this, $entityId, $entity)->willReturn(true);
 
         $this->addCondition($condition);
-        $this->match($entity)->shouldReturn(true);
+        $this->match($entityId, $entity)->shouldReturn(true);
     }
 
-    function it_does_not_match_if_condition_does_not(Condition $condition, Entity $entity)
+    function it_does_not_match_if_condition_does_not(Condition $condition, EntityId $entityId, Entity $entity)
     {
-        $condition->match($this, $entity)->willReturn(false);
+        $condition->match($this, $entityId, $entity)->willReturn(false);
 
         $this->addCondition($condition);
-        $this->match($entity)->shouldReturn(false);
+        $this->match($entityId, $entity)->shouldReturn(false);
     }
 }

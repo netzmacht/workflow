@@ -4,6 +4,7 @@ namespace Netzmacht\Workflow;
 
 use Assert\Assertion;
 use Netzmacht\Workflow\Data\Entity;
+use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Factory\TransitionHandlerFactory;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
@@ -76,7 +77,7 @@ class Manager
     public function handle(Item $item, $transitionName = null)
     {
         $entity   = $item->getEntity();
-        $workflow = $this->getWorkflow($entity);
+        $workflow = $this->getWorkflow($item->getEntityId(), $entity);
 
         if (!$workflow) {
             return false;
@@ -88,7 +89,7 @@ class Manager
             $item,
             $workflow,
             $transitionName,
-            $entity->getEntityId()->getProviderName(),
+            $item->getEntityId()->getProviderName(),
             $this->stateRepository
         );
 
@@ -113,14 +114,15 @@ class Manager
     /**
      * Get a workflow for the given entity.
      *
-     * @param Entity $entity The entity.
+     * @param EntityId $entityId The entity id.
+     * @param Entity   $entity   The entity.
      *
      * @return Workflow|bool
      */
-    public function getWorkflow(Entity $entity)
+    public function getWorkflow(EntityId $entityId, Entity $entity)
     {
         foreach ($this->workflows as $workflow) {
-            if ($workflow->match($entity)) {
+            if ($workflow->match($entityId, $entity)) {
                 return $workflow;
             }
         }
@@ -149,14 +151,15 @@ class Manager
     /**
      * Consider if entity has an workflow.
      *
-     * @param Entity $entity The entity.
+     * @param EntityId $entityId The entity id.
+     * @param Entity   $entity   The entity.
      *
      * @return bool
      */
-    public function hasWorkflow(Entity $entity)
+    public function hasWorkflow(EntityId $entityId, Entity $entity)
     {
         foreach ($this->workflows as $workflow) {
-            if ($workflow->match($entity)) {
+            if ($workflow->match($entityId, $entity)) {
                 return true;
             }
         }
@@ -177,15 +180,16 @@ class Manager
     /**
      * Create the item for an entity.
      *
-     * @param Entity $entity Current entity.
+     * @param EntityId $entityId The entity id.
+     * @param Entity   $entity   Current entity.
      *
      * @return Item
      */
-    public function createItem(Entity $entity)
+    public function createItem(EntityId $entityId, Entity $entity)
     {
-        $stateHistory = $this->stateRepository->find($entity->getEntityId());
+        $stateHistory = $this->stateRepository->find($entityId);
 
-        return Item::reconstitute($entity, $stateHistory);
+        return Item::reconstitute($entityId, $entity, $stateHistory);
     }
 
     /**
@@ -203,7 +207,7 @@ class Manager
         if ($item->isWorkflowStarted() && $item->getWorkflowName() != $workflow->getName()) {
             $message = sprintf(
                 'Item "%s" already process workflow "%s" and cannot be handled by "%s"',
-                $item->getEntity()->getEntityId(),
+                $item->getEntityId(),
                 $item->getWorkflowName(),
                 $workflow->getName()
             );

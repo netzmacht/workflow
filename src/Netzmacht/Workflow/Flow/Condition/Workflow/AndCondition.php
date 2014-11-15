@@ -12,6 +12,7 @@
 namespace Netzmacht\Workflow\Flow\Condition\Workflow;
 
 use Netzmacht\Workflow\Data\Entity;
+use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Workflow;
 
 /**
@@ -24,10 +25,10 @@ class AndCondition extends ConditionCollection
     /**
      * {@inheritdoc}
      */
-    public function match(Workflow $workflow, Entity $entity)
+    public function match(Workflow $workflow, EntityId $entityId, Entity $entity)
     {
         foreach ($this->conditions as $condition) {
-            if (!$condition->match($workflow, $entity)) {
+            if (!$condition->match($workflow, $entityId, $entity)) {
                 return false;
             }
         }

@@ -43,11 +43,11 @@ class ManagerSpec extends ObjectBehavior
         $entity->getEntityId()->willReturn($entityId);
     }
 
-    function it_gets_workflow(Workflow $workflow, Entity $entity)
+    function it_gets_workflow(Workflow $workflow, EntityId $entityId, Entity $entity)
     {
-        $workflow->match($entity)->willReturn(true);
+        $workflow->match($entityId, $entity)->willReturn(true);
 
-        $this->getWorkflow($entity)->shouldReturn($workflow);
+        $this->getWorkflow($entityId, $entity)->shouldReturn($workflow);
     }
 
     function it_adds_workflow(Workflow $anotherWorkflow)
@@ -58,23 +58,23 @@ class ManagerSpec extends ObjectBehavior
         $this->getWorkflowByName('another')->shouldReturn($anotherWorkflow);
     }
 
-    function it_returns_false_if_no_workflow_found(Workflow $workflow, Entity $entity)
+    function it_returns_false_if_no_workflow_found(Workflow $workflow, EntityId $entityId, Entity $entity)
     {
-        $workflow->match($entity)->willReturn(false);
+        $workflow->match($entityId, $entity)->willReturn(false);
 
-        $this->getWorkflow($entity)->shouldReturn(false);
+        $this->getWorkflow($entityId, $entity)->shouldReturn(false);
     }
 
-    function it_knows_if_matching_workflow_exists(Workflow $workflow, Entity $entity)
+    function it_knows_if_matching_workflow_exists(Workflow $workflow, EntityId $entityId, Entity $entity)
     {
-        $workflow->match($entity)->willReturn(true);
-        $this->hasWorkflow($entity)->shouldReturn(true);
+        $workflow->match($entityId, $entity)->willReturn(true);
+        $this->hasWorkflow($entityId, $entity)->shouldReturn(true);
     }
 
-    function it_knows_if_no_matching_workflow_exists(Workflow $workflow, Entity $entity)
+    function it_knows_if_no_matching_workflow_exists(Workflow $workflow, EntityId $entityId, Entity $entity)
     {
-        $workflow->match($entity)->willReturn(false);
-        $this->hasWorkflow($entity)->shouldReturn(false);
+        $workflow->match($entityId, $entity)->willReturn(false);
+        $this->hasWorkflow($entityId, $entity)->shouldReturn(false);
     }
 
     function it_adds_an_workflow(Workflow $anotherWorkflow)
@@ -87,11 +87,13 @@ class ManagerSpec extends ObjectBehavior
     function it_returns_false_if_no_matching_workflow_found(
         Workflow $workflow,
         Item $item,
-        Entity $entity
+        Entity $entity,
+        EntityId $entityId
     ) {
+        $item->getEntityId()->willReturn($entityId);
         $item->getEntity()->willReturn($entity);
 
-        $workflow->match($entity)->willReturn(false);
+        $workflow->match($entityId, $entity)->willReturn(false);
         $this->handle($item)->shouldReturn(false);
     }
 
@@ -105,12 +107,11 @@ class ManagerSpec extends ObjectBehavior
         TransitionHandler $transitionHandler
     )
     {
+        $item->getEntityId()->willReturn($entityId);
         $item->getEntity()->willReturn($entity);
         $item->isWorkflowStarted()->willReturn(false);
 
-        $workflow->match($entity)->willReturn(true);
-
-        $entity->getEntityId()->willReturn($entityId);
+        $workflow->match($entityId, $entity)->willReturn(true);
 
         $entityId->getProviderName()->willReturn(static::ENTITY_PROVIDER_NAME);
 
@@ -141,17 +142,16 @@ class ManagerSpec extends ObjectBehavior
         $step->getName()->willReturn('start');
         $step->isTransitionAllowed('next')->willReturn(true);
 
+        $item->getEntityId()->willReturn($entityId);
         $item->getEntity()->willReturn($entity);
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('start');
         $item->getWorkflowName()->willReturn('workflow_a');
 
-        $workflow->match($entity)->willReturn(true);
+        $workflow->match($entityId, $entity)->willReturn(true);
         $workflow->getStep('start')->willReturn($step);
         $workflow->getTransition('next')->willReturn($transition);
         $workflow->getName()->willReturn('workflow_a');
-
-        $entity->getEntityId()->willReturn($entityId);
 
         $entityId->getProviderName()->willReturn(static::ENTITY_PROVIDER_NAME);
 
@@ -183,17 +183,16 @@ class ManagerSpec extends ObjectBehavior
         $step->getName()->willReturn('start');
         $step->isTransitionAllowed('next')->willReturn(true);
 
+        $item->getEntityId()->willReturn($entityId);
         $item->getEntity()->willReturn($entity);
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('start');
         $item->getWorkflowName()->willReturn('workflow_a');
 
-        $workflow->match($entity)->willReturn(true);
+        $workflow->match($entityId, $entity)->willReturn(true);
         $workflow->getStep('start')->willReturn($step);
         $workflow->getTransition('next')->willReturn($transition);
         $workflow->getName()->willReturn('workflow_b');
-
-        $entity->getEntityId()->willReturn($entityId);
 
         $entityId->getProviderName()->willReturn(static::ENTITY_PROVIDER_NAME);
         $entityId->__toString()->willReturn(static::ENTITY_PROVIDER_NAME . '::' . static::ENTITY_ID);
@@ -204,6 +203,7 @@ class ManagerSpec extends ObjectBehavior
     }
 
     function it_creates_an_item(
+        EntityId $entityId,
         Entity $entity,
         EntityId $entityId,
         StateRepository $stateRepository,
@@ -211,7 +211,7 @@ class ManagerSpec extends ObjectBehavior
     ) {
         $stateRepository->find($entityId)->willReturn(array($state));
 
-        $this->createItem($entity)->shouldHaveType('Netzmacht\Workflow\Flow\Item');
+        $this->createItem($entityId, $entity)->shouldHaveType('Netzmacht\Workflow\Flow\Item');
     }
 
 

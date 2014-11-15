@@ -12,6 +12,7 @@
 namespace Netzmacht\Workflow\Flow\Condition\Workflow;
 
 use Netzmacht\Workflow\Data\Entity;
+use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Workflow;
 
 /**
@@ -53,21 +54,14 @@ class ProviderNameCondition implements Condition
     }
 
     /**
-     * Consider if workflow matches to the entity.
-     *
-     * @param Workflow $workflow The workflow.
-     * @param Entity   $entity   The entity.
-     *
-     * @return bool
+     * {@inheritdoc}
      */
-    public function match(Workflow $workflow, Entity $entity)
+    public function match(Workflow $workflow, EntityId $entityId, Entity $entity)
     {
-        $entityId = $entity->getEntityId();
-
-        if (!$this->providerName) {
-            return $entityId->getProviderName() == $workflow->getProviderName();
+        if ($this->providerName) {
+            return $entityId->getProviderName() == $this->providerName;
         }
 
-        return $entityId->getProviderName() == $this->providerName;
+        return $entityId->getProviderName() == $workflow->getProviderName();
     }
 }

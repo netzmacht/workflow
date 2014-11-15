@@ -12,6 +12,7 @@
 namespace Netzmacht\Workflow\Flow\Condition\Workflow;
 
 use Netzmacht\Workflow\Data\Entity;
+use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Workflow;
 
 /**
@@ -25,9 +26,10 @@ interface Condition
      * Consider if workflow matches to the entity.
      *
      * @param Workflow $workflow The current workflow.
+     * @param EntityId $entityId The entity id.
      * @param Entity   $entity   The entity.
      *
      * @return bool
      */
-    public function match(Workflow $workflow, Entity $entity);
+    public function match(Workflow $workflow, EntityId $entityId, Entity $entity);
 }
