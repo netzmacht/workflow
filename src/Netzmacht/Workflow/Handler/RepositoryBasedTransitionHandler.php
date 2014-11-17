@@ -23,11 +23,13 @@ use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 
 /**
- * Class TransitionHandler handles the transition to another step in the workflow.
+ * Class RepositoryBasedTransitionHandler handles the transition to another step in the workflow.
+ *
+ * It uses an collection repository approach to store entities.
  *
  * @package Netzmacht\Workflow
  */
-abstract class AbstractTransitionHandler implements TransitionHandler
+class RepositoryBasedTransitionHandler implements TransitionHandler
 {
     /**
      * The given entity.
@@ -39,7 +41,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * The current workflow.
      *
-     * @var \Netzmacht\Workflow\Flow\Workflow
+     * @var Workflow
      */
     private $workflow;
 
@@ -74,14 +76,14 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * The state repository.
      *
-     * @var \Netzmacht\Workflow\Data\StateRepository
+     * @var StateRepository
      */
     private $stateRepository;
 
     /**
      * The transaction handler.
      *
-     * @var \Netzmacht\Workflow\Transaction\TransactionHandler
+     * @var TransactionHandler
      */
     private $transactionHandler;
 
@@ -99,6 +101,10 @@ abstract class AbstractTransitionHandler implements TransitionHandler
      */
     private $errorCollection;
 
+    /**
+     * @var Listener
+     */
+    private $listener;
 
     /**
      * Construct.
@@ -109,6 +115,9 @@ abstract class AbstractTransitionHandler implements TransitionHandler
      * @param EntityRepository   $entityRepository   EntityRepository which stores changes.
      * @param StateRepository    $stateRepository    StateRepository which stores new states.
      * @param TransactionHandler $transactionHandler TransactionHandler take care of transactions.
+     * @param Listener           $listener           Transition handler dispatcher.
+     *
+     * @throws WorkflowException
      */
     public function __construct(
         Item $item,
@@ -116,7 +125,8 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         $transitionName,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
-        TransactionHandler $transactionHandler
+        TransactionHandler $transactionHandler,
+        Listener $listener
     ) {
         $this->item               = $item;
         $this->workflow           = $workflow;
@@ -126,6 +136,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         $this->transactionHandler = $transactionHandler;
         $this->context            = new Context();
         $this->errorCollection    = new ErrorCollection();
+        $this->listener         = $listener;
 
         $this->guardAllowedTransition($transitionName);
     }
@@ -236,7 +247,14 @@ abstract class AbstractTransitionHandler implements TransitionHandler
             }
         }
 
-        return $this->dispatchValidate($form, $this->validated);
+        return $this->listener->onValidate(
+            $form,
+            $this->validated,
+            $this->workflow,
+            $this->item,
+            $this->context,
+            $this->getTransition()->getName()
+        );
     }
 
     /**
@@ -251,11 +269,16 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         $this->transactionHandler->begin();
 
         try {
-            $this->dispatchPreTransit($this->workflow, $this->item, $this->context, $this->getTransition()->getName());
+            $this->listener->onPreTransit(
+                $this->workflow,
+                $this->item,
+                $this->context,
+                $this->getTransition()->getName()
+            );
 
             $state = $this->executeTransition();
 
-            $this->dispatchPostTransit($this->workflow, $this->item, $this->context, $state);
+            $this->listener->onPostTransit($this->workflow, $this->item, $this->context, $state);
 
             $this->stateRepository->add($state);
             $this->entityRepository->add($this->item->getEntity());
@@ -298,7 +321,13 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         $this->form = $form;
         $this->getTransition()->buildForm($this->form, $this->item);
 
-        $this->dispatchBuildForm($form, $this->item, $this->context, $this->getTransition()->getName());
+        $this->listener->onBuildForm(
+            $form,
+            $this->workflow,
+            $this->item,
+            $this->context,
+            $this->getTransition()->getName()
+        );
     }
 
     /**
@@ -355,60 +384,4 @@ abstract class AbstractTransitionHandler implements TransitionHandler
             );
         }
     }
-
-    /**
-     * Consider if form is validated.
-     *
-     * @param Form $form      Transition form.
-     * @param bool $validated Current validation state.
-     *
-     * @return bool
-     */
-    abstract protected function dispatchValidate(Form $form, $validated);
-
-    /**
-     * Dispatch pre transition.
-     *
-     * @param Workflow $workflow       The workflow.
-     * @param Item     $item           Current workflow item.
-     * @param Context  $context        Transition context.
-     * @param string   $transitionName Transition name.
-     *
-     * @return void
-     */
-    abstract protected function dispatchPreTransit(
-        Workflow $workflow,
-        Item $item,
-        Context $context,
-        $transitionName
-    );
-
-    /**
-     * Dispatch post transition.
-     *
-     * @param Workflow $workflow The workflow.
-     * @param Item     $item     Current workflow item.
-     * @param Context  $context  Transition context.
-     * @param State    $state    Item state.
-     *
-     * @return void
-     */
-    abstract protected function dispatchPostTransit(
-        Workflow $workflow,
-        Item $item,
-        Context $context,
-        State $state
-    );
-
-    /**
-     * Dispatch build form.
-     *
-     * @param Form    $form           Form being build.
-     * @param Item    $item           Workflow item.
-     * @param Context $context        Transition context.
-     * @param string  $transitionName Transition name.
-     *
-     * @return void
-     */
-    abstract protected function dispatchBuildForm(Form $form, Item $item, Context $context, $transitionName);
 }

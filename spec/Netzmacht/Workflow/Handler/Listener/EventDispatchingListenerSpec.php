@@ -1,9 +1,10 @@
 <?php
 
-namespace spec\Netzmacht\Workflow\Handler;
+namespace spec\Netzmacht\Workflow\Handler\Listener;
 
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\EntityRepository;
+use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
@@ -11,22 +12,22 @@ use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Form\Form;
+use Netzmacht\Workflow\Handler\Listener\EventDispatchingListener;
 use Netzmacht\Workflow\Handler\Event\BuildFormEvent;
 use Netzmacht\Workflow\Handler\Event\PostTransitionEvent;
 use Netzmacht\Workflow\Handler\Event\PreTransitionEvent;
 use Netzmacht\Workflow\Handler\Event\ValidateTransitionEvent;
-use Netzmacht\Workflow\Handler\EventDispatchingTransitionHandler;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface as EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface as SymfonyEventDispatcher;
 
 /**
  * Class TransitionHandlerSpec
  * @package spec\Netzmacht\Contao\Workflow
- * @mixin EventDispatchingTransitionHandler
+ * @mixin EventDispatchingListener
  */
-class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
+class EventDispatchingListenerSpec extends ObjectBehavior
 {
     const TRANSITION_NAME = 'transition_name';
     const CONTEXT_CLASS = 'Netzmacht\Workflow\Flow\Context';
@@ -42,7 +43,7 @@ class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
         StateRepository $stateRepository,
         EntityRepository $entityRepository,
         TransactionHandler $transactionHandler,
-        EventDispatcher $eventDispatcher,
+        SymfonyEventDispatcher $eventDispatcher,
         Transition $transition,
         State $state,
         EntityId $entityId,
@@ -69,86 +70,79 @@ class EventDispatchingTransitionHandlerSpec extends ObjectBehavior
 
         $entityId->__toString()->willReturn('entity::2');
 
-        $this->beConstructedWith(
-            $item,
-            $workflow,
-            static::TRANSITION_NAME,
-            $entityRepository,
-            $stateRepository,
-            $transactionHandler,
-            $eventDispatcher
-        );
+        $this->beConstructedWith($eventDispatcher);
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Handler\EventDispatchingTransitionHandler');
+        $this->shouldHaveType('Netzmacht\Workflow\Handler\Listener\EventDispatchingListener');
+    }
+
+    function it_is_a_tansition_handler_listener()
+    {
+        $this->shouldImplement('Netzmacht\Workflow\Handler\Listener');
     }
 
     function it_dispatches_build_form_event_during_validate(
         Form $form,
-        Transition $transition,
+        Workflow $workflow,
+        Context $context,
         Item $item,
-        EventDispatcher $eventDispatcher
+        SymfonyEventDispatcher $eventDispatcher
     ) {
-        $transition->buildForm($form, $item)->shouldBeCalled();
-
-        $this->validate($form);
-
         $eventDispatcher->dispatch(
             BuildFormEvent::NAME,
             Argument::type('Netzmacht\Workflow\Handler\Event\BuildFormEvent')
         )
-            ->shouldHaveBeenCalled();
+            ->shouldBeCalled();
+
+        $this->onBuildForm($form, $workflow, $item, $context, static::TRANSITION_NAME);
     }
 
     function it_dispatches_validate_event_during_validate(
         Form $form,
-        Transition $transition,
+        Workflow $workflow,
+        Context $context,
         Item $item,
-        EventDispatcher $eventDispatcher
+        SymfonyEventDispatcher $eventDispatcher
     ) {
-        $transition->buildForm($form, $item)->shouldBeCalled();
-        $this->validate($form);
-
         $eventDispatcher->dispatch(
             ValidateTransitionEvent::NAME,
             Argument::type('Netzmacht\Workflow\Handler\Event\ValidateTransitionEvent')
         )
-            ->shouldHaveBeenCalled();
+            ->shouldBeCalled();
+
+        $this->onValidate($form, true, $workflow, $item, $context, static::TRANSITION_NAME);
     }
 
     function it_dispatches_pre_transition_event(
-        Form $form,
-        Transition $transition,
+        Workflow $workflow,
+        Context $context,
         Item $item,
-        EventDispatcher $eventDispatcher
+        SymfonyEventDispatcher $eventDispatcher
     ) {
-        $transition->buildForm($form, $item)->shouldBeCalled();
-        $this->validate($form);
-        $this->transit();
-
         $eventDispatcher->dispatch(
             PreTransitionEvent::NAME,
             Argument::type('Netzmacht\Workflow\Handler\Event\PreTransitionEvent')
         )
-            ->shouldHaveBeenCalled();
+            ->shouldBeCalled();
+
+        $this->onPreTransit($workflow, $item, $context, static::TRANSITION_NAME);
     }
 
     function it_dispatches_post_transition_event(
-        Form $form,
-        Transition $transition,
+        Workflow $workflow,
+        Context $context,
         Item $item,
-        EventDispatcher $eventDispatcher
+        State $state,
+        SymfonyEventDispatcher $eventDispatcher
     ) {
-        $transition->buildForm($form, $item)->shouldBeCalled();
-        $this->validate($form);
-        $this->transit();
-
         $eventDispatcher->dispatch(
             PostTransitionEvent::NAME,
             Argument::type('Netzmacht\Workflow\Handler\Event\PostTransitionEvent')
         )
-            ->shouldHaveBeenCalled();
+            ->shouldBeCalled();
+
+        $this->onPostTransit($workflow, $item, $context, $state);
     }
 }

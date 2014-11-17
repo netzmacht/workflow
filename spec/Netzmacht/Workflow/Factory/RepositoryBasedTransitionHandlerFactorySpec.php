@@ -6,41 +6,36 @@ use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\EntityManager;
 use Netzmacht\Workflow\Data\EntityRepository;
 use Netzmacht\Workflow\Data\StateRepository;
-use Netzmacht\Workflow\Factory\EventDispatchingTransitionHandlerFactory;
+use Netzmacht\Workflow\Factory\RepositoryBasedTransitionHandlerFactory;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
+use Netzmacht\Workflow\Handler\Listener;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface as EventDispatcher;
 
 /**
  * Class EventDispatchingTransitionHandlerFactorySpec
  * @package spec\Netzmacht\Workflow\Factory
- * @mixin EventDispatchingTransitionHandlerFactory
+ * @mixin RepositoryBasedTransitionHandlerFactory
  */
-class EventDispatchingTransitionHandlerFactorySpec extends ObjectBehavior
+class RepositoryBasedTransitionHandlerFactorySpec extends ObjectBehavior
 {
     protected static $entity = array('id' => 5);
 
-    function let(EventDispatcher $eventDispatcher, TransactionHandler $transactionHandler, EntityManager $entityManager)
+    function let(Listener $dispatcher, TransactionHandler $transactionHandler, EntityManager $entityManager)
     {
-        $this->beConstructedWith($entityManager, $transactionHandler, $eventDispatcher);
+        $this->beConstructedWith($entityManager, $transactionHandler, $dispatcher);
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Factory\EventDispatchingTransitionHandlerFactory');
+        $this->shouldHaveType('Netzmacht\Workflow\Factory\RepositoryBasedTransitionHandlerFactory');
     }
 
     function it_gets_entity_manager(EntityManager $entityManager)
     {
         $this->getEntityManager()->shouldReturn($entityManager);
-    }
-
-    function it_gets_event_dispatcher(EventDispatcher $eventDispatcher)
-    {
-        $this->getEventDispatcher()->shouldReturn($eventDispatcher);
     }
 
     function it_gets_transaction_handler(TransactionHandler $transactionHandler)
@@ -53,8 +48,7 @@ class EventDispatchingTransitionHandlerFactorySpec extends ObjectBehavior
         Workflow $workflow,
         StateRepository $stateRepository,
         EntityManager $entityManager,
-        EntityRepository $entityRepository,
-        EntityId $entityId
+        EntityRepository $entityRepository
     ) {
         $entityManager->getRepository('test')->willReturn($entityRepository);
 
@@ -68,6 +62,6 @@ class EventDispatchingTransitionHandlerFactorySpec extends ObjectBehavior
             'test',
             $stateRepository
         )
-            ->shouldHaveType('Netzmacht\Workflow\Handler\EventDispatchingTransitionHandler');
+            ->shouldHaveType('Netzmacht\Workflow\Handler\RepositoryBasedTransitionHandler');
     }
 }

@@ -15,17 +15,18 @@ use Netzmacht\Workflow\Data\EntityManager;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
-use Netzmacht\Workflow\Handler\EventDispatchingTransitionHandler;
+use Netzmacht\Workflow\Handler\Listener;
+use Netzmacht\Workflow\Handler\Listener\NoOpListener;
+use Netzmacht\Workflow\Handler\RepositoryBasedTransitionHandler;
 use Netzmacht\Workflow\Handler\TransitionHandler;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface as EventDispatcher;
 
 /**
  * Class EventDispatchingTransitionHandlerFactory creates the event dispatching transition handler.
  *
  * @package Netzmacht\Workflow\Factory
  */
-class EventDispatchingTransitionHandlerFactory implements TransitionHandlerFactory
+class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactory
 {
     /**
      * Transaction handler being used during workflow transitions.
@@ -37,9 +38,9 @@ class EventDispatchingTransitionHandlerFactory implements TransitionHandlerFacto
     /**
      * The event dispatcher.
      *
-     * @var EventDispatcher
+     * @var Listener
      */
-    private $eventDispatcher;
+    private $listener;
 
     /**
      * The entity manager.
@@ -53,15 +54,12 @@ class EventDispatchingTransitionHandlerFactory implements TransitionHandlerFacto
      *
      * @param EntityManager      $entityManager      The entity manager.
      * @param TransactionHandler $transactionHandler Transaction handler being used during workflow transitions.
-     * @param EventDispatcher    $eventDispatcher    The event dispatcher.
      */
     public function __construct(
         EntityManager $entityManager,
-        TransactionHandler $transactionHandler,
-        EventDispatcher $eventDispatcher
+        TransactionHandler $transactionHandler
     ) {
         $this->transactionHandler = $transactionHandler;
-        $this->eventDispatcher    = $eventDispatcher;
         $this->entityManager      = $entityManager;
     }
 
@@ -83,14 +81,14 @@ class EventDispatchingTransitionHandlerFactory implements TransitionHandlerFacto
         $providerName,
         StateRepository $stateRepository
     ) {
-        return new EventDispatchingTransitionHandler(
+        return new RepositoryBasedTransitionHandler(
             $item,
             $workflow,
             $transitionName,
             $this->entityManager->getRepository($providerName),
             $stateRepository,
             $this->transactionHandler,
-            $this->eventDispatcher
+            $this->listener ?: new NoOpListener()
         );
     }
 
@@ -105,13 +103,27 @@ class EventDispatchingTransitionHandlerFactory implements TransitionHandlerFacto
     }
 
     /**
+     * Set the dispatcher which should be used.
+     *
+     * @param Listener $dispatcher The transition handler dispatcher
+     *
+     * @return $this
+     */
+    public function setListener(Listener $dispatcher)
+    {
+        $this->listener = $dispatcher;
+
+        return $this;
+    }
+
+    /**
      * Get the event dispatcher.
      *
-     * @return EventDispatcher
+     * @return Listener
      */
-    public function getEventDispatcher()
+    public function getListener()
     {
-        return $this->eventDispatcher;
+        return $this->listener;
     }
 
     /**

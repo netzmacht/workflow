@@ -13,17 +13,18 @@ use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Form\Form;
-use Netzmacht\Workflow\Handler\AbstractTransitionHandler;
+use Netzmacht\Workflow\Handler\Listener;
+use Netzmacht\Workflow\Handler\RepositoryBasedTransitionHandler;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 /**
- * Class AbstractTransitionHandlerSpec
+ * Class RepositoryBasedTransitionHandlerSpec
  * @package spec\Netzmacht\Workflow\Handler
- * @mixin TransitionHandler
+ * @mixin RepositoryBasedTransitionHandler
  */
-class AbstractTransitionHandlerSpec extends ObjectBehavior
+class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 {
     const TRANSITION_NAME = 'transition_name';
 
@@ -44,7 +45,8 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
         TransactionHandler $transactionHandler,
         Step $step,
         Transition $transition,
-        State $state
+        State $state,
+        Listener $dispatcher
     ) {
         $workflow->getStep(static::STEP_NAME)->willReturn($step);
         $workflow->getStartTransition()->willReturn($transition);
@@ -67,20 +69,20 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
 
         $entityId->__toString()->willReturn('entity::2');
 
-        $this->beAnInstanceOf('spec\Netzmacht\Workflow\Handler\TransitionHandler');
         $this->beConstructedWith(
             $item,
             $workflow,
             static::TRANSITION_NAME,
             $entityRepository,
             $stateRepository,
-            $transactionHandler
+            $transactionHandler,
+            $dispatcher
         );
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Handler\AbstractTransitionHandler');
+        $this->shouldHaveType('Netzmacht\Workflow\Handler\RepositoryBasedTransitionHandler');
     }
 
     function it_gets_workflow(Workflow $workflow)
@@ -136,7 +138,8 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
         Workflow $workflow,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
-        TransactionHandler $transactionHandler
+        TransactionHandler $transactionHandler,
+        Listener $dispatcher
     ) {
         $this->beConstructedWith(
             $item,
@@ -144,7 +147,8 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
             null,
             $entityRepository,
             $stateRepository,
-            $transactionHandler
+            $transactionHandler,
+            $dispatcher
         );
 
         $item->isWorkflowStarted()->willReturn(false);
@@ -163,7 +167,8 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
         Workflow $workflow,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
-        TransactionHandler $transactionHandler
+        TransactionHandler $transactionHandler,
+        Listener $dispatcher
     ) {
         $this->beConstructedWith(
             $item,
@@ -171,7 +176,8 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
             null,
             $entityRepository,
             $stateRepository,
-            $transactionHandler
+            $transactionHandler,
+            $dispatcher
         );
 
         $item->isWorkflowStarted()->willReturn(false);
@@ -203,46 +209,18 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
         $this->getErrorCollection()->shouldHaveType(self::ERROR_COLLECTION_CLASS);
     }
 
-    function it_validates(Form $form, Workflow $workflow, Transition $transition, Item $item)
+    function it_validates(Form $form, Workflow $workflow, Transition $transition, Item $item, Listener $dispatcher)
     {
         $workflow->getStartTransition()->willReturn($transition);
         $transition->buildForm($form, $item)->shouldBeCalled();
         $transition->getName()->willReturn(static::TRANSITION_NAME);
         $transition->requiresInputData()->willReturn(true);
 
+        $dispatcher->onBuildForm(Argument::cetera())->shouldBeCalled();
+        $dispatcher->onValidate(Argument::cetera())->willReturn(true);
         $form->validate(Argument::type(self::CONTEXT_CLASS))->shouldBeCalled()->willReturn(true);
 
         $this->validate($form)->shouldReturn(true);
-    }
-
-    function it_adds_form_errors_to_error_collection_when_validates_failes(
-        Form $form,
-        Workflow $workflow,
-        Transition $transition,
-        Item $item,
-        ErrorCollection $formErrorCollection
-    ) {
-        $workflow->getStartTransition()->willReturn($transition);
-        $transition->buildForm($form, $item)->shouldBeCalled();
-        $transition->getName()->willReturn(static::TRANSITION_NAME);
-        $transition->requiresInputData()->willReturn(true);
-
-        $form->validate(Argument::type(self::CONTEXT_CLASS))->shouldBeCalled()->willReturn(false);
-        $form->getErrorCollection()->shouldBeCalled()->willReturn($formErrorCollection);
-
-        $this->validate($form)->shouldReturn(false);
-
-
-        $this->getErrorCollection()->getErrors()->shouldReturn(
-            array(
-                array(
-                    'transition.validate.form.failed',
-                    array(),
-                    $formErrorCollection
-                )
-            )
-        );
-
     }
 
     function it_throws_during_transits_if_not_validated(Workflow $workflow, Transition $transition)
@@ -258,33 +236,5 @@ class AbstractTransitionHandlerSpec extends ObjectBehavior
         $transition->buildForm($form, $item)->shouldBeCalled();
         $this->validate($form);
         $this->transit()->shouldHaveType('Netzmacht\Workflow\Flow\State');
-    }
-}
-
-class TransitionHandler extends AbstractTransitionHandler
-{
-    protected function dispatchValidate(Form $form, $validated)
-    {
-        return $validated;
-    }
-
-    protected function dispatchPreTransit(
-        Workflow $workflow,
-        Item $item,
-        Context $context,
-        $transitionName
-    ) {
-    }
-
-    protected function dispatchPostTransit(
-        Workflow $workflow,
-        Item $item,
-        Context $context,
-        State $state
-    ) {
-    }
-
-    protected function dispatchBuildForm(Form $form, Item $item, Context $context, $transitionName)
-    {
     }
 }
