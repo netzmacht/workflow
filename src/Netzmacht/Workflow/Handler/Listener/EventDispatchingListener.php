@@ -21,23 +21,28 @@ use Netzmacht\Workflow\Handler\Event\BuildFormEvent;
 use Netzmacht\Workflow\Handler\Event\PostTransitionEvent;
 use Netzmacht\Workflow\Handler\Event\PreTransitionEvent;
 use Netzmacht\Workflow\Handler\Event\ValidateTransitionEvent;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface as SymfonyEventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface as EventDispatcher;
 
+/**
+ * Class EventDispatchingListener listens to the transition handler and dispatches event for every call.
+ *
+ * @package Netzmacht\Workflow\Handler\Listener
+ */
 class EventDispatchingListener implements Listener
 {
     /**
      * The event dispatcher.
      *
-     * @var SymfonyEventDispatcher
+     * @var EventDispatcher
      */
     private $eventDispatcher;
 
     /**
      * Construct.
      *
-     * @param SymfonyEventDispatcher $eventDispatcher The event dispatcher.
+     * @param EventDispatcher $eventDispatcher The event dispatcher.
      */
-    public function __construct(SymfonyEventDispatcher $eventDispatcher)
+    public function __construct(EventDispatcher $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
     }

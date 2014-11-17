@@ -102,6 +102,8 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
     private $errorCollection;
 
     /**
+     * Transition handler listener.
+     *
      * @var Listener
      */
     private $listener;
@@ -117,7 +119,7 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
      * @param TransactionHandler $transactionHandler TransactionHandler take care of transactions.
      * @param Listener           $listener           Transition handler dispatcher.
      *
-     * @throws WorkflowException
+     * @throws WorkflowException If invalid transition name is given.
      */
     public function __construct(
         Item $item,
@@ -136,7 +138,7 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
         $this->transactionHandler = $transactionHandler;
         $this->context            = new Context();
         $this->errorCollection    = new ErrorCollection();
-        $this->listener         = $listener;
+        $this->listener           = $listener;
 
         $this->guardAllowedTransition($transitionName);
     }

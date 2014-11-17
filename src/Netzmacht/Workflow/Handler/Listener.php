@@ -27,12 +27,12 @@ interface Listener
     /**
      * Consider if form is validated.
      *
-     * @param Form     $form            Transition form.
-     * @param bool     $validated       Current validation state.
-     * @param Workflow $workflow        Current workflow.
-     * @param Item     $item            Workflow item.
-     * @param Context  $context         Transition context.
-     * @param string   $transitionName  Current transition name.
+     * @param Form     $form           Transition form.
+     * @param bool     $validated      Current validation state.
+     * @param Workflow $workflow       Current workflow.
+     * @param Item     $item           Workflow item.
+     * @param Context  $context        Transition context.
+     * @param string   $transitionName Current transition name.
      *
      * @return bool
      */

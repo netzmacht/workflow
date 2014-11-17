@@ -11,6 +11,7 @@
 
 namespace Netzmacht\Workflow\Factory;
 
+use Netzmacht\Html\Element\Node;
 use Netzmacht\Workflow\Data\EntityManager;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Flow\Item;
@@ -88,7 +89,7 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
             $this->entityManager->getRepository($providerName),
             $stateRepository,
             $this->transactionHandler,
-            $this->listener ?: new NoOpListener()
+            $this->getListener()
         );
     }
 
@@ -105,7 +106,7 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
     /**
      * Set the dispatcher which should be used.
      *
-     * @param Listener $dispatcher The transition handler dispatcher
+     * @param Listener $dispatcher The transition handler dispatcher.
      *
      * @return $this
      */
@@ -123,6 +124,10 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
      */
     public function getListener()
     {
+        if (!$this->listener) {
+            $this->listener = new NoOpListener();
+        }
+
         return $this->listener;
     }
 

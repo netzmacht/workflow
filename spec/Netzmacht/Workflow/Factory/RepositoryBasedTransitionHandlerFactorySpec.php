@@ -43,18 +43,31 @@ class RepositoryBasedTransitionHandlerFactorySpec extends ObjectBehavior
         $this->getTransactionHandler()->shouldReturn($transactionHandler);
     }
 
-    function it_creates_the_event_dispatching_transition_handler(
+    function it_has_a_listener(Listener $listener)
+    {
+        $this->setListener($listener)->shouldReturn($this);
+        $this->getListener()->shouldReturn($listener);
+    }
+
+    function it_creates_a_no_op_listener_if_none_set()
+    {
+        $this->getListener()->shouldHaveType('Netzmacht\Workflow\Handler\Listener\NoOpListener');
+    }
+
+    function it_creates_the_repository_based_transition_handler(
         Item $item,
         Workflow $workflow,
         StateRepository $stateRepository,
         EntityManager $entityManager,
-        EntityRepository $entityRepository
+        EntityRepository $entityRepository,
+        Listener $listener
     ) {
         $entityManager->getRepository('test')->willReturn($entityRepository);
 
         $item->isWorkflowStarted()->willReturn(false);
         $item->getEntity()->willReturn(static::$entity);
 
+        $this->setListener($listener);
         $this->createTransitionHandler(
             $item,
             $workflow,
