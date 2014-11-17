@@ -23,7 +23,7 @@ interface EntityRepository
      *
      * @param int $entityId The Entity id.
      *
-     * @return Entity
+     * @return mixed
      */
     public function find($entityId);
 
