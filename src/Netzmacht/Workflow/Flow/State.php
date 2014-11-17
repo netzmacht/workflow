@@ -151,7 +151,7 @@ class State
             $success,
             $context->getProperties(),
             new \DateTime(),
-            $errorCollection->getErrors()
+            $errorCollection->toArray()
         );
 
         return $state;

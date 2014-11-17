@@ -128,7 +128,7 @@ class Item
     ) {
         $this->guardNotStarted();
 
-        $state = State::start($this->entity, $transition, $context, $errorCollection, $success);
+        $state = State::start($this->entityId, $transition, $context, $errorCollection, $success);
         $this->apply($state);
 
         return $state;

@@ -2,7 +2,6 @@
 
 namespace spec\Netzmacht\Workflow\Factory;
 
-use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\EntityManager;
 use Netzmacht\Workflow\Data\EntityRepository;
 use Netzmacht\Workflow\Data\StateRepository;

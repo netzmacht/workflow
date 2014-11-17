@@ -3,8 +3,13 @@
 namespace spec\Netzmacht\Workflow\Flow;
 
 use Netzmacht\Workflow\Data\EntityId;
+use Netzmacht\Workflow\Data\ErrorCollection;
+use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
+use Netzmacht\Workflow\Flow\Step;
+use Netzmacht\Workflow\Flow\Transition;
+use Netzmacht\Workflow\Flow\Workflow;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -47,24 +52,50 @@ class ItemSpec extends ObjectBehavior
         $this->isWorkflowStarted()->shouldReturn(false);
     }
 
-    function it_transits_to_a_successful_state(EntityId $entityId, State $state, EntityId $entityId)
+    function it_transits_to_a_successful_state(EntityId $entityId, State $state, State $newState, EntityId $entityId, Transition $transition, Context $context, ErrorCollection $errorCollection)
     {
-        $state->getStateId()->willReturn(1);
-        $state->getEntityId()->willReturn($entityId);
-        $state->getErrors()->willReturn(array());
-        $state->getData()->willReturn(array());
-        $state->getReachedAt()->willReturn(new \DateTime());
         $state->getStepName()->willReturn('start');
         $state->getWorkflowName()->willReturn('workflow_name');
-        $state->getTransitionName()->willReturn('transition_name');
         $state->isSuccessful()->willReturn(true);
+        $state->transit(Argument::cetera())->willReturn($newState);
+
+        $newState->getWorkflowName()->willReturn('workflow_name');
+        $newState->getStepName()->willReturn('target');
+        $newState->isSuccessful()->willReturn(true);
 
         $this->it_restores_state_history($entityId, $state);
 
-        $this->getCurrentStepName()->shouldReturn('start');
-        $this->getStateHistory()->shouldReturn(array($state));
+        $this->transit($transition, $context, $errorCollection, true);
+
+        $this->getCurrentStepName()->shouldReturn('target');
         $this->getWorkflowName()->shouldReturn('workflow_name');
-        $this->getLatestState()->shouldReturn($state);
+        $this->getStateHistory()->shouldReturn(array($state, $newState));
+
+        $this->getLatestState()->shouldHaveType('Netzmacht\Workflow\Flow\State');
+        $this->getLatestState()->shouldNotBe($state);
+    }
+
+
+    function it_starts_a_new_workflow_state(
+        EntityId $entityId,
+        State $state,
+        EntityId $entityId,
+        Transition $transition,
+        Workflow $workflow,
+        Step $step,
+        Context $context,
+        ErrorCollection $errorCollection
+    )
+    {
+        $transition->getWorkflow()->willReturn($workflow);
+        $transition->getName()->willReturn('transition_name');
+        $transition->getStepTo()->willReturn($step);
+
+        $context->getProperties()->willReturn(array());
+        $errorCollection->toArray()->willReturn(array());
+
+        $this->beConstructedThrough('initialize', array($entityId, static::$entity));
+        $this->start($transition, $context, $errorCollection, true)->shouldHaveType('Netzmacht\Workflow\Flow\State');
     }
 
     function it_get_last_successful_state(EntityId $entityId, State $state, State $failedState)
