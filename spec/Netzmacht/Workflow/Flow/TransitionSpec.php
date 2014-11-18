@@ -298,7 +298,6 @@ class TransitionSpec extends ObjectBehavior
         Workflow $workflow,
         Step $step,
         ErrorCollection $errorCollection,
-        EntityId $entityId,
         State $state
     ) {
         $item->isWorkflowStarted()->willReturn(false);
@@ -312,6 +311,18 @@ class TransitionSpec extends ObjectBehavior
 
         $this->setWorkflow($workflow);
         $this->setStepTo($step);
+
+        $this->start($item, $context, $errorCollection)->shouldReturn($state);
+    }
+
+    function it_returns_latest_state_if_workflow_already_started_on_start(
+        Item $item,
+        Context $context,
+        ErrorCollection $errorCollection,
+        State $state
+    ) {
+        $item->isWorkflowStarted()->willReturn(true);
+        $item->getLatestState()->willReturn($state);
 
         $this->start($item, $context, $errorCollection)->shouldReturn($state);
     }

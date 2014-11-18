@@ -90,8 +90,29 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $this->getWorkflow()->shouldReturn($workflow);
     }
 
-    function it_gets_start_transition_if_not_started(Workflow $workflow, Transition $transition)
-    {
+    function it_gets_start_transition_if_not_started(
+        Item $item,
+        Workflow $workflow,
+        EntityRepository $entityRepository,
+        StateRepository $stateRepository,
+        TransactionHandler $transactionHandler,
+        Transition $transition,
+        Listener $listener,
+        EntityId $entityId
+    ) {
+        $this->beConstructedWith(
+            $item,
+            $workflow,
+            null,
+            $entityRepository,
+            $stateRepository,
+            $transactionHandler,
+            $listener
+        );
+
+        $item->isWorkflowStarted()->willReturn(false);
+        $item->getEntityId()->willReturn($entityId);
+
         $workflow->getStartTransition()->willReturn($transition);
 
         $this->getTransition()->shouldReturn($transition);
@@ -139,7 +160,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
         TransactionHandler $transactionHandler,
-        Listener $dispatcher
+        Listener $listener
     ) {
         $this->beConstructedWith(
             $item,
@@ -148,7 +169,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             $entityRepository,
             $stateRepository,
             $transactionHandler,
-            $dispatcher
+            $listener
         );
 
         $item->isWorkflowStarted()->willReturn(false);
