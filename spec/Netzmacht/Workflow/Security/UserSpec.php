@@ -44,6 +44,12 @@ class UserSpec extends ObjectBehavior
         $this->hasRole($role)->shouldReturn(false);
     }
 
+    function it_contains_roles(Role $role)
+    {
+        $this->assign($role);
+        $this->getRoles()->shouldReturn(array($role));
+    }
+
     function it_checks_permission(Role $role, Permission $permission)
     {
         $this->assign($role);

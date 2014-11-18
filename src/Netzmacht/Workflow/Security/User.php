@@ -106,6 +106,16 @@ class User
     }
 
     /**
+     * Get user roles.
+     *
+     * @return Role[]
+     */
+    public function getRoles()
+    {
+        return $this->roles;
+    }
+
+    /**
      * Withdraw access.
      *
      * @param Role $role Role to be withdrawn.
