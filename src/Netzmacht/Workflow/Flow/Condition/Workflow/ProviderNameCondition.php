@@ -11,7 +11,6 @@
 
 namespace Netzmacht\Workflow\Flow\Condition\Workflow;
 
-use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Workflow;
 

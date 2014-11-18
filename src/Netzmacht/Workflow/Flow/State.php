@@ -12,11 +12,8 @@
 namespace Netzmacht\Workflow\Flow;
 
 use DateTime;
-use Netzmacht\Workflow\Data\Entity;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\ErrorCollection;
-use Netzmacht\Workflow\Flow\Context;
-use Netzmacht\Workflow\Flow\Transition;
 
 /**
  * Class State stores information of a current state of an entity.

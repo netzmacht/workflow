@@ -11,7 +11,6 @@
 
 namespace Netzmacht\Workflow\Factory;
 
-use Netzmacht\Html\Element\Node;
 use Netzmacht\Workflow\Data\EntityManager;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Flow\Item;
