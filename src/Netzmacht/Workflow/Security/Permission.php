@@ -57,7 +57,25 @@ class Permission
      */
     public static function forWorkflow(Workflow $workflow, $permissionId)
     {
-        return new static($workflow->getName(), $permissionId);
+        return static::forWorkflowName($workflow->getName(), $permissionId);
+    }
+
+    /**
+     * Reconstruct permission from a string representation.
+     *
+     * @param string $workflowName Workflow name.
+     * @param string $permissionId Permission id.
+     *
+     * @return static
+     */
+    public static function forWorkflowName($workflowName, $permissionId)
+    {
+        Assertion::notBlank($workflowName);
+        Assertion::notBlank($permissionId);
+
+        self::guardValidPermission($workflowName, $permissionId);
+
+        return new static($workflowName, $permissionId);
     }
 
     /**
@@ -69,10 +87,14 @@ class Permission
      */
     public static function fromString($permission)
     {
-        list($workflowName, $permissionId) = explode('/', $permission);
+        list($workflowName, $permissionId) = explode(':', $permission);
 
-        Assertion::notBlank($workflowName);
-        Assertion::notBlank($permissionId);
+        $message = sprintf(
+            'Invalid permission string given. Expected "workflowName:permissionId, got "%s"".',
+            $permission
+        );
+
+        self::guardValidPermission($workflowName, $permissionId, $message);
 
         return new static($workflowName, $permissionId);
     }
@@ -104,7 +126,7 @@ class Permission
      */
     public function __toString()
     {
-        return $this->workflowName . '/' . $this->permissionId;
+        return $this->workflowName . ':' . $this->permissionId;
     }
 
     /**
@@ -117,5 +139,20 @@ class Permission
     public function equals(Permission $permission)
     {
         return ((string) $this === (string) $permission);
+    }
+
+    /**
+     * Guard that permissoin values are valid.
+     *
+     * @param string      $workflowName The workflow name.
+     * @param string      $permissionId The permission id.
+     * @param string|null $message      Optional error message.
+     *
+     * @return void
+     */
+    protected static function guardValidPermission($workflowName, $permissionId, $message = null)
+    {
+        Assertion::notBlank($workflowName, $message);
+        Assertion::notBlank($permissionId, $message);
     }
 }
