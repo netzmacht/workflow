@@ -11,8 +11,6 @@
 
 namespace Netzmacht\Workflow;
 
-use Netzmacht\Workflow\Data\Entity;
-use Netzmacht\Workflow\Factory\Event\CreateEntityEvent;
 use Netzmacht\Workflow\Factory\Event\CreateFormEvent;
 use Netzmacht\Workflow\Factory\Event\CreateManagerEvent;
 use Netzmacht\Workflow\Factory\Event\CreateUserEvent;
