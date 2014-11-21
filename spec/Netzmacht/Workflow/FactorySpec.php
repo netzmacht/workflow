@@ -80,14 +80,4 @@ class FactorySpec extends ObjectBehavior
 
         $this->shouldThrow('RuntimeException')->duringCreateForm('form_type');
     }
-
-    function it_creates_user(EventDispatcher $eventDispatcher)
-    {
-        $eventDispatcher->dispatch(
-            CreateUserEvent::NAME,
-            Argument::type('Netzmacht\Workflow\Factory\Event\CreateUserEvent')
-        )->shouldBeCalled();
-
-        $this->createUser()->shouldHaveType('Netzmacht\Workflow\Security\User');
-    }
 }

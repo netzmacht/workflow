@@ -82,19 +82,6 @@ class Factory
     }
 
     /**
-     * Create user instance.
-     *
-     * @return User
-     */
-    public function createUser()
-    {
-        $event = new CreateUserEvent(new User());
-        $this->eventDispatcher->dispatch($event::NAME, $event);
-
-        return $event->getUser();
-    }
-
-    /**
      * Guard that result was created.
      *
      * @param mixed  $result  Result of the event dispatched factory.
