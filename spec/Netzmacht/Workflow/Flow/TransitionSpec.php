@@ -72,24 +72,24 @@ class TransitionSpec extends ObjectBehavior
         $action->buildForm($form, $item)->shouldBeCalled();
     }
 
-    function it_knows_if_input_data_is_not_required(Action $action)
+    function it_knows_if_input_data_is_not_required(Action $action, Item $item)
     {
-        $this->requiresInputData()->shouldReturn(false);
+        $this->requiresInputData($item)->shouldReturn(false);
 
-        $action->requiresInputData()->willReturn(false);
+        $action->requiresInputData($item)->willReturn(false);
         $this->addAction($action);
 
-        $this->requiresInputData()->shouldReturn(false);
+        $this->requiresInputData($item)->shouldReturn(false);
     }
 
-    function it_knows_if_input_data_is_required(Action $action)
+    function it_knows_if_input_data_is_required(Action $action, Item $item)
     {
-        $this->requiresInputData()->shouldReturn(false);
+        $this->requiresInputData($item)->shouldReturn(false);
 
-        $action->requiresInputData()->willReturn(true);
+        $action->requiresInputData($item)->willReturn(true);
         $this->addAction($action);
 
-        $this->requiresInputData()->shouldReturn(true);
+        $this->requiresInputData($item)->shouldReturn(true);
     }
 
     function it_checks_a_precondition(Condition $condition, Item $item, Context $context, ErrorCollection $errorCollection)
@@ -282,7 +282,7 @@ class TransitionSpec extends ObjectBehavior
             ->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))
             ->willReturn(false);
 
-        $action->requiresInputData()->willReturn(true);
+        $action->requiresInputData($item)->willReturn(true);
         $this->addAction($action);
 
 
@@ -385,39 +385,14 @@ class TransitionSpec extends ObjectBehavior
 
 class ThrowingAction implements Action
 {
-    /**
-     * Consider if user input is required.
-     *
-     * @return bool
-     */
-    public function requiresInputData()
+    public function requiresInputData(Item $item)
     {
-        // TODO: Implement requiresInputData() method.
     }
 
-    /**
-     * Build the corresponding form.
-     *
-     * @param Form $form Transition form.
-     * @param Item $item Workflow item.
-     *
-     * @return void
-     */
     public function buildForm(Form $form, Item $item)
     {
-        // TODO: Implement buildForm() method.
     }
 
-    /**
-     * Transit will execute the action.
-     *
-     * @param Transition $transition Current transition.
-     * @param Item       $item       Workflow item.
-     * @param Context    $context    Transition context.
-     *
-     * @throws ActionFailedException
-     * @return void
-     */
     public function transit(Transition $transition, Item $item, Context $context)
     {
         throw new ActionFailedException();

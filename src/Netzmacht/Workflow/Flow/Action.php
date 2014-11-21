@@ -26,9 +26,11 @@ interface Action
     /**
      * Consider if user input is required.
      *
+     * @param Item $item
+     *
      * @return bool
      */
-    public function requiresInputData();
+    public function requiresInputData(Item $item);
 
     /**
      * Build the corresponding form.

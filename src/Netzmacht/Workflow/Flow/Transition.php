@@ -209,12 +209,14 @@ class Transition extends Base
     /**
      * Consider if user input is required.
      *
+     * @param Item $item Workflow item.
+     *
      * @return bool
      */
-    public function requiresInputData()
+    public function requiresInputData(Item $item)
     {
         foreach ($this->actions as $action) {
-            if ($action->requiresInputData()) {
+            if ($action->requiresInputData($item)) {
                 return true;
             }
         }
@@ -253,7 +255,7 @@ class Transition extends Base
      */
     public function isAvailable(Item $item, Context $context, ErrorCollection $errorCollection)
     {
-        if ($this->requiresInputData()) {
+        if ($this->requiresInputData($item)) {
             return $this->checkPreCondition($item, $context, $errorCollection);
         }
 

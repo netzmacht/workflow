@@ -205,9 +205,9 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
     /**
      * {@inheritdoc}
      */
-    public function requiresInputData()
+    public function requiresInputData(Item $item)
     {
-        return $this->getTransition()->requiresInputData();
+        return $this->getTransition()->requiresInputData($item);
     }
 
     /**
@@ -234,7 +234,7 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
         $this->buildForm($form);
 
         if (!$this->validated) {
-            if ($this->requiresInputData()) {
+            if ($this->requiresInputData($this->item)) {
                 $this->validated = $this->getForm()->validate($this->context);
 
                 if (!$this->validated) {

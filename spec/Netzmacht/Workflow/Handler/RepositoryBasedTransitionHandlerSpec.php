@@ -56,7 +56,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $workflow->getTransition(static::TRANSITION_NAME)->willReturn($transition);
 
         $transition->getName()->willReturn(static::TRANSITION_NAME);
-        $transition->requiresInputData()->willReturn(false);
+        $transition->requiresInputData($item)->willReturn(false);
         $transition->transit(
             $item,
             Argument::type(static::CONTEXT_CLASS),
@@ -205,19 +205,19 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $this->isWorkflowStarted()->shouldReturn(false);
     }
 
-    function it_checks_if_input_data_is_required(Workflow $workflow, Transition $transition)
+    function it_checks_if_input_data_is_required(Workflow $workflow, Transition $transition, Item $item)
     {
         $workflow->getStartTransition()->willReturn($transition);
-        $transition->requiresInputData()->willReturn(true);
+        $transition->requiresInputData($item)->willReturn(true);
 
-        $this->requiresInputData()->shouldReturn(true);
+        $this->requiresInputData($item)->shouldReturn(true);
     }
-    function it_checks_if_input_data_is_not_required(Workflow $workflow, Transition $transition)
+    function it_checks_if_input_data_is_not_required(Workflow $workflow, Transition $transition, Item $item)
     {
         $workflow->getStartTransition()->willReturn($transition);
-        $transition->requiresInputData()->willReturn(false);
+        $transition->requiresInputData($item)->willReturn(false);
 
-        $this->requiresInputData()->shouldReturn(false);
+        $this->requiresInputData($item)->shouldReturn(false);
     }
 
     function it_gets_the_context()
@@ -235,7 +235,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $workflow->getStartTransition()->willReturn($transition);
         $transition->buildForm($form, $item)->shouldBeCalled();
         $transition->getName()->willReturn(static::TRANSITION_NAME);
-        $transition->requiresInputData()->willReturn(true);
+        $transition->requiresInputData($item)->willReturn(true);
 
         $dispatcher->onBuildForm(Argument::cetera())->shouldBeCalled();
         $dispatcher->onValidate(Argument::cetera())->willReturn(true);

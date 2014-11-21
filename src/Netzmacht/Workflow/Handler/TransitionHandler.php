@@ -75,9 +75,11 @@ interface TransitionHandler
     /**
      * Consider if input is required.
      *
+     * @param Item $item workflow item.
+     *
      * @return bool
      */
-    public function requiresInputData();
+    public function requiresInputData(Item $item);
 
     /**
      * Get the context.
