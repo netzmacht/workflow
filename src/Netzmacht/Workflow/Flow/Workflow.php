@@ -6,6 +6,7 @@ use Assert\Assertion;
 use Assert\InvalidArgumentException;
 use Netzmacht\Workflow\Base;
 use Netzmacht\Workflow\Data\EntityId;
+use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Exception\RoleNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\StepNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\TransitionNotFoundException;
@@ -115,6 +116,40 @@ class Workflow extends Base
         }
 
         throw new TransitionNotFoundException($transitionName, $this->getName());
+    }
+
+    /**
+     * Get allowed transitions for a workflow item.
+     *
+     * @param Item    $item Workflow item.
+     *
+     * @param Context $context
+     *
+     * @throws StepNotFoundException
+     * @throws TransitionNotFoundException
+     * @return array
+     */
+    public function getAllowedTransitions(Item $item, Context $context = null)
+    {
+        $transitions     = array();
+        $context         = $context ?: new Context();
+        $errorCollection = new ErrorCollection();
+
+        if (!$item->isWorkflowStarted()) {
+            $transitions[] = $this->getStartTransition();
+        } else {
+            $step = $this->getStep($item->getCurrentStepName());
+
+            foreach ($step->getAllowedTransitions() as $transitionName) {
+                $transition = $this->getTransition($transitionName);
+
+                if ($transition->isAvailable($item, $context, $errorCollection)) {
+                    $transitions[] = $transition;
+                }
+            }
+        }
+
+        return $transitions;
     }
 
     /**

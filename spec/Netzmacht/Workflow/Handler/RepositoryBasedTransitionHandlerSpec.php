@@ -210,14 +210,14 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $workflow->getStartTransition()->willReturn($transition);
         $transition->requiresInputData($item)->willReturn(true);
 
-        $this->requiresInputData($item)->shouldReturn(true);
+        $this->requiresInputData()->shouldReturn(true);
     }
     function it_checks_if_input_data_is_not_required(Workflow $workflow, Transition $transition, Item $item)
     {
         $workflow->getStartTransition()->willReturn($transition);
         $transition->requiresInputData($item)->willReturn(false);
 
-        $this->requiresInputData($item)->shouldReturn(false);
+        $this->requiresInputData()->shouldReturn(false);
     }
 
     function it_gets_the_context()

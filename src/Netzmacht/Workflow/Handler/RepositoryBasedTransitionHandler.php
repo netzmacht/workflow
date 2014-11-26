@@ -205,9 +205,9 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
     /**
      * {@inheritdoc}
      */
-    public function requiresInputData(Item $item)
+    public function requiresInputData()
     {
-        return $this->getTransition()->requiresInputData($item);
+        return $this->getTransition()->requiresInputData($this->item);
     }
 
     /**
@@ -360,7 +360,7 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
     private function guardAllowedTransition($transitionName)
     {
         if (!$this->isWorkflowStarted()) {
-            if (!$transitionName) {
+            if (!$transitionName || $transitionName === $this->getWorkflow()->getStartTransition()->getName()) {
                 return;
             }
 
