@@ -56,7 +56,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $workflow->getTransition(static::TRANSITION_NAME)->willReturn($transition);
 
         $transition->getName()->willReturn(static::TRANSITION_NAME);
-        $transition->requiresInputData($item)->willReturn(false);
+        $transition->isInputRequired($item)->willReturn(false);
         $transition->transit(
             $item,
             Argument::type(static::CONTEXT_CLASS),
@@ -208,16 +208,16 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
     function it_checks_if_input_data_is_required(Workflow $workflow, Transition $transition, Item $item)
     {
         $workflow->getStartTransition()->willReturn($transition);
-        $transition->requiresInputData($item)->willReturn(true);
+        $transition->isInputRequired($item)->willReturn(true);
 
-        $this->requiresInputData()->shouldReturn(true);
+        $this->isInputRequired()->shouldReturn(true);
     }
     function it_checks_if_input_data_is_not_required(Workflow $workflow, Transition $transition, Item $item)
     {
         $workflow->getStartTransition()->willReturn($transition);
-        $transition->requiresInputData($item)->willReturn(false);
+        $transition->isInputRequired($item)->willReturn(false);
 
-        $this->requiresInputData()->shouldReturn(false);
+        $this->isInputRequired()->shouldReturn(false);
     }
 
     function it_gets_the_context()
@@ -235,7 +235,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $workflow->getStartTransition()->willReturn($transition);
         $transition->buildForm($form, $item)->shouldBeCalled();
         $transition->getName()->willReturn(static::TRANSITION_NAME);
-        $transition->requiresInputData($item)->willReturn(true);
+        $transition->isInputRequired($item)->willReturn(true);
 
         $dispatcher->onBuildForm(Argument::cetera())->shouldBeCalled();
         $dispatcher->onValidate(Argument::cetera())->willReturn(true);

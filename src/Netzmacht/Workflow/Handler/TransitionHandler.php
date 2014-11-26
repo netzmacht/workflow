@@ -77,7 +77,7 @@ interface TransitionHandler
      *
      * @return bool
      */
-    public function requiresInputData();
+    public function isInputRequired();
 
     /**
      * Get the context.

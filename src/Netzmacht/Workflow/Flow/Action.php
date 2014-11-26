@@ -30,7 +30,7 @@ interface Action
      *
      * @return bool
      */
-    public function requiresInputData(Item $item);
+    public function isInputRequired(Item $item);
 
     /**
      * Build the corresponding form.

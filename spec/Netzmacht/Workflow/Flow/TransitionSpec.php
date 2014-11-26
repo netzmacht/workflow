@@ -74,22 +74,22 @@ class TransitionSpec extends ObjectBehavior
 
     function it_knows_if_input_data_is_not_required(Action $action, Item $item)
     {
-        $this->requiresInputData($item)->shouldReturn(false);
+        $this->isInputRequired($item)->shouldReturn(false);
 
-        $action->requiresInputData($item)->willReturn(false);
+        $action->isInputRequired($item)->willReturn(false);
         $this->addAction($action);
 
-        $this->requiresInputData($item)->shouldReturn(false);
+        $this->isInputRequired($item)->shouldReturn(false);
     }
 
     function it_knows_if_input_data_is_required(Action $action, Item $item)
     {
-        $this->requiresInputData($item)->shouldReturn(false);
+        $this->isInputRequired($item)->shouldReturn(false);
 
-        $action->requiresInputData($item)->willReturn(true);
+        $action->isInputRequired($item)->willReturn(true);
         $this->addAction($action);
 
-        $this->requiresInputData($item)->shouldReturn(true);
+        $this->isInputRequired($item)->shouldReturn(true);
     }
 
     function it_checks_a_precondition(Condition $condition, Item $item, Context $context, ErrorCollection $errorCollection)
@@ -282,7 +282,7 @@ class TransitionSpec extends ObjectBehavior
             ->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))
             ->willReturn(false);
 
-        $action->requiresInputData($item)->willReturn(true);
+        $action->isInputRequired($item)->willReturn(true);
         $this->addAction($action);
 
 
@@ -385,7 +385,7 @@ class TransitionSpec extends ObjectBehavior
 
 class ThrowingAction implements Action
 {
-    public function requiresInputData(Item $item)
+    public function isInputRequired(Item $item)
     {
     }
 

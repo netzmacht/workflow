@@ -213,10 +213,10 @@ class Transition extends Base
      *
      * @return bool
      */
-    public function requiresInputData(Item $item)
+    public function isInputRequired(Item $item)
     {
         foreach ($this->actions as $action) {
-            if ($action->requiresInputData($item)) {
+            if ($action->isInputRequired($item)) {
                 return true;
             }
         }
@@ -255,7 +255,7 @@ class Transition extends Base
      */
     public function isAvailable(Item $item, Context $context, ErrorCollection $errorCollection)
     {
-        if ($this->requiresInputData($item)) {
+        if ($this->isInputRequired($item)) {
             return $this->checkPreCondition($item, $context, $errorCollection);
         }
 
