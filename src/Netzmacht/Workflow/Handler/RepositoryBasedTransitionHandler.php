@@ -280,8 +280,6 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
 
             $state = $this->executeTransition();
 
-            $this->listener->onPostTransit($this->workflow, $this->item, $this->context, $state);
-
             $this->stateRepository->add($state);
             $this->entityRepository->add($this->item->getEntity());
         } catch (\Exception $e) {
@@ -291,6 +289,8 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
         }
 
         $this->transactionHandler->commit();
+
+        $this->listener->onPostTransit($this->workflow, $this->item, $this->context, $state);
 
         return $state;
     }
