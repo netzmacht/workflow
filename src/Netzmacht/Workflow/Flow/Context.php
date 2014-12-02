@@ -125,7 +125,7 @@ class Context
     /**
      * Consider if a param isset.
      *
-     * @param string $name Param name.
+     * @param string $name      Param name.
      * @param string $namespace Namespace the param belongs to.
      *
      * @return bool
@@ -160,7 +160,7 @@ class Context
     /**
      * Get a param by name.
      *
-     * @param string $name Param name.
+     * @param string $name      Param name.
      * @param string $namespace Namespace the param belongs to.
      *
      * @return mixed
@@ -177,7 +177,7 @@ class Context
     /**
      * Set multiple params.
      *
-     * @param array $params Array of params.
+     * @param array  $params    Array of params.
      * @param string $namespace Namespace the params belongs to.
      *
      * @return $this

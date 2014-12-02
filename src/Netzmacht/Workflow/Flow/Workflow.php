@@ -121,12 +121,12 @@ class Workflow extends Base
     /**
      * Get allowed transitions for a workflow item.
      *
-     * @param Item    $item Workflow item.
+     * @param Item    $item    Workflow item.
+     * @param Context $context Transition context.
      *
-     * @param Context $context
+     * @throws StepNotFoundException If Step does not exists.
+     * @throws TransitionNotFoundException If transition does not exists.
      *
-     * @throws StepNotFoundException
-     * @throws TransitionNotFoundException
      * @return array
      */
     public function getAllowedTransitions(Item $item, Context $context = null)

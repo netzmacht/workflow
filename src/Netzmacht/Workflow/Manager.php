@@ -150,7 +150,7 @@ class Manager
     /**
      * Get workflow by item.
      *
-     * @param Item $item
+     * @param Item $item Workflow item.
      *
      * @return bool|Workflow
      */

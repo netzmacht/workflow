@@ -11,9 +11,6 @@
 
 namespace Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Flow\Item;
-use Netzmacht\Workflow\Flow\Context;
-use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Form\Form;
 
 /**
@@ -26,7 +23,7 @@ interface Action
     /**
      * Consider if user input is required.
      *
-     * @param Item $item
+     * @param Item $item Workflow item.
      *
      * @return bool
      */
