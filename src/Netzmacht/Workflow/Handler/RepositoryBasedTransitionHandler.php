@@ -235,7 +235,7 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
 
         if ($this->validated === null) {
             if ($this->isInputRequired($this->item)) {
-                $this->validated = $this->getForm()->validate($this->context);
+                $this->validated = $this->getForm()->validate($this->item, $this->context);
 
                 if (!$this->validated) {
                     $this->errorCollection->addError(

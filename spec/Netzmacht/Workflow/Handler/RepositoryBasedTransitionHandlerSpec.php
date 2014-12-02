@@ -239,7 +239,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
         $listener->onBuildForm(Argument::cetera())->shouldBeCalled();
         $listener->onValidate(Argument::cetera())->willReturn(true);
-        $form->validate(Argument::type(self::CONTEXT_CLASS))->shouldBeCalled()->willReturn(true);
+        $form->validate($item, Argument::type(self::CONTEXT_CLASS))->shouldBeCalled()->willReturn(true);
 
         $this->validate($form)->shouldReturn(true);
     }

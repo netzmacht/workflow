@@ -13,6 +13,7 @@ namespace Netzmacht\Workflow\Form;
 
 use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context;
+use Netzmacht\Workflow\Flow\Item;
 
 /**
  * Interface Form describes a form instance which is used for workflow transition.
@@ -24,11 +25,12 @@ interface Form
     /**
      * Validate form data and set form values as context params.
      *
+     * @param Item    $item    Current workflow item.
      * @param Context $context The transition context.
      *
      * @return bool
      */
-    public function validate(Context $context);
+    public function validate(Item $item, Context $context);
 
     /**
      * Get errors of form.
