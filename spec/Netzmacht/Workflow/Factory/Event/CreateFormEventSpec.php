@@ -15,10 +15,11 @@ use Prophecy\Argument;
 class CreateFormEventSpec extends ObjectBehavior
 {
     const TYPE = 'type';
+    const NAME = 'name';
 
     function let()
     {
-        $this->beConstructedWith(static::TYPE);
+        $this->beConstructedWith(static::TYPE, static::NAME);
     }
 
     function it_is_initializable()

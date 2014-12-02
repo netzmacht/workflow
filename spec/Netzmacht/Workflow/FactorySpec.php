@@ -68,7 +68,7 @@ class FactorySpec extends ObjectBehavior
             }
         );
 
-        $this->createForm('form_type')->shouldReturn($form);
+        $this->createForm('form_type', 'form_name')->shouldReturn($form);
     }
 
     function it_throws_if_no_form_is_created(EventDispatcher $eventDispatcher)
@@ -78,6 +78,6 @@ class FactorySpec extends ObjectBehavior
             Argument::type('Netzmacht\Workflow\Factory\Event\CreateFormEvent')
         )->shouldBeCalled();
 
-        $this->shouldThrow('RuntimeException')->duringCreateForm('form_type');
+        $this->shouldThrow('RuntimeException')->duringCreateForm('form_type', 'form_name');
     }
 }

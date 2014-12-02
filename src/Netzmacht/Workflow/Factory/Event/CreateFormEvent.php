@@ -38,13 +38,22 @@ class CreateFormEvent extends Event
     private $type;
 
     /**
+     * The form name.
+     *
+     * @var string
+     */
+    private $name;
+
+    /**
      * Construct.
      *
      * @param string $type Form type.
+     * @param string $name Form name.
      */
-    public function __construct($type)
+    public function __construct($type, $name)
     {
         $this->type = $type;
+        $this->name = $name;
     }
 
     /**
@@ -79,5 +88,15 @@ class CreateFormEvent extends Event
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * Get form name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 }

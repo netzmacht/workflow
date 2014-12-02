@@ -68,14 +68,15 @@ class Factory
      * Create a form.
      *
      * @param string $type The form type.
+     * @param string $name The form name.
      *
      * @return Form
      *
      * @throws RuntimeException If form was not created.
      */
-    public function createForm($type)
+    public function createForm($type, $name)
     {
-        $event = new CreateFormEvent($type);
+        $event = new CreateFormEvent($type, $name);
         $this->eventDispatcher->dispatch($event::NAME, $event);
 
         return $this->guardCreated($event->getForm(), sprintf('Could not create form type "%s"', $type));
