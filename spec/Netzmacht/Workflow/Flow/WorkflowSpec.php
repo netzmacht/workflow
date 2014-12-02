@@ -3,6 +3,7 @@
 namespace spec\Netzmacht\Workflow\Flow;
 
 use Netzmacht\Workflow\Data\EntityId;
+use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
@@ -89,6 +90,56 @@ class WorkflowSpec extends ObjectBehavior
             ->shouldThrow('Netzmacht\Workflow\Flow\Exception\TransitionNotFoundException')
             ->duringSetStartTransition('not_set');
     }
+
+    function it_knows_if_transition_exists()
+    {
+        $this->hasTransition('start')->shouldReturn(true);
+        $this->hasTransition('test')->shouldReturn(false);
+    }
+
+    function it_gets_all_transitions(Transition $transition)
+    {
+        $this->getTransitions()->shouldReturn(array($transition));
+    }
+
+    function it_knows_if_start_transition_is_available_for_an_item(Item $item)
+    {
+        $item->isWorkflowStarted()->willReturn(false);
+
+        $this->isTransitionAvailable($item, 'start')->shouldReturn(true);
+    }
+
+    function it_knows_if_start_transition_is_not_available_for_an_item(Item $item)
+    {
+        $item->isWorkflowStarted()->willReturn(false);
+
+        $this->isTransitionAvailable($item, 'start2')->shouldReturn(false);
+    }
+
+    function it_knows_if_transition_is_not_available_for_an_item(Item $item, Step $step)
+    {
+        $item->isWorkflowStarted()->willReturn(true);
+        $item->getCurrentStepName()->willReturn('started');
+
+        $step->getName()->willReturn('started');
+        $step->isTransitionAllowed('start')->willReturn(false);
+        $this->addStep($step);
+
+        $this->isTransitionAvailable($item, 'start')->shouldReturn(false);
+    }
+
+    function it_knows_if_transition_is_available_for_an_item(Item $item, Step $step)
+    {
+        $item->isWorkflowStarted()->willReturn(true);
+        $item->getCurrentStepName()->willReturn('started');
+
+        $step->getName()->willReturn('started');
+        $step->isTransitionAllowed('next')->willReturn(true);
+        $this->addStep($step);
+
+        $this->isTransitionAvailable($item, 'next')->shouldReturn(true);
+    }
+
 
     function it_adds_a_role(Role $role)
     {

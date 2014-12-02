@@ -153,6 +153,52 @@ class Workflow extends Base
     }
 
     /**
+     * Get all transitions.
+     *
+     * @return Transition[]
+     */
+    public function getTransitions()
+    {
+        return $this->transitions;
+    }
+
+    /**
+     * Check if transition is part of the workflow.
+     *
+     * @param string $transitionName Transition name.
+     *
+     * @return bool
+     */
+    public function hasTransition($transitionName)
+    {
+        foreach ($this->transitions as $transition) {
+            if ($transition->getName() === $transitionName) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if a specific transition is available.
+     *
+     * @param Item   $item           The workflow item.
+     * @param string $transitionName The transition name.
+     *
+     * @return bool
+     */
+    public function isTransitionAvailable(Item $item, $transitionName)
+    {
+        if (!$item->isWorkflowStarted()) {
+            return $this->getStartTransition()->getName() === $transitionName;
+        }
+
+        $step = $this->getStep($item->getCurrentStepName());
+        return $step->isTransitionAllowed($transitionName);
+    }
+
+    /**
      * Add a new step to the workflow.
      *
      * @param Step $step Step to be added.
