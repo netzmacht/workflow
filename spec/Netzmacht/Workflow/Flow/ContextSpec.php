@@ -91,6 +91,23 @@ class ContextSpec extends ObjectBehavior
         $this->getParam('param')->shouldReturn('val');
     }
 
+    function it_sets_namespaces_param()
+    {
+        $this->setParam('param', 'val', 'custom')->shouldReturn($this);
+        $this->getParam('param', 'custom')->shouldReturn('val');
+    }
+
+    function it_knows_if_param_exists()
+    {
+        $this->hasParam('param')->shouldReturn(false);
+        $this->hasParam('param', 'custom')->shouldReturn(false);
+
+        $this->setParam('param', 'val', 'custom');
+
+        $this->hasParam('param')->shouldReturn(false);
+        $this->hasParam('param', 'custom')->shouldReturn(true);
+    }
+
     function it_gets_null_if_param_not_exists()
     {
         $this->getParam('foo')->shouldReturn(null);
@@ -103,15 +120,23 @@ class ContextSpec extends ObjectBehavior
         $this->getParams()->shouldReturn($data);
     }
 
-    function it_knows_if_param_exists()
+    function it_sets_namespaced_params()
     {
-        $this->hasParam('param')->shouldReturn(false);
-        $this->setParam('param', 'val');
-        $this->hasParam('param')->shouldReturn(true);
+        $data = array('default' => array('foo' => 'bar'));
+        $this->setParams($data, 'custom')->shouldReturn($this);
+        $this->getParams('custom')->shouldReturn($data);
     }
 
     function it_gets_params_as_array()
     {
         $this->getParams()->shouldBeArray();
+    }
+
+    function it_gets_params_contains_namespaces()
+    {
+        $data = array('default' => array('foo' => 'bar'));
+        $this->setParams($data, 'custom');
+
+        $this->getParams()->shouldReturn(array('custom' => $data));
     }
 }

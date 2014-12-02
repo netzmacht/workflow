@@ -25,7 +25,7 @@ class Context
      *
      * @var array
      */
-    private $params;
+    private $params = array();
 
 
     /**
@@ -109,14 +109,15 @@ class Context
     /**
      * Set a parameter.
      *
-     * @param string $name  Param name.
-     * @param mixed  $value Param value.
+     * @param string $name      Param name.
+     * @param mixed  $value     Param value.
+     * @param string $namespace Namespace the param belongs to.
      *
      * @return $this
      */
-    public function setParam($name, $value)
+    public function setParam($name, $value, $namespace = self::NAMESPACE_DEFAULT)
     {
-        $this->params[$name] = $value;
+        $this->params[$namespace][$name] = $value;
 
         return $this;
     }
@@ -125,21 +126,34 @@ class Context
      * Consider if a param isset.
      *
      * @param string $name Param name.
+     * @param string $namespace Namespace the param belongs to.
      *
      * @return bool
      */
-    public function hasParam($name)
+    public function hasParam($name, $namespace = self::NAMESPACE_DEFAULT)
     {
-        return isset($this->params[$name]);
+        return isset($this->params[$namespace][$name]);
     }
 
     /**
      * Get all params.
      *
+     * If namespace is given only a specific namespace is returned. Otherwise all namesapces are returned.
+     *
+     * @param string|null $namespace Optional namespace.
+     *
      * @return array
      */
-    public function getParams()
+    public function getParams($namespace = null)
     {
+        if ($namespace) {
+            if (isset($this->params[$namespace])) {
+                return $this->params[$namespace];
+            }
+
+            return array();
+        }
+
         return $this->params;
     }
 
@@ -147,13 +161,14 @@ class Context
      * Get a param by name.
      *
      * @param string $name Param name.
+     * @param string $namespace Namespace the param belongs to.
      *
      * @return mixed
      */
-    public function getParam($name)
+    public function getParam($name, $namespace = self::NAMESPACE_DEFAULT)
     {
-        if ($this->hasParam($name)) {
-            return $this->params[$name];
+        if ($this->hasParam($name, $namespace)) {
+            return $this->params[$namespace][$name];
         }
 
         return null;
@@ -163,12 +178,17 @@ class Context
      * Set multiple params.
      *
      * @param array $params Array of params.
+     * @param string $namespace Namespace the params belongs to.
      *
      * @return $this
      */
-    public function setParams(array $params)
+    public function setParams(array $params, $namespace = null)
     {
-        $this->params = $params;
+        if ($namespace) {
+            $this->params[$namespace] = $params;
+        } else {
+            $this->params = $params;
+        }
 
         return $this;
     }
