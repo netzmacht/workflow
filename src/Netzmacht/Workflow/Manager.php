@@ -148,6 +148,18 @@ class Manager
     }
 
     /**
+     * Get workflow by item.
+     *
+     * @param Item $item
+     *
+     * @return bool|Workflow
+     */
+    public function getWorkflowByItem(Item $item)
+    {
+        return $this->getWorkflow($item->getEntityId(), $item->getEntity());
+    }
+
+    /**
      * Consider if entity has an workflow.
      *
      * @param EntityId $entityId The entity id.

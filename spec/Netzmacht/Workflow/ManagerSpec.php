@@ -47,6 +47,16 @@ class ManagerSpec extends ObjectBehavior
         $this->getWorkflow($entityId, static::$entity)->shouldReturn($workflow);
     }
 
+    function it_gets_workflow_by_item(Workflow $workflow, Item $item, EntityId $entityId)
+    {
+        $item->getEntityId()->willReturn($entityId);
+        $item->getEntity()->willReturn(static::$entity);
+
+        $workflow->match($entityId, static::$entity)->willReturn(true);
+
+        $this->getWorkflowByItem($item)->shouldReturn($workflow);
+    }
+
     function it_adds_workflow(Workflow $anotherWorkflow)
     {
         $anotherWorkflow->getName()->willReturn('another');
