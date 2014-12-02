@@ -46,7 +46,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         Step $step,
         Transition $transition,
         State $state,
-        Listener $dispatcher
+        Listener $listener
     ) {
         $workflow->getStep(static::STEP_NAME)->willReturn($step);
         $workflow->getStartTransition()->willReturn($transition);
@@ -76,7 +76,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             $entityRepository,
             $stateRepository,
             $transactionHandler,
-            $dispatcher
+            $listener
         );
     }
 
@@ -189,7 +189,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
         TransactionHandler $transactionHandler,
-        Listener $dispatcher
+        Listener $listener
     ) {
         $this->beConstructedWith(
             $item,
@@ -198,7 +198,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             $entityRepository,
             $stateRepository,
             $transactionHandler,
-            $dispatcher
+            $listener
         );
 
         $item->isWorkflowStarted()->willReturn(false);
@@ -230,15 +230,15 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $this->getErrorCollection()->shouldHaveType(self::ERROR_COLLECTION_CLASS);
     }
 
-    function it_validates(Form $form, Workflow $workflow, Transition $transition, Item $item, Listener $dispatcher)
+    function it_validates(Form $form, Workflow $workflow, Transition $transition, Item $item, Listener $listener)
     {
         $workflow->getStartTransition()->willReturn($transition);
         $transition->buildForm($form, $item)->shouldBeCalled();
         $transition->getName()->willReturn(static::TRANSITION_NAME);
         $transition->isInputRequired($item)->willReturn(true);
 
-        $dispatcher->onBuildForm(Argument::cetera())->shouldBeCalled();
-        $dispatcher->onValidate(Argument::cetera())->willReturn(true);
+        $listener->onBuildForm(Argument::cetera())->shouldBeCalled();
+        $listener->onValidate(Argument::cetera())->willReturn(true);
         $form->validate(Argument::type(self::CONTEXT_CLASS))->shouldBeCalled()->willReturn(true);
 
         $this->validate($form)->shouldReturn(true);
@@ -252,9 +252,17 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
     }
 
     function it_transits_to_next_state(
-        Form $form, Transition $transition, Item $item
+        Form $form, Transition $transition, Item $item, Listener $listener
     ) {
+        $listener->onBuildForm(Argument::cetera())->shouldBeCalled();
+        $listener->onValidate(Argument::cetera())->willReturn(true);
+        $listener->onPreTransit(Argument::cetera())->shouldBeCalled();
+        $listener->onPostTransit(Argument::cetera())->shouldBeCalled();
+
         $transition->buildForm($form, $item)->shouldBeCalled();
+
+        $form->validate(Argument::type(self::CONTEXT_CLASS))->shouldBeCalled()->willReturn(true);
+
         $this->validate($form);
         $this->transit()->shouldHaveType('Netzmacht\Workflow\Flow\State');
     }
