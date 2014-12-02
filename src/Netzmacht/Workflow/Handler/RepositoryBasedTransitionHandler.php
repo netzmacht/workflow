@@ -247,16 +247,18 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
             } else {
                 $this->validated = true;
             }
+
+            $this->validated = $this->listener->onValidate(
+                $form,
+                $this->validated,
+                $this->workflow,
+                $this->item,
+                $this->context,
+                $this->getTransition()->getName()
+            );
         }
 
-        return $this->listener->onValidate(
-            $form,
-            $this->validated,
-            $this->workflow,
-            $this->item,
-            $this->context,
-            $this->getTransition()->getName()
-        );
+        return $this->validated;
     }
 
     /**
