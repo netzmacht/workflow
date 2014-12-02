@@ -261,8 +261,6 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
         $transition->buildForm($form, $item)->shouldBeCalled();
 
-        $form->validate(Argument::type(self::CONTEXT_CLASS))->shouldBeCalled()->willReturn(true);
-
         $this->validate($form);
         $this->transit()->shouldHaveType('Netzmacht\Workflow\Flow\State');
     }
