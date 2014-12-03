@@ -136,6 +136,11 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
     function it_gets_form_after_validation(Form $form, Workflow $workflow, Transition $transition, Item $item)
     {
         $transition->buildForm($form, $item)->shouldBeCalled();
+        $transition->checkPreCondition(
+            $item,
+            Argument::type(static::CONTEXT_CLASS),
+            Argument::type(static::ERROR_COLLECTION_CLASS)
+        )->shouldBeCalled();
 
         $workflow->getStartTransition()->willReturn($transition);
 
@@ -236,6 +241,17 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $transition->buildForm($form, $item)->shouldBeCalled();
         $transition->getName()->willReturn(static::TRANSITION_NAME);
         $transition->isInputRequired($item)->willReturn(true);
+        $transition->checkPreCondition(
+            $item,
+            Argument::type(static::CONTEXT_CLASS),
+            Argument::type(static::ERROR_COLLECTION_CLASS)
+        )->shouldBeCalled()->willReturn(true);
+
+        $transition->checkCondition(
+            $item,
+            Argument::type(static::CONTEXT_CLASS),
+            Argument::type(static::ERROR_COLLECTION_CLASS)
+        )->shouldBeCalled()->willReturn(true);
 
         $listener->onBuildForm(Argument::cetera())->shouldBeCalled();
         $listener->onValidate(Argument::cetera())->willReturn(true);
@@ -260,6 +276,11 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $listener->onPostTransit(Argument::cetera())->shouldBeCalled();
 
         $transition->buildForm($form, $item)->shouldBeCalled();
+        $transition->checkPreCondition(
+            $item,
+            Argument::type(static::CONTEXT_CLASS),
+            Argument::type(static::ERROR_COLLECTION_CLASS)
+            )->shouldBeCalled();
 
         $this->validate($form);
         $this->transit()->shouldHaveType('Netzmacht\Workflow\Flow\State');

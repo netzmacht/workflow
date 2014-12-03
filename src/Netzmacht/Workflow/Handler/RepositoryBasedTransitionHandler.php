@@ -231,9 +231,15 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
      */
     public function validate(Form $form)
     {
+        // first build the form
         $this->buildForm($form);
+        $this->validated = false;
 
-        if ($this->validated === null) {
+        // check pre conditions first
+        if ($this->getTransition()->checkPreCondition($this->item, $this->context, $this->errorCollection)) {
+            $this->validated = true;
+
+            // validate form input now
             if ($this->isInputRequired($this->item)) {
                 $this->validated = $this->getForm()->validate($this->item, $this->context);
 
@@ -244,19 +250,23 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
                         $form->getErrorCollection()
                     );
                 }
-            } else {
-                $this->validated = true;
             }
 
-            $this->validated = $this->listener->onValidate(
-                $form,
-                $this->validated,
-                $this->workflow,
-                $this->item,
-                $this->context,
-                $this->getTransition()->getName()
-            );
+            // check conditions after validating the form so that context is setup
+            if (!$this->getTransition()->checkCondition($this->item, $this->context, $this->errorCollection)) {
+                $this->validated = false;
+            }
         }
+
+        // trigger the listener, no matter if validated so far
+        $this->validated = $this->listener->onValidate(
+            $form,
+            $this->validated,
+            $this->workflow,
+            $this->item,
+            $this->context,
+            $this->getTransition()->getName()
+        );
 
         return $this->validated;
     }
