@@ -29,8 +29,7 @@ class TransitionPermissionCondition extends AbstractPermissionCondition
     public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection)
     {
         $permission = $transition->getPermission();
-
-        if ($permission && $this->user->hasPermission($permission)) {
+        if ($this->checkPermission($permission)) {
             return true;
         }
 

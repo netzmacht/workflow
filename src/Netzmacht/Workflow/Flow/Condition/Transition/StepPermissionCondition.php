@@ -78,8 +78,7 @@ class StepPermissionCondition extends AbstractPermissionCondition
         }
 
         $permission = $this->getStepPermission($transition, $item);
-
-        if ($permission && $this->user->hasPermission($permission)) {
+        if ($this->checkPermission($permission)) {
             return true;
         }
 

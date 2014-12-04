@@ -11,6 +11,7 @@
 
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
+use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Security\User;
 
 /**
@@ -70,5 +71,25 @@ abstract class AbstractPermissionCondition implements Condition
     public function isGrantedByDefault()
     {
         return $this->default;
+    }
+
+    /**
+     * Check a specific transition. Check if access is granted by default if no permission is given.
+     *
+     * @param Permission|null $permission Permission to check.
+     *
+     * @return bool
+     */
+    protected function checkPermission(Permission $permission = null)
+    {
+        if ($permission) {
+            if ($this->user->hasPermission($permission)) {
+                return true;
+            }
+        } elseif ($this->isGrantedByDefault()) {
+            return true;
+        }
+
+        return false;
     }
 }
