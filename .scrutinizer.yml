@@ -3,7 +3,6 @@ filter:
     excluded_paths: [vendor/*, bin/*, bin/*]
 tools:
     php_sim:
-        enabled: true
         min_mass: 25
     php_mess_detector:
         enabled: true
