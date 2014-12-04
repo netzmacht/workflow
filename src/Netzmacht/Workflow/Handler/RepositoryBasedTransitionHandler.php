@@ -211,6 +211,16 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
     }
 
     /**
+     * Consider if transition is available.
+     *
+     * @return bool
+     */
+    public function isAvailable()
+    {
+        return $this->getTransition()->isAvailable($this->item, $this->context, $this->errorCollection);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getContext()
@@ -240,6 +250,7 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
     public function validate(Form $form)
     {
         // first build the form
+        $this->errorCollection->reset();
         $this->buildForm($form);
         $this->validated = false;
 
@@ -249,7 +260,7 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
 
             // validate form input now
             if ($this->isInputRequired($this->item)) {
-                $this->validated = $this->getForm()->validate($this->item, $this->context);
+                $this->validated = $this->getForm()->validate();
 
                 if (!$this->validated) {
                     $this->errorCollection->addError(

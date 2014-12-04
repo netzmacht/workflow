@@ -80,6 +80,13 @@ interface TransitionHandler
     public function isInputRequired();
 
     /**
+     * Consider if transition is available.
+     *
+     * @return bool
+     */
+    public function isAvailable();
+
+    /**
      * Get the context.
      *
      * @return Context

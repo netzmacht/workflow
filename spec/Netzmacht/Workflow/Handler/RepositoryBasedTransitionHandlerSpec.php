@@ -255,7 +255,9 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
         $listener->onBuildForm(Argument::cetera())->shouldBeCalled();
         $listener->onValidate(Argument::cetera())->willReturn(true);
-        $form->validate($item, Argument::type(self::CONTEXT_CLASS))->shouldBeCalled()->willReturn(true);
+
+        $form->prepare($item, Argument::type(self::CONTEXT_CLASS))->shouldBeCalled();
+        $form->validate()->shouldBeCalled()->willReturn(true);
 
         $this->validate($form)->shouldReturn(true);
     }
@@ -284,5 +286,17 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
         $this->validate($form);
         $this->transit()->shouldHaveType('Netzmacht\Workflow\Flow\State');
+    }
+
+    function it_checks_if_transition_is_available(Form $form, Transition $transition, Item $item)
+    {
+        $transition->getName()->willReturn(static::TRANSITION_NAME);
+        $transition->isAvailable(
+            $item,
+            Argument::type(self::CONTEXT_CLASS),
+            Argument::type(self::ERROR_COLLECTION_CLASS)
+        )->willReturn(true);
+
+        $this->isAvailable()->shouldReturn(true);
     }
 }
