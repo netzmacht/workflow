@@ -135,20 +135,21 @@ class Workflow extends Base
         $errorCollection = new ErrorCollection();
 
         if (!$item->isWorkflowStarted()) {
-            $transitions = array($this->getStartTransition()->getName());
+            $transitions = array($this->getStartTransition());
         } else {
             $step        = $this->getStep($item->getCurrentStepName());
-            $transitions = $step->getAllowedTransitions();
+            $transitions = array_map(
+                function ($transitionName) {
+                    return $this->getTransition($transitionName);
+                },
+                $step->getAllowedTransitions()
+            );
         }
 
         return array_filter(
             $transitions,
-            function($transitionName) use ($item, $context, $errorCollection) {
-                $transition = $this->getTransition($transitionName);
-
-                if ($transition->isAvailable($item, $context, $errorCollection)) {
-                    $available[] = $transition;
-                }
+            function (Transition $transition) use ($item, $context, $errorCollection) {
+                return $transition->isAvailable($item, $context, $errorCollection);
             }
         );
     }
@@ -184,19 +185,30 @@ class Workflow extends Base
     /**
      * Check if a specific transition is available.
      *
-     * @param Item   $item           The workflow item.
-     * @param string $transitionName The transition name.
+     * @param Item            $item            The workflow item.
+     * @param Context         $context         Transition context.
+     * @param ErrorCollection $errorCollection Error collection.
+     * @param string          $transitionName  The transition name.
      *
      * @return bool
      */
-    public function isTransitionAvailable(Item $item, $transitionName)
-    {
+    public function isTransitionAvailable(
+        Item $item,
+        Context $context,
+        ErrorCollection $errorCollection,
+        $transitionName
+    ) {
         if (!$item->isWorkflowStarted()) {
             return $this->getStartTransition()->getName() === $transitionName;
         }
 
         $step = $this->getStep($item->getCurrentStepName());
-        return $step->isTransitionAllowed($transitionName);
+        if (!$step->isTransitionAllowed($transitionName)) {
+            return false;
+        }
+
+        $transition = $this->getTransition($transitionName);
+        return $transition->isAvailable($item, $context, $errorCollection);
     }
 
     /**

@@ -3,6 +3,8 @@
 namespace spec\Netzmacht\Workflow\Flow;
 
 use Netzmacht\Workflow\Data\EntityId;
+use Netzmacht\Workflow\Data\ErrorCollection;
+use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Security\Role;
@@ -102,22 +104,32 @@ class WorkflowSpec extends ObjectBehavior
         $this->getTransitions()->shouldReturn(array($transition));
     }
 
-    function it_knows_if_start_transition_is_available_for_an_item(Item $item)
-    {
+    function it_knows_if_start_transition_is_available_for_an_item(
+        Item $item,
+        Context $context,
+        ErrorCollection $errorCollection
+    ) {
         $item->isWorkflowStarted()->willReturn(false);
 
-        $this->isTransitionAvailable($item, 'start')->shouldReturn(true);
+        $this->isTransitionAvailable($item, $context, $errorCollection, 'start')->shouldReturn(true);
     }
 
-    function it_knows_if_start_transition_is_not_available_for_an_item(Item $item)
-    {
+    function it_knows_if_start_transition_is_not_available_for_an_item(
+        Item $item,
+        Context $context,
+        ErrorCollection $errorCollection
+    ) {
         $item->isWorkflowStarted()->willReturn(false);
 
-        $this->isTransitionAvailable($item, 'start2')->shouldReturn(false);
+        $this->isTransitionAvailable($item, $context, $errorCollection, 'start2')->shouldReturn(false);
     }
 
-    function it_knows_if_transition_is_not_available_for_an_item(Item $item, Step $step)
-    {
+    function it_knows_if_transition_is_not_available_for_an_item(
+        Item $item,
+        Step $step,
+        Context $context,
+        ErrorCollection $errorCollection
+    ) {
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('started');
 
@@ -125,19 +137,28 @@ class WorkflowSpec extends ObjectBehavior
         $step->isTransitionAllowed('start')->willReturn(false);
         $this->addStep($step);
 
-        $this->isTransitionAvailable($item, 'start')->shouldReturn(false);
+        $this->isTransitionAvailable($item, $context, $errorCollection, 'start')->shouldReturn(false);
     }
 
-    function it_knows_if_transition_is_available_for_an_item(Item $item, Step $step)
-    {
+    function it_knows_if_transition_is_available_for_an_item(
+        Item $item,
+        Step $step,
+        Context $context,
+        Transition $transition,
+        ErrorCollection $errorCollection
+    ) {
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('started');
+
+        $transition->getName()->willReturn('next');
+        $transition->isAvailable($item, $context, $errorCollection)->shouldBeCalled()->willReturn(true);
+        $this->addTransition($transition);
 
         $step->getName()->willReturn('started');
         $step->isTransitionAllowed('next')->willReturn(true);
         $this->addStep($step);
 
-        $this->isTransitionAvailable($item, 'next')->shouldReturn(true);
+        $this->isTransitionAvailable($item, $context, $errorCollection, 'next')->shouldReturn(true);
     }
 
 
