@@ -129,23 +129,23 @@ class Workflow extends Base
      *
      * @return array
      */
-    public function getAllowedTransitions(Item $item, Context $context = null)
+    public function getAvailableTransitions(Item $item, Context $context = null)
     {
-        $transitions     = array();
         $context         = $context ?: new Context();
         $errorCollection = new ErrorCollection();
 
         if (!$item->isWorkflowStarted()) {
-            $transitions[] = $this->getStartTransition();
+            $transitions = array($this->getStartTransition()->getName());
         } else {
-            $step = $this->getStep($item->getCurrentStepName());
+            $step        = $this->getStep($item->getCurrentStepName());
+            $transitions = $step->getAllowedTransitions();
+        }
 
-            foreach ($step->getAllowedTransitions() as $transitionName) {
-                $transition = $this->getTransition($transitionName);
+        foreach ($transitions as $transitionName) {
+            $transition = $this->getTransition($transitionName);
 
-                if ($transition->isAvailable($item, $context, $errorCollection)) {
-                    $transitions[] = $transition;
-                }
+            if ($transition->isAvailable($item, $context, $errorCollection)) {
+                $transitions[] = $transition;
             }
         }
 
