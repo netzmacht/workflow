@@ -141,15 +141,16 @@ class Workflow extends Base
             $transitions = $step->getAllowedTransitions();
         }
 
-        foreach ($transitions as $transitionName) {
-            $transition = $this->getTransition($transitionName);
+        return array_filter(
+            $transitions,
+            function($transitionName) use ($item, $context, $errorCollection) {
+                $transition = $this->getTransition($transitionName);
 
-            if ($transition->isAvailable($item, $context, $errorCollection)) {
-                $transitions[] = $transition;
+                if ($transition->isAvailable($item, $context, $errorCollection)) {
+                    $available[] = $transition;
+                }
             }
-        }
-
-        return $transitions;
+        );
     }
 
     /**
