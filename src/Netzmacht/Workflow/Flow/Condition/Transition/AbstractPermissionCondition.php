@@ -55,7 +55,7 @@ abstract class AbstractPermissionCondition implements Condition
      *
      * @return $this
      */
-    public function setDefault($access)
+    public function grantAccessByDefault($access)
     {
         $this->default = (bool) $access;
 
@@ -67,7 +67,7 @@ abstract class AbstractPermissionCondition implements Condition
      *
      * @return bool
      */
-    public function getDefault()
+    public function isGrantedByDefault()
     {
         return $this->default;
     }

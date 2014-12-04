@@ -38,11 +38,11 @@ class AbstractPermissionConditionSpec extends ObjectBehavior
 
     function it_has_a_default()
     {
-        $this->setDefault(false)->shouldReturn($this);
-        $this->getDefault()->shouldReturn(false);
+        $this->grantAccessByDefault(false)->shouldReturn($this);
+        $this->isGrantedByDefault()->shouldReturn(false);
 
-        $this->setDefault(true);
-        $this->getDefault()->shouldReturn(true);
+        $this->grantAccessByDefault(true);
+        $this->isGrantedByDefault()->shouldReturn(true);
     }
 }
 
