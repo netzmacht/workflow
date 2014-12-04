@@ -223,6 +223,14 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
      */
     public function getErrorCollection()
     {
+        if (count($this->errorCollection->getErrors()) === 1) {
+            $error = $this->errorCollection->getError(0);
+
+            if ($error[2] instanceof ErrorCollection) {
+                return $error[2];
+            }
+        }
+
         return $this->errorCollection;
     }
 
@@ -334,6 +342,7 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
     {
         $this->form = $form;
         $this->getTransition()->buildForm($this->form, $this->item);
+        $form->prepare($this->item, $this->context);
 
         $this->listener->onBuildForm(
             $form,
