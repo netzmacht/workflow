@@ -30,6 +30,15 @@ abstract class AbstractPermissionCondition implements Condition
     protected $user;
 
     /**
+     * Default value.
+     *
+     * Default value is used if no permission is given.
+     *
+     * @var bool
+     */
+    protected $default = false;
+
+    /**
      * Construct.
      *
      * @param User $user Security user instance.
@@ -37,5 +46,29 @@ abstract class AbstractPermissionCondition implements Condition
     public function __construct(User $user)
     {
         $this->user = $user;
+    }
+
+    /**
+     * Set default value.
+     *
+     * @param bool $access Default access value if no permission is found.
+     *
+     * @return $this
+     */
+    public function setDefault($access)
+    {
+        $this->default = (bool) $access;
+
+        return $this;
+    }
+
+    /**
+     * Get default value.
+     *
+     * @return bool
+     */
+    public function getDefault()
+    {
+        return $this->default;
     }
 }

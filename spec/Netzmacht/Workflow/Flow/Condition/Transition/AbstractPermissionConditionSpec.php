@@ -35,6 +35,15 @@ class AbstractPermissionConditionSpec extends ObjectBehavior
     {
         $this->shouldImplement('Netzmacht\Workflow\Flow\Condition\Transition\Condition');
     }
+
+    function it_has_a_default()
+    {
+        $this->setDefault(false)->shouldReturn($this);
+        $this->getDefault()->shouldReturn(false);
+
+        $this->setDefault(true);
+        $this->getDefault()->shouldReturn(true);
+    }
 }
 
 class PermissionCondition extends AbstractPermissionCondition
