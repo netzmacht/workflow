@@ -23,14 +23,21 @@ use Netzmacht\Workflow\Flow\Item;
 interface Form
 {
     /**
-     * Validate form data and set form values as context params.
+     * Prepare form for a specific item in a transition context.
      *
      * @param Item    $item    Current workflow item.
      * @param Context $context The transition context.
      *
+     * @return void
+     */
+    public function prepare(Item $item, Context $context);
+
+    /**
+     * Validate form data and set form values as context params.
+     *
      * @return bool
      */
-    public function validate(Item $item, Context $context);
+    public function validate();
 
     /**
      * Get errors of form.
