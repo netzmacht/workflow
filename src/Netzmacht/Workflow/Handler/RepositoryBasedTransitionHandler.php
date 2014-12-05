@@ -272,7 +272,9 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
             }
 
             // check conditions after validating the form so that context is setup
-            if (!$this->getTransition()->checkCondition($this->item, $this->context, $this->errorCollection)) {
+            if ($this->validated &&
+                !$this->getTransition()->checkCondition($this->item, $this->context, $this->errorCollection)
+            ) {
                 $this->validated = false;
             }
         }
