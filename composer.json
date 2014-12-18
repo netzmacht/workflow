@@ -31,7 +31,7 @@
     "prefer-stable": true,
     "autoload": {
         "psr-0": {
-            "Netzmacht\\Workflow\\": "src/"
+            "Netzmacht\\Workflow": "src/"
         }
     },
     "config": {

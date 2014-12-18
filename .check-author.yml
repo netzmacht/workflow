@@ -1,0 +1,6 @@
+mapping:
+  "David Molineus <david.molineus@netzmacht.de>":
+    - "David Molineus <mail@netzmacht.de>"
+
+exclude:
+  - spec/
