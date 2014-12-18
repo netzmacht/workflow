@@ -292,79 +292,17 @@ class TransitionSpec extends ObjectBehavior
         $this->isAvailable($item, $context, $errorCollection)->shouldReturn(true);
     }
 
-    function it_starts_an_workflow(
-        Item $item,
-        Context $context,
-        Workflow $workflow,
-        Step $step,
-        ErrorCollection $errorCollection,
-        State $state
-    ) {
-        $item->isWorkflowStarted()->willReturn(false);
-        $item->getEntity()->willReturn(static::$entity);
-        $item->start($this, $context, $errorCollection, true)
-            ->shouldBeCalled()
-            ->willReturn($state);
-
-        $context->getProperties()->willReturn(array());
-        $errorCollection->getErrors()->willReturn(array());
-
-        $this->setWorkflow($workflow);
-        $this->setStepTo($step);
-
-        $this->start($item, $context, $errorCollection)->shouldReturn($state);
-    }
-
-    function it_returns_latest_state_if_workflow_already_started_on_start(
-        Item $item,
-        Context $context,
-        ErrorCollection $errorCollection,
-        State $state
-    ) {
-        $item->isWorkflowStarted()->willReturn(true);
-        $item->getLatestState()->willReturn($state);
-
-        $this->start($item, $context, $errorCollection)->shouldReturn($state);
-    }
-
-    function it_transits_an_item(
-        Item $item,
-        Context $context,
-        ErrorCollection $errorCollection,
-        State $state,
-        State $newState
-    ) {
-        $item->getLatestState()->willReturn($state);
-        $item->transit($this, $context, $errorCollection, true)
-            ->shouldBeCalled()
-            ->willReturn($newState);
-
-        $state->transit($this, $context, $errorCollection, true)->willReturn($newState);
-
-        $context->getProperties()->willReturn(array());
-
-        $this->transit($item, $context, $errorCollection)->shouldBe($newState);
-    }
-
     function it_catches_action_failed_exceptions_during_action_execution(
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
-        State $state,
-        State $newState
+        ErrorCollection $errorCollection
     ) {
-        $item->getLatestState()->willReturn($state);
-        $item->transit($this, $context, $errorCollection, false)
-            ->shouldBeCalled()
-            ->willReturn($newState);
-
-        $this->isAllowed($item, $context, $errorCollection)->shouldReturn(true);
         $this->addAction(new ThrowingAction());
 
         $errorCollection->addError(Argument::type('string'), Argument::type('array'))->shouldBeCalled();
         $context->getProperties()->willReturn(array());
 
-        $this->transit($item, $context, $errorCollection)->shouldBe($newState);
+        $this->executeActions($item, $context, $errorCollection);
     }
 
     function it_has_permission(Permission $permission)
