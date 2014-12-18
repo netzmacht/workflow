@@ -57,11 +57,12 @@ class EventDispatchingListenerSpec extends ObjectBehavior
         $workflow->getTransition(static::TRANSITION_NAME)->willReturn($transition);
 
         $transition->getName()->willReturn(static::TRANSITION_NAME);
-        $transition->isInputRequired()->willReturn(false);
-        $transition->transit(
-            $item,
+        $transition->isInputRequired($item)->willReturn(false);
+        $item->transit(
+            $transition,
             Argument::type(static::CONTEXT_CLASS),
-            Argument::type(static::ERROR_COLLECTION_CLASS)
+            Argument::type(static::ERROR_COLLECTION_CLASS),
+            true
         )->willReturn($state);
 
         $item->isWorkflowStarted()->willReturn(true);

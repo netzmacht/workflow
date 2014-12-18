@@ -57,11 +57,13 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
         $transition->getName()->willReturn(static::TRANSITION_NAME);
         $transition->isInputRequired($item)->willReturn(false);
-        $transition->transit(
-            $item,
+
+        $item->transit(
+            $transition,
             Argument::type(static::CONTEXT_CLASS),
             Argument::type(static::ERROR_COLLECTION_CLASS)
-        )->willReturn($state);
+            )
+            ->willReturn($state);
 
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn(static::STEP_NAME);
@@ -270,12 +272,25 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
     }
 
     function it_transits_to_next_state(
-        Form $form, Transition $transition, Item $item, Listener $listener
+        Form $form, Transition $transition, Item $item, Listener $listener, State $state
     ) {
         $listener->onBuildForm(Argument::cetera())->shouldBeCalled();
         $listener->onValidate(Argument::cetera())->willReturn(true);
         $listener->onPreTransit(Argument::cetera())->shouldBeCalled();
         $listener->onPostTransit(Argument::cetera())->shouldBeCalled();
+
+        $item->transit(
+            $transition,
+            Argument::type(static::CONTEXT_CLASS),
+            Argument::type(static::ERROR_COLLECTION_CLASS),
+            true
+            )->shouldBeCalled()->willReturn($state);
+
+        $transition->executeActions(
+            $item,
+            Argument::type(static::CONTEXT_CLASS),
+            Argument::type(static::ERROR_COLLECTION_CLASS)
+            )->willReturn(true)->shouldBeCalled();
 
         $transition->buildForm($form, $item)->shouldBeCalled();
         $transition->checkPreCondition(

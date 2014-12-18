@@ -336,12 +336,13 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
     private function executeTransition()
     {
         $transition = $this->getTransition();
+        $success    = $transition->executeActions($this->item, $this->context, $this->errorCollection);
 
         if ($this->isWorkflowStarted()) {
-            return $transition->transit($this->item, $this->context, $this->errorCollection);
+            return $this->item->transit($transition, $this->context, $this->errorCollection, $success);
         }
 
-        return $transition->start($this->item, $this->context, $this->errorCollection);
+        return $this->item->start($transition, $this->context, $this->errorCollection, $success);
     }
 
     /**

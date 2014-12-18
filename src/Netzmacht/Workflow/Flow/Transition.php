@@ -272,46 +272,6 @@ class Transition extends Base
     }
 
     /**
-     * Start a transition.
-     *
-     * @param Item            $item            The Item.
-     * @param Context         $context         The transition context.
-     * @param ErrorCollection $errorCollection The error collection.
-     *
-     * @return State
-     */
-    public function start(Item $item, Context $context, ErrorCollection $errorCollection)
-    {
-        if ($item->isWorkflowStarted()) {
-            return $item->getLatestState();
-        }
-
-        $success = $this->executeActions($item, $context, $errorCollection);
-        $state   = $item->start($this, $context, $errorCollection, $success);
-
-        return $state;
-    }
-
-    /**
-     * Transit an Item using this transition.
-     *
-     * @param Item            $item            The Item.
-     * @param Context         $context         The transition context.
-     * @param ErrorCollection $errorCollection The error collection.
-     *
-     * @throws WorkflowException If process was not started yet.
-     *
-     * @return State
-     */
-    public function transit(Item $item, Context $context, ErrorCollection $errorCollection)
-    {
-        $success = $this->executeActions($item, $context, $errorCollection);
-        $state   = $item->transit($this, $context, $errorCollection, $success);
-
-        return $state;
-    }
-
-    /**
      * Check the precondition.
      *
      * @param Item            $item            The Item.
@@ -388,7 +348,7 @@ class Transition extends Base
      *
      * @return bool
      */
-    private function executeActions(Item $item, Context $context, ErrorCollection $errorCollection)
+    public function executeActions(Item $item, Context $context, ErrorCollection $errorCollection)
     {
         $success = $this->isAllowed($item, $context, $errorCollection);
 
