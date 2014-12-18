@@ -12,13 +12,9 @@
 namespace Netzmacht\Workflow\Handler;
 
 use Netzmacht\Workflow\Data\EntityRepository;
-use Netzmacht\Workflow\Data\ErrorCollection;
-use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Item;
-use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Workflow;
-use Netzmacht\Workflow\Form\Form;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 
@@ -29,43 +25,8 @@ use Netzmacht\Workflow\Transaction\TransactionHandler;
  *
  * @package Netzmacht\Workflow
  */
-class RepositoryBasedTransitionHandler implements TransitionHandler
+class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
 {
-    /**
-     * The given entity.
-     *
-     * @var Item
-     */
-    private $item;
-
-    /**
-     * The current workflow.
-     *
-     * @var Workflow
-     */
-    private $workflow;
-
-    /**
-     * The transition name which will be handled.
-     *
-     * @var string
-     */
-    private $transitionName;
-
-    /**
-     * The form object for user input.
-     *
-     * @var Form
-     */
-    private $form;
-
-    /**
-     * Validation state.
-     *
-     * @var bool
-     */
-    private $validated;
-
     /**
      * The entity repository.
      *
@@ -79,34 +40,6 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
      * @var StateRepository
      */
     private $stateRepository;
-
-    /**
-     * The transaction handler.
-     *
-     * @var TransactionHandler
-     */
-    private $transactionHandler;
-
-    /**
-     * The transition context.
-     *
-     * @var Context
-     */
-    private $context;
-
-    /**
-     * Error collection of errors occurred during transition handling.
-     *
-     * @var ErrorCollection
-     */
-    private $errorCollection;
-
-    /**
-     * Transition handler listener.
-     *
-     * @var Listener
-     */
-    private $listener;
 
     /**
      * Construct.
@@ -130,166 +63,10 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
         TransactionHandler $transactionHandler,
         Listener $listener
     ) {
-        $this->item               = $item;
-        $this->workflow           = $workflow;
-        $this->transitionName     = $transitionName;
-        $this->entityRepository   = $entityRepository;
-        $this->stateRepository    = $stateRepository;
-        $this->transactionHandler = $transactionHandler;
-        $this->context            = new Context();
-        $this->errorCollection    = new ErrorCollection();
-        $this->listener           = $listener;
-
-        $this->guardAllowedTransition($transitionName);
-    }
-
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getWorkflow()
-    {
-        return $this->workflow;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getItem()
-    {
-        return $this->item;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getForm()
-    {
-        return $this->form;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getTransition()
-    {
-        if ($this->isWorkflowStarted()) {
-            return $this->workflow->getTransition($this->transitionName);
-        }
-
-        return $this->workflow->getStartTransition();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCurrentStep()
-    {
-        if ($this->isWorkflowStarted()) {
-            $stepName = $this->item->getCurrentStepName();
-
-            return $this->workflow->getStep($stepName);
-        }
-
-        return null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isWorkflowStarted()
-    {
-        return $this->item->isWorkflowStarted();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isInputRequired()
-    {
-        return $this->getTransition()->isInputRequired($this->item);
-    }
-
-    /**
-     * Consider if transition is available.
-     *
-     * @return bool
-     */
-    public function isAvailable()
-    {
-        return $this->getTransition()->isAvailable($this->item, $this->context, $this->errorCollection);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getContext()
-    {
-        return $this->context;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getErrorCollection()
-    {
-        if (count($this->errorCollection->getErrors()) === 1) {
-            $error = $this->errorCollection->getError(0);
-
-            if ($error[2] instanceof ErrorCollection) {
-                return $error[2];
-            }
-        }
-
-        return $this->errorCollection;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function validate(Form $form)
-    {
-        // first build the form
-        $this->errorCollection->reset();
-        $this->buildForm($form);
-        $this->validated = false;
-
-        // check pre conditions first
-        if ($this->getTransition()->checkPreCondition($this->item, $this->context, $this->errorCollection)) {
-            $this->validated = true;
-
-            // validate form input now
-            if ($this->isInputRequired($this->item)) {
-                $this->validated = $this->getForm()->validate();
-
-                if (!$this->validated) {
-                    $this->errorCollection->addError(
-                        'transition.validate.form.failed',
-                        array(),
-                        $form->getErrorCollection()
-                    );
-                }
-            }
-
-            // check conditions after validating the form so that context is setup
-            if ($this->validated &&
-                !$this->getTransition()->checkCondition($this->item, $this->context, $this->errorCollection)
-            ) {
-                $this->validated = false;
-            }
-        }
-
-        // trigger the listener, no matter if validated so far
-        $this->validated = $this->listener->onValidate(
-            $form,
-            $this->validated,
-            $this->workflow,
-            $this->item,
-            $this->context,
-            $this->getTransition()->getName()
-        );
-
-        return $this->validated;
+        parent::__construct($item, $workflow, $transitionName, $transactionHandler, $listener);
+        
+        $this->entityRepository = $entityRepository;
+        $this->stateRepository  = $stateRepository;
     }
 
     /**
@@ -305,16 +82,16 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
 
         try {
             $this->listener->onPreTransit(
-                $this->workflow,
-                $this->item,
-                $this->context,
+                $this->getWorkflow(),
+                $this->getItem(),
+                $this->getContext(),
                 $this->getTransition()->getName()
             );
 
             $state = $this->executeTransition();
 
             $this->stateRepository->add($state);
-            $this->entityRepository->add($this->item->getEntity());
+            $this->entityRepository->add($this->getItem()->getEntity());
         } catch (\Exception $e) {
             $this->transactionHandler->rollback();
 
@@ -323,102 +100,8 @@ class RepositoryBasedTransitionHandler implements TransitionHandler
 
         $this->transactionHandler->commit();
 
-        $this->listener->onPostTransit($this->workflow, $this->item, $this->context, $state);
+        $this->listener->onPostTransit($this->getWorkflow(), $this->getItem(), $this->getContext(), $state);
 
         return $state;
-    }
-
-    /**
-     * Execute the transition.
-     *
-     * @return State
-     */
-    private function executeTransition()
-    {
-        $transition = $this->getTransition();
-        $success    = $transition->executeActions($this->item, $this->context, $this->errorCollection);
-
-        if ($this->isWorkflowStarted()) {
-            return $this->item->transit($transition, $this->context, $this->errorCollection, $success);
-        }
-
-        return $this->item->start($transition, $this->context, $this->errorCollection, $success);
-    }
-
-    /**
-     * Build transition form.
-     *
-     * @param Form $form The form being built.
-     *
-     * @return void
-     */
-    private function buildForm(Form $form)
-    {
-        $this->form = $form;
-        $this->getTransition()->buildForm($this->form, $this->item);
-        $form->prepare($this->item, $this->context);
-
-        $this->listener->onBuildForm(
-            $form,
-            $this->workflow,
-            $this->item,
-            $this->context,
-            $this->getTransition()->getName()
-        );
-    }
-
-    /**
-     * Guard that transition was validated before.
-     *
-     * @throws WorkflowException If transition.
-     *
-     * @return void
-     */
-    private function guardValidated()
-    {
-        if ($this->validated === null) {
-            throw new WorkflowException('Transition was not validated so far.');
-        } elseif (!$this->validated) {
-            throw new WorkflowException('Transition is in a invalid state and can\'t be processed.');
-        }
-    }
-
-    /**
-     * Guard that requested transition is allowed.
-     *
-     * @param string $transitionName Transition to be processed.
-     *
-     * @throws WorkflowException If Transition is not allowed.
-     *
-     * @return void
-     */
-    private function guardAllowedTransition($transitionName)
-    {
-        if (!$this->isWorkflowStarted()) {
-            if (!$transitionName || $transitionName === $this->getWorkflow()->getStartTransition()->getName()) {
-                return;
-            }
-
-            throw new WorkflowException(
-                sprintf(
-                    'Not allowed to process transition "%s". Workflow "%s" not started for item "%s"',
-                    $transitionName,
-                    $this->workflow->getName(),
-                    $this->item->getEntityId()
-                )
-            );
-        }
-
-        $step = $this->getCurrentStep();
-
-        if (!$step->isTransitionAllowed($transitionName)) {
-            throw new WorkflowException(
-                sprintf(
-                    'Not allowed to process transition "%s". Transition is not allowed in step "%s"',
-                    $transitionName,
-                    $step->getName()
-                )
-            );
-        }
     }
 }

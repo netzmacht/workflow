@@ -3,10 +3,8 @@
 namespace spec\Netzmacht\Workflow\Handler;
 
 use Netzmacht\Workflow\Data\EntityId;
-use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Data\EntityRepository;
-use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
