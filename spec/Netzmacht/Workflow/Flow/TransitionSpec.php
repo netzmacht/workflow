@@ -58,6 +58,12 @@ class TransitionSpec extends ObjectBehavior
         $this->getActions()->shouldReturn(array($action));
     }
 
+    function it_has_post_actions(Action $action)
+    {
+        $this->addPostAction($action)->shouldReturn($this);
+        $this->getPostActions()->shouldReturn(array($action));
+    }
+
     function it_has_a_target_step(Step $step)
     {
         $this->setStepTo($step)->shouldReturn($this);
@@ -292,6 +298,19 @@ class TransitionSpec extends ObjectBehavior
         $this->isAvailable($item, $context, $errorCollection)->shouldReturn(true);
     }
 
+    function it_executes_actions(
+        Item $item,
+        Context $context,
+        ErrorCollection $errorCollection,
+        Action $action
+    )
+    {
+        $action->transit($this, $item, $context)->shouldBeCalled();
+        $this->addAction($action);
+
+        $this->executeActions($item, $context, $errorCollection)->shouldReturn(true);
+    }
+
     function it_catches_action_failed_exceptions_during_action_execution(
         Item $item,
         Context $context,
@@ -303,6 +322,32 @@ class TransitionSpec extends ObjectBehavior
         $context->getProperties()->willReturn(array());
 
         $this->executeActions($item, $context, $errorCollection);
+    }
+
+    function it_executes_post_actions(
+        Item $item,
+        Context $context,
+        ErrorCollection $errorCollection,
+        Action $action
+    )
+    {
+        $action->transit($this, $item, $context)->shouldBeCalled();
+        $this->addPostAction($action);
+
+        $this->executePostActions($item, $context, $errorCollection)->shouldReturn(true);
+    }
+
+    function it_catches_action_failed_exceptions_during_post_action_execution(
+        Item $item,
+        Context $context,
+        ErrorCollection $errorCollection
+    ) {
+        $this->addPostAction(new ThrowingAction());
+
+        $errorCollection->addError(Argument::type('string'), Argument::type('array'))->shouldBeCalled();
+        $context->getProperties()->willReturn(array());
+
+        $this->executePostActions($item, $context, $errorCollection);
     }
 
     function it_has_permission(Permission $permission)

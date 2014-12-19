@@ -35,6 +35,13 @@ class Transition extends Base
     private $actions = array();
 
     /**
+     * Post actions which will be executed when new step is reached.
+     *
+     * @var Action[]
+     */
+    private $postActions = array();
+
+    /**
      * The step the transition is moving to.
      *
      * @var Step
@@ -117,6 +124,30 @@ class Transition extends Base
     public function getActions()
     {
         return $this->actions;
+    }
+
+    /**
+     * Add an post action to the transition.
+     *
+     * @param Action $action The added action.
+     *
+     * @return $this
+     */
+    public function addPostAction(Action $action)
+    {
+        $this->postActions[] = $action;
+
+        return $this;
+    }
+
+    /**
+     * Get all post actions.
+     *
+     * @return Action[]
+     */
+    public function getPostActions()
+    {
+        return $this->postActions;
     }
 
     /**
@@ -350,22 +381,21 @@ class Transition extends Base
      */
     public function executeActions(Item $item, Context $context, ErrorCollection $errorCollection)
     {
-        $success = $this->isAllowed($item, $context, $errorCollection);
+        return $this->doExecuteActions($item, $context, $errorCollection, $this->actions);
+    }
 
-        if ($success) {
-            try {
-                foreach ($this->actions as $action) {
-                    $action->transit($this, $item, $context);
-                }
-            } catch (ActionFailedException $e) {
-                $params = array('exception' => $e->getMessage());
-                $errorCollection->addError('transition.action.failed', $params);
-
-                return false;
-            }
-        }
-
-        return $success;
+    /**
+     * Execute all actions.
+     *
+     * @param Item            $item            The workflow item.
+     * @param Context         $context         The transition context.
+     * @param ErrorCollection $errorCollection The error collection.
+     *
+     * @return bool
+     */
+    public function executePostActions(Item $item, Context $context, ErrorCollection $errorCollection)
+    {
+        return $this->doExecuteActions($item, $context, $errorCollection, $this->postActions);
     }
 
     /**
@@ -385,5 +415,35 @@ class Transition extends Base
         }
 
         return $condition->match($this, $item, $context, $errorCollection);
+    }
+
+    /**
+     * Execute the actions.
+     *
+     * @param Item            $item            Workflow item.
+     * @param Context         $context         Condition context.
+     * @param ErrorCollection $errorCollection Error collection.
+     * @param Action[]        $actions         Action to execute.
+     *
+     * @return bool
+     */
+    private function doExecuteActions(Item $item, Context $context, ErrorCollection $errorCollection, $actions)
+    {
+        $success = $this->isAllowed($item, $context, $errorCollection);
+
+        if ($success) {
+            try {
+                foreach ($actions as $action) {
+                    $action->transit($this, $item, $context);
+                }
+            } catch (ActionFailedException $e) {
+                $params = array('exception' => $e->getMessage());
+                $errorCollection->addError('transition.action.failed', $params);
+
+                return false;
+            }
+        }
+
+        return $success;
     }
 }

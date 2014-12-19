@@ -290,6 +290,12 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             Argument::type(static::ERROR_COLLECTION_CLASS)
             )->willReturn(true)->shouldBeCalled();
 
+        $transition->executePostActions(
+            $item,
+            Argument::type(static::CONTEXT_CLASS),
+            Argument::type(static::ERROR_COLLECTION_CLASS)
+        )->willReturn(true)->shouldBeCalled();
+
         $transition->buildForm($form, $item)->shouldBeCalled();
         $transition->checkPreCondition(
             $item,
