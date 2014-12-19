@@ -261,6 +261,12 @@ class Transition extends Base
             }
         }
 
+        foreach ($this->postActions as $action) {
+            if ($action->isInputRequired($item)) {
+                return true;
+            }
+        }
+
         return false;
     }
 
