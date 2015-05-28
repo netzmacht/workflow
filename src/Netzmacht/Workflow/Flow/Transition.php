@@ -17,7 +17,6 @@ use Netzmacht\Workflow\Base;
 use Netzmacht\Workflow\Flow\Condition\Transition\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
-use Netzmacht\Workflow\Flow\Exception\WorkflowException;
 use Netzmacht\Workflow\Form\Form;
 
 /**
