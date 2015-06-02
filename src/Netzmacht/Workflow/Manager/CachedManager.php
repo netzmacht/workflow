@@ -56,7 +56,7 @@ class CachedManager implements Manager
      */
     public function handle(Item $item, $transitionName = null)
     {
-        return $this->handle($item, $transitionName);
+        return $this->manager->handle($item, $transitionName);
     }
 
     /**
@@ -77,7 +77,7 @@ class CachedManager implements Manager
         $key = $entityId->__toString();
 
         if (!isset($this->workflows[$key])) {
-            $this->workflows[$key] = $this->getWorkflow($entityId, $entity);
+            $this->workflows[$key] = $this->manager->getWorkflow($entityId, $entity);
         }
 
         return $this->workflows[$key];
@@ -110,7 +110,7 @@ class CachedManager implements Manager
             return true;
         }
 
-        return $this->hasWorkflow($entityId, $entity);
+        return $this->manager->hasWorkflow($entityId, $entity);
     }
 
     /**
