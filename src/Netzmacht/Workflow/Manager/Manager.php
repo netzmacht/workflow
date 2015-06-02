@@ -45,7 +45,7 @@ interface Manager
      *
      * @param Workflow $workflow The workflow being added.
      *
-     * @return \Netzmacht\Workflow\Manager
+     * @return \Netzmacht\Workflow\Manager\Manager
      */
     public function addWorkflow(Workflow $workflow);
 

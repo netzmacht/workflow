@@ -3,7 +3,7 @@
 namespace spec\Netzmacht\Workflow\Factory\Event;
 
 use Netzmacht\Workflow\Factory\Event\CreateManagerEvent;
-use Netzmacht\Workflow\Manager;
+use Netzmacht\Workflow\Manager\Manager;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 

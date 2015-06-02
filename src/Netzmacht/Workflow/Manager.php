@@ -3,7 +3,7 @@
 /**
  * @package    workflow
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014 netzmacht creative David Molineus
+ * @copyright  2015 netzmacht creative David Molineus
  * @license    LGPL 3.0
  * @filesource
  *
@@ -11,228 +11,30 @@
 
 namespace Netzmacht\Workflow;
 
-use Assert\Assertion;
-use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Factory\TransitionHandlerFactory;
-use Netzmacht\Workflow\Flow\Exception\WorkflowException;
-use Netzmacht\Workflow\Flow\Item;
-use Netzmacht\Workflow\Handler\TransitionHandler;
-use Netzmacht\Workflow\Flow\Workflow;
+use Netzmacht\Workflow\Manager\WorkflowManager;
 
 /**
- * Class Manager handles a set of workflows.
- *
- * Usually there will a different workflow manager for different workflow types. The manager is the API entry point
- * when using the workflow API.
+ * Backward compatibility workflow manager class.
  *
  * @package Netzmacht\Workflow
  */
-class Manager implements \Netzmacht\Workflow\Manager\Manager
+class Manager extends WorkflowManager
 {
     /**
-     * The state repository.
-     *
-     * @var StateRepository
-     */
-    private $stateRepository;
-
-    /**
-     * A set of workflows.
-     *
-     * @var Workflow[]
-     */
-    private $workflows;
-
-    /**
-     * A Transition handler factory.
-     *
-     * @var TransitionHandlerFactory
-     */
-    private $handlerFactory;
-
-    /**
-     * Construct.
-     *
-     * @param TransitionHandlerFactory $handlerFactory  The transition handler factory.
-     * @param StateRepository          $stateRepository The state repository.
-     * @param Workflow[]               $workflows       The set of managed workflows.
+     * {@inheritdoc}
      */
     public function __construct(
         TransitionHandlerFactory $handlerFactory,
         StateRepository $stateRepository,
         $workflows = array()
     ) {
-        Assertion::allIsInstanceOf($workflows, 'Netzmacht\Workflow\Flow\Workflow');
+        parent::__construct($handlerFactory, $stateRepository, $workflows);
 
-        $this->workflows       = $workflows;
-        $this->handlerFactory  = $handlerFactory;
-        $this->stateRepository = $stateRepository;
-    }
+        $message  = '"Netzmacht\Workflow\Manager"" is deprecated and will be removed in v1.0.0 stable.';
+        $message .= ' Use "Netzmacht\Workflow\Manager\WorkflowManager" instead.';
 
-    /**
-     * Handle a workflow transition of an entity will createRepository a transition handler.
-     *
-     * If no matching workflow definition is found false will be returned.
-     *
-     * @param Item   $item           The current workflow item.
-     * @param string $transitionName Transition name, required if workflow has already started.
-     *
-     * @throws WorkflowException If something went wrong.
-     *
-     * @return bool|TransitionHandler
-     */
-    public function handle(Item $item, $transitionName = null)
-    {
-        $entity   = $item->getEntity();
-        $workflow = $this->getWorkflow($item->getEntityId(), $entity);
-
-        if (!$workflow) {
-            return false;
-        }
-
-        $this->guardSameWorkflow($item, $workflow);
-
-        $handler = $this->handlerFactory->createTransitionHandler(
-            $item,
-            $workflow,
-            $transitionName,
-            $item->getEntityId()->getProviderName(),
-            $this->stateRepository
-        );
-
-        return $handler;
-    }
-
-
-    /**
-     * Add a workflow to the manager.
-     *
-     * @param Workflow $workflow The workflow being added.
-     *
-     * @return $this
-     */
-    public function addWorkflow(Workflow $workflow)
-    {
-        $this->workflows[] = $workflow;
-
-        return $this;
-    }
-
-    /**
-     * Get a workflow for the given entity.
-     *
-     * @param EntityId $entityId The entity id.
-     * @param mixed    $entity   The entity.
-     *
-     * @return Workflow|bool
-     */
-    public function getWorkflow(EntityId $entityId, $entity)
-    {
-        foreach ($this->workflows as $workflow) {
-            if ($workflow->match($entityId, $entity)) {
-                return $workflow;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Get Workflow by its name.
-     *
-     * @param string $name Name of workflow.
-     *
-     * @return bool|Workflow
-     */
-    public function getWorkflowByName($name)
-    {
-        foreach ($this->workflows as $workflow) {
-            if ($workflow->getName() == $name) {
-                return $workflow;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Get workflow by item.
-     *
-     * @param Item $item Workflow item.
-     *
-     * @return bool|Workflow
-     */
-    public function getWorkflowByItem(Item $item)
-    {
-        return $this->getWorkflow($item->getEntityId(), $item->getEntity());
-    }
-
-    /**
-     * Consider if entity has an workflow.
-     *
-     * @param EntityId $entityId The entity id.
-     * @param mixed    $entity   The entity.
-     *
-     * @return bool
-     */
-    public function hasWorkflow(EntityId $entityId, $entity)
-    {
-        foreach ($this->workflows as $workflow) {
-            if ($workflow->match($entityId, $entity)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Get all registered workflows.
-     *
-     * @return Workflow[]
-     */
-    public function getWorkflows()
-    {
-        return $this->workflows;
-    }
-
-    /**
-     * Create the item for an entity.
-     *
-     * @param EntityId $entityId The entity id.
-     * @param mixed    $entity   Current entity.
-     *
-     * @return Item
-     */
-    public function createItem(EntityId $entityId, $entity)
-    {
-        $stateHistory = $this->stateRepository->find($entityId);
-
-        return Item::reconstitute($entityId, $entity, $stateHistory);
-    }
-
-    /**
-     * Guard that already started workflow is the same which is tried to be ran now.
-     *
-     * @param Item     $item     Current workflow item.
-     * @param Workflow $workflow Selected workflow.
-     *
-     * @throws WorkflowException If item workflow is not the same as current workflow.
-     *
-     * @return void
-     */
-    private function guardSameWorkflow(Item $item, Workflow $workflow)
-    {
-        if ($item->isWorkflowStarted() && $item->getWorkflowName() != $workflow->getName()) {
-            $message = sprintf(
-                'Item "%s" already process workflow "%s" and cannot be handled by "%s"',
-                $item->getEntityId(),
-                $item->getWorkflowName(),
-                $workflow->getName()
-            );
-
-            throw new WorkflowException($message);
-        }
+        trigger_error($message, E_USER_DEPRECATED);
     }
 }

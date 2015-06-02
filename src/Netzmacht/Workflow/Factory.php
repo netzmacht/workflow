@@ -13,9 +13,8 @@ namespace Netzmacht\Workflow;
 
 use Netzmacht\Workflow\Factory\Event\CreateFormEvent;
 use Netzmacht\Workflow\Factory\Event\CreateManagerEvent;
-use Netzmacht\Workflow\Factory\Event\CreateUserEvent;
 use Netzmacht\Workflow\Form\Form;
-use Netzmacht\Workflow\Security\User;
+use Netzmacht\Workflow\Manager\Manager;
 use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface as EventDispatcher;
 

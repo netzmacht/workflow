@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Netzmacht\Workflow;
+namespace spec\Netzmacht\Workflow\Manager;
 
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Factory\TransitionHandlerFactory;
@@ -19,7 +19,7 @@ use Prophecy\Argument;
  * @package spec\Netzmacht\Contao\Workflow
  * @mixin \Netzmacht\Workflow\Manager
  */
-class ManagerSpec extends ObjectBehavior
+class WorkflowManagerSpec extends ObjectBehavior
 {
     const ENTITY_PROVIDER_NAME = 'provider_name';
 
@@ -29,7 +29,7 @@ class ManagerSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Manager');
+        $this->shouldHaveType('Netzmacht\Workflow\Manager\Manager');
     }
 
     function let(
