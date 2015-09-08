@@ -28,6 +28,15 @@ interface EntityRepository
     public function find($entityId);
 
     /**
+     * Find multiple entities by a specification.
+     *
+     * @param Specification $specification The specification.
+     *
+     * @return array
+     */
+    public function findBySpecification(Specification $specification);
+
+    /**
      * Add an entity to the repository.
      *
      * @param mixed $entity The new entity.
