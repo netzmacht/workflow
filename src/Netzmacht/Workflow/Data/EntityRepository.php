@@ -44,4 +44,13 @@ interface EntityRepository
      * @return void
      */
     public function add($entity);
+
+    /**
+     * Remove an entity from the repository.
+     *
+     * @param mixed $entity The entity.
+     *
+     * @return void
+     */
+    public function remove($entity);
 }
