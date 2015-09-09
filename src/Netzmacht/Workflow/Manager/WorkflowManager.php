@@ -17,7 +17,6 @@ use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Factory\TransitionHandlerFactory;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Item;
-use Netzmacht\Workflow\Handler\TransitionHandler;
 use Netzmacht\Workflow\Flow\Workflow;
 
 /**
