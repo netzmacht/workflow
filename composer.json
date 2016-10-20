@@ -23,15 +23,15 @@
         "beberlei/assert": "~2.0"
     },
     "require-dev": {
-        "phpspec/phpspec": "2.1.*",
-        "netzmacht/contao-build-tools": "dev-master",
-        "henrikbjorn/phpspec-code-coverage" : "~0.2"
+        "phpspec/phpspec": "~2.1",
+        "netzmacht/contao-build-tools": "~1.1",
+        "henrikbjorn/phpspec-code-coverage": "~2"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "autoload": {
         "psr-0": {
-            "Netzmacht\\Workflow": "src/"
+            "Netzmacht\\Workflow\\": "src/"
         }
     },
     "config": {

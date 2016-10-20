@@ -23,6 +23,7 @@ use Netzmacht\Workflow\Form\Form;
  * Class Transition handles the transition from a step to another.
  *
  * @package Netzmacht\Workflow\Flow
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class Transition extends Base
 {

@@ -27,7 +27,7 @@ use Netzmacht\Workflow\Flow\Workflow;
  *
  * @package Netzmacht\Workflow
  */
-class WorkflowManager implements \Netzmacht\Workflow\Manager\Manager
+class WorkflowManager implements Manager
 {
     /**
      * The state repository.

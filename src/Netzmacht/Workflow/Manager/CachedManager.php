@@ -23,6 +23,8 @@ use Netzmacht\Workflow\Flow\Workflow;
 class CachedManager implements Manager
 {
     /**
+     * Workflow manager.
+     *
      * @var Manager
      */
     private $manager;
