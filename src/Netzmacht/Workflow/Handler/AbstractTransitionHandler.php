@@ -226,7 +226,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
             $this->validated = true;
 
             // validate form input now
-            if ($this->isInputRequired($this->item)) {
+            if ($this->isInputRequired()) {
                 $this->validated = $this->getForm()->validate();
 
                 if (!$this->validated) {
