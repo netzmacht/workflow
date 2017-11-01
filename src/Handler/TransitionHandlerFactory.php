@@ -10,7 +10,7 @@
  * @filesource
  */
 
-namespace Netzmacht\Workflow\Factory;
+namespace Netzmacht\Workflow\Handler;
 
 
 use Netzmacht\Workflow\Data\StateRepository;

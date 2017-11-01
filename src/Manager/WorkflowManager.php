@@ -15,7 +15,7 @@ namespace Netzmacht\Workflow\Manager;
 use Assert\Assertion;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\StateRepository;
-use Netzmacht\Workflow\Factory\TransitionHandlerFactory;
+use Netzmacht\Workflow\Handler\TransitionHandlerFactory;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;

@@ -10,14 +10,12 @@
  * @filesource
  */
 
-namespace Netzmacht\Workflow\Factory;
+namespace Netzmacht\Workflow\Handler;
 
 use Netzmacht\Workflow\Data\EntityManager;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
-use Netzmacht\Workflow\Handler\RepositoryBasedTransitionHandler;
-use Netzmacht\Workflow\Handler\TransitionHandler;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 
 /**
