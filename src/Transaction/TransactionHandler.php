@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Transaction;
 
 /**
@@ -24,19 +26,19 @@ interface TransactionHandler
      *
      * @return void
      */
-    public function begin();
+    public function begin(): void;
 
     /**
      * Commit changes.
      *
      * @return void
      */
-    public function commit();
+    public function commit(): void;
 
     /**
      * Rollback the transaction.
      *
      * @return void
      */
-    public function rollback();
+    public function rollback(): void;
 }
