@@ -99,7 +99,7 @@ class WorkflowManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function addWorkflow(Workflow $workflow)
+    public function addWorkflow(Workflow $workflow): Manager
     {
         $this->workflows[] = $workflow;
 
@@ -123,7 +123,7 @@ class WorkflowManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function getWorkflowByName($name)
+    public function getWorkflowByName(string $name)
     {
         foreach ($this->workflows as $workflow) {
             if ($workflow->getName() == $name) {
@@ -145,7 +145,7 @@ class WorkflowManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function hasWorkflow(EntityId $entityId, $entity)
+    public function hasWorkflow(EntityId $entityId, $entity): bool
     {
         foreach ($this->workflows as $workflow) {
             if ($workflow->match($entityId, $entity)) {
@@ -159,7 +159,7 @@ class WorkflowManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function getWorkflows()
+    public function getWorkflows(): iterable
     {
         return $this->workflows;
     }
@@ -167,7 +167,7 @@ class WorkflowManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function createItem(EntityId $entityId, $entity)
+    public function createItem(EntityId $entityId, $entity): Item
     {
         $stateHistory = $this->stateRepository->find($entityId);
 
@@ -184,7 +184,7 @@ class WorkflowManager implements Manager
      *
      * @return void
      */
-    private function guardSameWorkflow(Item $item, Workflow $workflow)
+    private function guardSameWorkflow(Item $item, Workflow $workflow): void
     {
         if ($item->isWorkflowStarted() && $item->getWorkflowName() != $workflow->getName()) {
             $message = sprintf(

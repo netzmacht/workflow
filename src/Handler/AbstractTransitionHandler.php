@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Handler;
 
 use Netzmacht\Workflow\Data\ErrorCollection;
@@ -17,6 +19,8 @@ use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
+use Netzmacht\Workflow\Flow\Step;
+use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 
@@ -105,7 +109,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * {@inheritdoc}
      */
-    public function getTransition()
+    public function getTransition(): Transition
     {
         if ($this->isWorkflowStarted()) {
             return $this->workflow->getTransition($this->transitionName);
@@ -117,7 +121,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * {@inheritdoc}
      */
-    public function getWorkflow()
+    public function getWorkflow(): Workflow
     {
         return $this->workflow;
     }
@@ -125,7 +129,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * {@inheritdoc}
      */
-    public function getItem()
+    public function getItem(): Item
     {
         return $this->item;
     }
@@ -133,7 +137,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * {@inheritdoc}
      */
-    public function getContext()
+    public function getContext(): Context
     {
         return $this->context;
     }
@@ -141,7 +145,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * {@inheritdoc}
      */
-    public function isWorkflowStarted()
+    public function isWorkflowStarted(): bool
     {
         return $this->item->isWorkflowStarted();
     }
@@ -149,7 +153,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * {@inheritdoc}
      */
-    public function getRequiredPayloadProperties()
+    public function getRequiredPayloadProperties(): array
     {
         return $this->getTransition()->getRequiredPayloadProperties($this->item);
     }
@@ -159,7 +163,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
      *
      * @return bool
      */
-    public function isAvailable()
+    public function isAvailable(): bool
     {
         return $this->getTransition()->isAvailable($this->item, $this->context, $this->errorCollection);
     }
@@ -167,7 +171,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * {@inheritdoc}
      */
-    public function getErrorCollection()
+    public function getErrorCollection(): ErrorCollection
     {
         return $this->errorCollection;
     }
@@ -175,7 +179,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * {@inheritdoc}
      */
-    public function getCurrentStep()
+    public function getCurrentStep():? Step
     {
         if ($this->isWorkflowStarted()) {
             $stepName = $this->item->getCurrentStepName();
@@ -189,7 +193,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * {@inheritdoc}
      */
-    public function validate(array $payload)
+    public function validate(array $payload): bool
     {
         // first build the form
         $this->errorCollection->reset();
@@ -215,7 +219,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
      *
      * @return State
      */
-    protected function executeTransition()
+    protected function executeTransition(): State
     {
         $transition = $this->getTransition();
         $success    = $transition->executeActions($this->item, $this->context, $this->errorCollection);
@@ -238,7 +242,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
      *
      * @return void
      */
-    protected function guardValidated()
+    protected function guardValidated(): void
     {
         if ($this->validated === null) {
             throw new WorkflowException('Transition was not validated so far.');
@@ -256,7 +260,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
      *
      * @return void
      */
-    private function guardAllowedTransition($transitionName)
+    private function guardAllowedTransition(string $transitionName): void
     {
         if (!$this->isWorkflowStarted()) {
             if (!$transitionName || $transitionName === $this->getWorkflow()->getStartTransition()->getName()) {

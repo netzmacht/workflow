@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Handler;
 
 use Netzmacht\Workflow\Data\EntityManager;
@@ -67,10 +69,10 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
     public function createTransitionHandler(
         Item $item,
         Workflow $workflow,
-        $transitionName,
-        $providerName,
+        string $transitionName,
+        string $providerName,
         StateRepository $stateRepository
-    ) {
+    ): TransitionHandler {
         return new RepositoryBasedTransitionHandler(
             $item,
             $workflow,
@@ -86,7 +88,7 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
      *
      * @return EntityManager
      */
-    public function getEntityManager()
+    public function getEntityManager(): EntityManager
     {
         return $this->entityManager;
     }
@@ -95,7 +97,7 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
      *
      * @return TransactionHandler
      */
-    public function getTransactionHandler()
+    public function getTransactionHandler(): TransactionHandler
     {
         return $this->transactionHandler;
     }

@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Manager;
 
 use Netzmacht\Workflow\Handler\TransitionHandler;
@@ -47,9 +49,9 @@ interface Manager
      *
      * @param Workflow $workflow The workflow being added.
      *
-     * @return \Netzmacht\Workflow\Manager\Manager
+     * @return Manager
      */
-    public function addWorkflow(Workflow $workflow);
+    public function addWorkflow(Workflow $workflow): self;
 
     /**
      * Get a workflow for the given entity.
@@ -68,7 +70,7 @@ interface Manager
      *
      * @return bool|Workflow
      */
-    public function getWorkflowByName($name);
+    public function getWorkflowByName(string $name);
 
     /**
      * Get workflow by item.
@@ -87,14 +89,14 @@ interface Manager
      *
      * @return bool
      */
-    public function hasWorkflow(EntityId $entityId, $entity);
+    public function hasWorkflow(EntityId $entityId, $entity): bool;
 
     /**
      * Get all registered workflows.
      *
-     * @return Workflow[]
+     * @return Workflow[]|iterable
      */
-    public function getWorkflows();
+    public function getWorkflows(): iterable;
 
     /**
      * Create the item for an entity.
@@ -104,5 +106,5 @@ interface Manager
      *
      * @return Item
      */
-    public function createItem(EntityId $entityId, $entity);
+    public function createItem(EntityId $entityId, $entity): Item;
 }

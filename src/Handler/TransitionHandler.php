@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Handler;
 
 use Netzmacht\Workflow\Flow\Context;
@@ -17,6 +19,7 @@ use Netzmacht\Workflow\Flow\Exception\TransitionNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
+use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
 
@@ -32,14 +35,14 @@ interface TransitionHandler
      *
      * @return Workflow
      */
-    public function getWorkflow();
+    public function getWorkflow(): Workflow;
 
     /**
      * Get the item.
      *
      * @return Item
      */
-    public function getItem();
+    public function getItem(): Item;
 
     /**
      * Get the transition.
@@ -48,42 +51,42 @@ interface TransitionHandler
      *
      * @throws TransitionNotFoundException If transition was not found.
      */
-    public function getTransition();
+    public function getTransition(): Transition;
 
     /**
      * Get current step. Will return null if workflow is not started yet.
      *
-     * @return \Netzmacht\Workflow\Flow\Step|null
+     * @return Step|null
      */
-    public function getCurrentStep();
+    public function getCurrentStep():? Step;
 
     /**
      * Consider if it handles a start transition.
      *
      * @return bool
      */
-    public function isWorkflowStarted();
+    public function isWorkflowStarted(): bool;
 
     /**
      * Consider if input is required.
      *
-     * @return bool
+     * @return array
      */
-    public function getRequiredPayloadProperties();
+    public function getRequiredPayloadProperties(): array;
 
     /**
      * Consider if transition is available.
      *
      * @return bool
      */
-    public function isAvailable();
+    public function isAvailable(): bool;
 
     /**
      * Get the context.
      *
      * @return Context
      */
-    public function getContext();
+    public function getContext(): Context;
 
     /**
      * Validate the input.
@@ -92,7 +95,7 @@ interface TransitionHandler
      *
      * @return bool
      */
-    public function validate(array $payload);
+    public function validate(array $payload): bool;
 
     /**
      * Transit to next step.
@@ -102,5 +105,5 @@ interface TransitionHandler
      *
      * @return State
      */
-    public function transit();
+    public function transit(): State;
 }

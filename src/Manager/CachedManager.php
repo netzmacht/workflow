@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Manager;
 
 use Netzmacht\Workflow\Data\EntityId;
@@ -65,7 +67,7 @@ class CachedManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function addWorkflow(Workflow $workflow)
+    public function addWorkflow(Workflow $workflow): Manager
     {
         $this->manager->addWorkflow($workflow);
 
@@ -89,7 +91,7 @@ class CachedManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function getWorkflowByName($name)
+    public function getWorkflowByName(string $name)
     {
         return $this->manager->getWorkflowByName($name);
     }
@@ -105,7 +107,7 @@ class CachedManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function hasWorkflow(EntityId $entityId, $entity)
+    public function hasWorkflow(EntityId $entityId, $entity): bool
     {
         $key = $entityId->__toString();
 
@@ -119,7 +121,7 @@ class CachedManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function getWorkflows()
+    public function getWorkflows(): iterable
     {
         return $this->manager->getWorkflows();
     }
@@ -127,7 +129,7 @@ class CachedManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function createItem(EntityId $entityId, $entity)
+    public function createItem(EntityId $entityId, $entity): Item
     {
         $key = $entityId->__toString();
 

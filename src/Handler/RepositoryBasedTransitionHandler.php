@@ -10,11 +10,14 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Handler;
 
 use Netzmacht\Workflow\Data\EntityRepository;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Item;
+use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
@@ -57,7 +60,7 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
     public function __construct(
         Item $item,
         Workflow $workflow,
-        $transitionName,
+        string $transitionName,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
         TransactionHandler $transactionHandler
@@ -73,7 +76,7 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
      *
      * @throws \Exception If something went wrong during action execution.
      */
-    public function transit()
+    public function transit(): State
     {
         $this->guardValidated();
 

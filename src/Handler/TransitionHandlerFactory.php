@@ -10,13 +10,13 @@
  * @filesource
  */
 
-namespace Netzmacht\Workflow\Handler;
+declare(strict_types=1);
 
+namespace Netzmacht\Workflow\Handler;
 
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
-use Netzmacht\Workflow\Handler\TransitionHandler;
 
 /**
  * Interface TransitionHandlerFactory describes factory for the workflow transition handler.
@@ -39,8 +39,8 @@ interface TransitionHandlerFactory
     public function createTransitionHandler(
         Item $item,
         Workflow $workflow,
-        $transitionName,
-        $providerName,
+        string $transitionName,
+        string $providerName,
         StateRepository $stateRepository
-    );
+    ): TransitionHandler;
 }
