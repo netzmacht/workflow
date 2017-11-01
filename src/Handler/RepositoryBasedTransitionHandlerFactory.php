@@ -19,7 +19,7 @@ use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 
 /**
- * Class EventDispatchingTransitionHandlerFactory creates the event dispatching transition handler.
+ * Class RepositoryBasedTransitionHandlerFactory creates a repository based transition handler.
  *
  * @package Netzmacht\Workflow\Factory
  */
