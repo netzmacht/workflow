@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Flow;
 
 /**
@@ -26,7 +28,7 @@ interface Action
      *
      * @return array
      */
-    public function getRequiredPayloadProperties(Item $item);
+    public function getRequiredPayloadProperties(Item $item): array;
 
     /**
      * Transit will execute the action.
@@ -37,5 +39,5 @@ interface Action
      *
      * @return void
      */
-    public function transit(Transition $transition, Item $item, Context $context);
+    public function transit(Transition $transition, Item $item, Context $context): void;
 }

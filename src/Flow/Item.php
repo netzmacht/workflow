@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Flow;
 
 use Assert\Assertion;
@@ -81,7 +83,7 @@ class Item
      *
      * @return Item
      */
-    public static function initialize(EntityId $entityId, $entity)
+    public static function initialize(EntityId $entityId, $entity): self
     {
         return new Item($entityId, $entity);
     }
@@ -89,15 +91,15 @@ class Item
     /**
      * Restore an existing item.
      *
-     * @param EntityId $entityId     The entity id.
-     * @param mixed    $entity       The entity.
-     * @param State[]  $stateHistory Set or already passed states.
+     * @param EntityId         $entityId     The entity id.
+     * @param mixed            $entity       The entity.
+     * @param State[]|iterable $stateHistory Set or already passed states.
      *
      * @return Item
      */
-    public static function reconstitute(EntityId $entityId, $entity, $stateHistory)
+    public static function reconstitute(EntityId $entityId, $entity, iterable $stateHistory): Item
     {
-        Assertion::allIsInstanceOf($stateHistory, 'Netzmacht\Workflow\Flow\State');
+        Assertion::allIsInstanceOf($stateHistory, State::class);
 
         $item = self::initialize($entityId, $entity);
 
@@ -125,8 +127,8 @@ class Item
         Transition $transition,
         Context $context,
         ErrorCollection $errorCollection,
-        $success
-    ) {
+        bool $success
+    ): State {
         $this->guardNotStarted();
 
         $state = State::start($this->entityId, $transition, $context, $errorCollection, $success);
@@ -151,8 +153,8 @@ class Item
         Transition $transition,
         Context $context,
         ErrorCollection $errorCollection,
-        $success
-    ) {
+        bool $success
+    ): State {
         $this->guardStarted();
 
         $state = $this->getLatestState();
@@ -168,7 +170,7 @@ class Item
      *
      * @return string
      */
-    public function getCurrentStepName()
+    public function getCurrentStepName(): string
     {
         return $this->currentStepName;
     }
@@ -178,7 +180,7 @@ class Item
      *
      * @return EntityId
      */
-    public function getEntityId()
+    public function getEntityId(): EntityId
     {
         return $this->entityId;
     }
@@ -196,9 +198,9 @@ class Item
     /**
      * Get the state history of the workflow item.
      *
-     * @return State[]
+     * @return State[]|iterable
      */
-    public function getStateHistory()
+    public function getStateHistory(): iterable
     {
         return $this->stateHistory;
     }
@@ -208,9 +210,9 @@ class Item
      *
      * @param bool $successfulOnly Return only success ful steps.
      *
-     * @return bool|State
+     * @return State|false
      */
-    public function getLatestState($successfulOnly = true)
+    public function getLatestState(bool $successfulOnly = true)
     {
         if (!$successfulOnly) {
             return end($this->stateHistory);
@@ -230,7 +232,7 @@ class Item
      *
      * @return string
      */
-    public function getWorkflowName()
+    public function getWorkflowName(): string
     {
         return $this->workflowName;
     }
@@ -240,7 +242,7 @@ class Item
      *
      * @return bool
      */
-    public function isWorkflowStarted()
+    public function isWorkflowStarted(): bool
     {
         return !empty($this->currentStepName);
     }
@@ -252,7 +254,7 @@ class Item
      *
      * @throws WorkflowException If item workflow process was already started.
      */
-    private function guardNotStarted()
+    private function guardNotStarted(): void
     {
         if ($this->isWorkflowStarted()) {
             throw new WorkflowException('Item is already started.');
@@ -266,7 +268,7 @@ class Item
      *
      * @throws WorkflowException If item workflow process was not started.
      */
-    private function guardStarted()
+    private function guardStarted(): void
     {
         if (!$this->isWorkflowStarted()) {
             throw new WorkflowException('Item has not started yet.');
@@ -281,7 +283,7 @@ class Item
      *
      * @return void
      */
-    private function apply(State $state)
+    private function apply(State $state): void
     {
         // only change current step if transition was successful
         if ($state->isSuccessful()) {

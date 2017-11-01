@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
 use Netzmacht\Workflow\Data\ErrorCollection;
@@ -27,7 +29,7 @@ class OrCondition extends ConditionCollection
     /**
      * {@inheritdoc}
      */
-    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection)
+    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection): bool
     {
         if (!$this->conditions) {
             return true;

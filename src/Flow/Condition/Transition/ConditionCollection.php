@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
 use Assert\Assertion;
@@ -29,13 +31,23 @@ abstract class ConditionCollection implements Condition
     protected $conditions = array();
 
     /**
+     * ConditionCollection constructor.
+     *
+     * @param Condition[]|iterable $conditions List of child conditions.
+     */
+    public function __construct(iterable $conditions = [])
+    {
+        $this->addConditions($conditions);
+    }
+
+    /**
      * Add condition.
      *
      * @param Condition $condition Condition being added.
      *
      * @return $this
      */
-    public function addCondition(Condition $condition)
+    public function addCondition(Condition $condition): self
     {
         $this->conditions[] = $condition;
 
@@ -49,7 +61,7 @@ abstract class ConditionCollection implements Condition
      *
      * @return $this
      */
-    public function removeCondition(Condition $condition)
+    public function removeCondition(Condition $condition): self
     {
         foreach ($this->conditions as $index => $value) {
             if ($value === $condition) {
@@ -63,9 +75,9 @@ abstract class ConditionCollection implements Condition
     /**
      * Get child conditions.
      *
-     * @return Condition[]
+     * @return Condition[]|iterable
      */
-    public function getConditions()
+    public function getConditions(): iterable
     {
         return $this->conditions;
     }
@@ -73,15 +85,15 @@ abstract class ConditionCollection implements Condition
     /**
      * Add multiple conditions.
      *
-     * @param array $conditions Array of conditions being added.
+     * @param iterable $conditions Array of conditions being added.
      *
      * @return $this
      *
      * @throws \Assert\InvalidArgumentException If array contains an invalid condition.
      */
-    public function addConditions(array $conditions)
+    public function addConditions(iterable $conditions): self
     {
-        Assertion::allIsInstanceOf($conditions, 'Netzmacht\Workflow\Flow\Condition\Transition\Condition');
+        Assertion::allIsInstanceOf($conditions, Condition::class);
 
         foreach ($conditions as $condition) {
             $this->addCondition($condition);

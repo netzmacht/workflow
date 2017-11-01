@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Flow\Condition\Workflow;
 
 use Netzmacht\Workflow\Data\EntityId;
@@ -31,5 +33,5 @@ interface Condition
      *
      * @return bool
      */
-    public function match(Workflow $workflow, EntityId $entityId, $entity);
+    public function match(Workflow $workflow, EntityId $entityId, $entity): bool;
 }

@@ -10,9 +10,11 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Flow;
 
-use DateTime;
+use DateTimeImmutable;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\ErrorCollection;
 
@@ -68,7 +70,7 @@ class State
     /**
      * Date when state was reached.
      *
-     * @var DateTime
+     * @var DateTimeImmutable
      */
     private $reachedAt;
 
@@ -89,28 +91,28 @@ class State
     /**
      * Construct.
      *
-     * @param EntityId $entityId       The entity id.
-     * @param string   $workflowName   Workflow name.
-     * @param string   $transitionName The transition executed to reach the step.
-     * @param string   $stepToName     The step reached after transition.
-     * @param bool     $successful     Consider if transition was successful.
-     * @param array    $data           Stored data.
-     * @param DateTime $reachedAt      Time when state was reached.
-     * @param array    $errors         List of errors.
-     * @param int      $stateId        The state id of a persisted state.
+     * @param EntityId          $entityId       The entity id.
+     * @param string            $workflowName   Workflow name.
+     * @param string            $transitionName The transition executed to reach the step.
+     * @param string            $stepToName     The step reached after transition.
+     * @param bool              $successful     Consider if transition was successful.
+     * @param array             $data           Stored data.
+     * @param DateTimeImmutable $reachedAt      Time when state was reached.
+     * @param array             $errors         List of errors.
+     * @param int               $stateId        The state id of a persisted state.
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         EntityId $entityId,
-        $workflowName,
-        $transitionName,
-        $stepToName,
-        $successful,
+        string $workflowName,
+        string $transitionName,
+        string $stepToName,
+        bool $successful,
         array $data,
-        DateTime $reachedAt,
+        DateTimeImmutable $reachedAt,
         array $errors = array(),
-        $stateId = null
+        int $stateId = null
     ) {
         $this->entityId       = $entityId;
         $this->workflowName   = $workflowName;
@@ -148,7 +150,7 @@ class State
             $transition->getStepTo()->getName(),
             $success,
             $context->getProperties(),
-            new \DateTime(),
+            new \DateTimeImmutable(),
             $errorCollection->toArray()
         );
 
@@ -160,7 +162,7 @@ class State
      *
      * @return string
      */
-    public function getStepName()
+    public function getStepName(): string
     {
         return $this->stepName;
     }
@@ -170,7 +172,7 @@ class State
      *
      * @return string
      */
-    public function getTransitionName()
+    public function getTransitionName(): string
     {
         return $this->transitionName;
     }
@@ -180,7 +182,7 @@ class State
      *
      * @return string
      */
-    public function getWorkflowName()
+    public function getWorkflowName(): string
     {
         return $this->workflowName;
     }
@@ -190,7 +192,7 @@ class State
      *
      * @return array
      */
-    public function getData()
+    public function getData(): array
     {
         return $this->data;
     }
@@ -198,9 +200,9 @@ class State
     /**
      * Get reached at time.
      *
-     * @return DateTime
+     * @return DateTimeImmutable
      */
-    public function getReachedAt()
+    public function getReachedAt(): \DateTimeImmutable
     {
         return $this->reachedAt;
     }
@@ -208,9 +210,9 @@ class State
     /**
      * Consider if state is successful.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
         return $this->successful;
     }
@@ -220,7 +222,7 @@ class State
      *
      * @return EntityId
      */
-    public function getEntityId()
+    public function getEntityId(): EntityId
     {
         return $this->entityId;
     }
@@ -230,7 +232,7 @@ class State
      *
      * @return array
      */
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->errors;
     }
@@ -238,9 +240,9 @@ class State
     /**
      * Get state id.
      *
-     * @return int
+     * @return int|null
      */
-    public function getStateId()
+    public function getStateId():? int
     {
         return $this->stateId;
     }
@@ -255,9 +257,13 @@ class State
      *
      * @return State
      */
-    public function transit(Transition $transition, Context $context, ErrorCollection $errorCollection, $success = true)
-    {
-        $dateTime = new DateTime();
+    public function transit(
+        Transition $transition,
+        Context $context,
+        ErrorCollection $errorCollection,
+        bool $success = true
+    ): State {
+        $dateTime = new DateTimeImmutable();
         $stepName = $success ? $transition->getStepTo()->getName() : $this->stepName;
 
         return new static(

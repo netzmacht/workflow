@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Flow\Condition\Workflow;
 
 use Netzmacht\Workflow\Data\EntityId;
@@ -30,33 +32,29 @@ class ProviderNameCondition implements Condition
     private $providerName;
 
     /**
+     * ProviderNameCondition constructor.
+     *
+     * @param string $providerName
+     */
+    public function __construct(string $providerName)
+    {
+        $this->providerName = $providerName;
+    }
+
+    /**
      * Get the provider name to check against.
      *
      * @return string
      */
-    public function getProviderName()
+    public function getProviderName(): string
     {
         return $this->providerName;
     }
 
     /**
-     * Set a new provider name.
-     *
-     * @param string $providerName New provider name.
-     *
-     * @return $this
-     */
-    public function setProviderName($providerName)
-    {
-        $this->providerName = $providerName;
-
-        return $this;
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function match(Workflow $workflow, EntityId $entityId, $entity)
+    public function match(Workflow $workflow, EntityId $entityId, $entity): bool
     {
         if ($this->providerName) {
             return $entityId->getProviderName() == $this->providerName;

@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
 use Netzmacht\Workflow\Security\Permission;
@@ -38,40 +40,18 @@ abstract class AbstractPermissionCondition implements Condition
      *
      * @var bool
      */
-    protected $default = false;
+    private $grantAccessByDefault;
 
     /**
      * Construct.
      *
-     * @param User $user Security user instance.
+     * @param User $user                 Security user instance.
+     * @param bool $grantAccessByDefault Default access value if no permission is found.
      */
-    public function __construct(User $user)
+    public function __construct(User $user, bool $grantAccessByDefault = false)
     {
-        $this->user = $user;
-    }
-
-    /**
-     * Set default value.
-     *
-     * @param bool $access Default access value if no permission is found.
-     *
-     * @return $this
-     */
-    public function grantAccessByDefault($access)
-    {
-        $this->default = (bool) $access;
-
-        return $this;
-    }
-
-    /**
-     * Get default value.
-     *
-     * @return bool
-     */
-    public function isGrantedByDefault()
-    {
-        return $this->default;
+        $this->user                 = $user;
+        $this->grantAccessByDefault = $grantAccessByDefault;
     }
 
     /**
@@ -81,7 +61,7 @@ abstract class AbstractPermissionCondition implements Condition
      *
      * @return bool
      */
-    protected function checkPermission(Permission $permission = null)
+    protected function checkPermission(Permission $permission = null): bool
     {
         if ($permission) {
             if ($this->user->hasPermission($permission)) {

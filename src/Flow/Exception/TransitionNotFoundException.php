@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Flow\Exception;
 
 use Exception;
@@ -29,7 +31,7 @@ class TransitionNotFoundException extends \Exception
      * @param int       $code           Error code.
      * @param Exception $previous       Previous thrown exception.
      */
-    public function __construct($transitionName, $workflowName, $code = 0, Exception $previous = null)
+    public function __construct(string $transitionName, string $workflowName, int $code = 0, Exception $previous = null)
     {
         parent::__construct(
             sprintf('Transition "%s" not found in workflow "%s"', $transitionName, $workflowName),

@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Flow\Exception;
 
 use Exception;
@@ -29,7 +31,7 @@ class StepNotFoundException extends WorkflowException
      * @param int       $code         Error code.
      * @param Exception $previous     Previous thrown exception.
      */
-    public function __construct($stepName, $workflowName, $code = 0, Exception $previous = null)
+    public function __construct(string $stepName, string $workflowName, int $code = 0, Exception $previous = null)
     {
         parent::__construct(
             sprintf('Step "%s" is not part of workflow "%s"', $stepName, $workflowName),

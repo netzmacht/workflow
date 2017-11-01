@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Flow;
 
 use Assert\Assertion;
@@ -76,12 +78,12 @@ class Workflow extends Base
     /**
      * Construct.
      *
-     * @param string $name         The name of the workflow.
-     * @param string $providerName Name of the provider.
-     * @param null   $label        The label of the workflow.
-     * @param array  $config       Extra config.
+     * @param string      $name         The name of the workflow.
+     * @param string      $providerName Name of the provider.
+     * @param string|null $label        The label of the workflow.
+     * @param array       $config       Extra config.
      */
-    public function __construct($name, $providerName, $label = null, array $config = array())
+    public function __construct(string $name, string $providerName, string $label = null, array $config = array())
     {
         parent::__construct($name, $label, $config);
 
@@ -96,9 +98,12 @@ class Workflow extends Base
      *
      * @return $this
      */
-    public function addTransition(Transition $transition, $startTransition = false)
+    public function addTransition(Transition $transition, $startTransition = false): self
     {
-        $transition->setWorkflow($this);
+        if (in_array($transition, $this->transitions)) {
+            return $this;
+        }
+
         $this->transitions[] = $transition;
 
         if ($startTransition) {
@@ -117,7 +122,7 @@ class Workflow extends Base
      *
      * @return \Netzmacht\Workflow\Flow\Transition If transition is not found.
      */
-    public function getTransition($transitionName)
+    public function getTransition(string $transitionName): Transition
     {
         foreach ($this->transitions as $transition) {
             if ($transition->getName() == $transitionName) {
@@ -137,9 +142,9 @@ class Workflow extends Base
      * @throws StepNotFoundException If Step does not exists.
      * @throws TransitionNotFoundException If transition does not exists.
      *
-     * @return array
+     * @return Transition[]|iterable
      */
-    public function getAvailableTransitions(Item $item, Context $context = null)
+    public function getAvailableTransitions(Item $item, Context $context = null): iterable
     {
         $context         = $context ?: new Context();
         $errorCollection = new ErrorCollection();
@@ -167,9 +172,9 @@ class Workflow extends Base
     /**
      * Get all transitions.
      *
-     * @return Transition[]
+     * @return Transition[]|iterable
      */
-    public function getTransitions()
+    public function getTransitions(): iterable
     {
         return $this->transitions;
     }
@@ -181,7 +186,7 @@ class Workflow extends Base
      *
      * @return bool
      */
-    public function hasTransition($transitionName)
+    public function hasTransition(string $transitionName): bool
     {
         foreach ($this->transitions as $transition) {
             if ($transition->getName() === $transitionName) {
@@ -206,8 +211,8 @@ class Workflow extends Base
         Item $item,
         Context $context,
         ErrorCollection $errorCollection,
-        $transitionName
-    ) {
+        string $transitionName
+    ): bool {
         if (!$item->isWorkflowStarted()) {
             return $this->getStartTransition()->getName() === $transitionName;
         }
@@ -228,7 +233,7 @@ class Workflow extends Base
      *
      * @return $this
      */
-    public function addStep(Step $step)
+    public function addStep(Step $step): self
     {
         $this->steps[] = $step;
 
@@ -244,7 +249,7 @@ class Workflow extends Base
      *
      * @throws StepNotFoundException If step is not found.
      */
-    public function getStep($stepName)
+    public function getStep(string $stepName): Step
     {
         foreach ($this->steps as $step) {
             if ($step->getName() == $stepName) {
@@ -264,7 +269,7 @@ class Workflow extends Base
      *
      * @return $this
      */
-    public function setStartTransition($transitionName)
+    public function setStartTransition(string $transitionName): self
     {
         $this->startTransition = $this->getTransition($transitionName);
 
@@ -276,7 +281,7 @@ class Workflow extends Base
      *
      * @return Transition
      */
-    public function getStartTransition()
+    public function getStartTransition(): Transition
     {
         return $this->startTransition;
     }
@@ -288,7 +293,7 @@ class Workflow extends Base
      *
      * @return $this
      */
-    public function addRole(Role $role)
+    public function addRole(Role $role): self
     {
         $this->guardWorkflowRole($role);
 
@@ -306,7 +311,7 @@ class Workflow extends Base
      *
      * @throws RoleNotFoundException If role is not set.
      */
-    public function getRole($roleName)
+    public function getRole(string $roleName): Role
     {
         foreach ($this->roles as $role) {
             if ($role->getName() == $roleName) {
@@ -320,9 +325,9 @@ class Workflow extends Base
     /**
      * Get all available roles.
      *
-     * @return Role[]
+     * @return Role[]|iterable
      */
-    public function getRoles()
+    public function getRoles(): iterable
     {
         return $this->roles;
     }
@@ -332,7 +337,7 @@ class Workflow extends Base
      *
      * @return AndCondition
      */
-    public function getCondition()
+    public function getCondition():? AndCondition
     {
         return $this->condition;
     }
@@ -360,7 +365,7 @@ class Workflow extends Base
      *
      * @return string
      */
-    public function getProviderName()
+    public function getProviderName(): string
     {
         return $this->providerName;
     }
@@ -373,7 +378,7 @@ class Workflow extends Base
      *
      * @return bool
      */
-    public function match(EntityId $entityId, $entity)
+    public function match(EntityId $entityId, $entity): bool
     {
         if (!$this->condition) {
             return true;
@@ -391,7 +396,7 @@ class Workflow extends Base
      *
      * @throws InvalidArgumentException If role is not the same workflow.
      */
-    private function guardWorkflowRole(Role $role)
+    private function guardWorkflowRole(Role $role): void
     {
         Assertion::eq($role->getWorkflowName(), $this->getName());
     }

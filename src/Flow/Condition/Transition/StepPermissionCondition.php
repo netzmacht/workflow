@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
 use Netzmacht\Workflow\Data\ErrorCollection;
@@ -17,6 +19,7 @@ use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
+use Netzmacht\Workflow\Security\User;
 
 /**
  * Class StepPermissionCondition can be used to limit permissions of a workflow step.
@@ -34,36 +37,26 @@ class StepPermissionCondition extends AbstractPermissionCondition
      *
      * @var bool
      */
-    private $allowStartTransition = true;
+    private $allowStartTransition;
 
     /**
-     * Disallow a start transition.
+     * StepPermissionCondition constructor.
      *
-     * @return $this
+     * @param User $user                 Security user instance.
+     * @param bool $grantAccessByDefault Default access value if no permission is found.
+     * @param bool $allowStartTransition Allow start transition.
      */
-    public function disallowStartTransition()
+    public function __construct(User $user, bool $grantAccessByDefault = false, bool $allowStartTransition = true)
     {
-        $this->allowStartTransition = false;
+        parent::__construct($user, $grantAccessByDefault);
 
-        return $this;
-    }
-
-    /**
-     * Allow start transitions.
-     *
-     * @return $this
-     */
-    public function allowStartTransition()
-    {
-        $this->allowStartTransition = true;
-
-        return $this;
+        $this->allowStartTransition = $allowStartTransition;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection)
+    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection): bool
     {
         // workflow is not started, so no start step exists
         if (!$item->isWorkflowStarted()) {
@@ -102,7 +95,7 @@ class StepPermissionCondition extends AbstractPermissionCondition
      *
      * @return Permission|null
      */
-    protected function getStepPermission(Transition $transition, Item $item)
+    protected function getStepPermission(Transition $transition, Item $item):? Permission
     {
         $stepName   = $item->getCurrentStepName();
         $step       = $transition->getWorkflow()->getStep($stepName);

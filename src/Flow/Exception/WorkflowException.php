@@ -10,9 +10,9 @@
  * @filesource
  */
 
-namespace Netzmacht\Workflow\Flow\Exception;
+declare(strict_types=1);
 
-use Exception;
+namespace Netzmacht\Workflow\Flow\Exception;
 
 /**
  * Class WorkflowException is thrown if something went wrong during workflow.

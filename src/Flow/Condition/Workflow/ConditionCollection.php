@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Flow\Condition\Workflow;
 
 use Assert\Assertion;
@@ -24,16 +26,16 @@ abstract class ConditionCollection implements Condition
     /**
      * Child conditions of the collection.
      *
-     * @var Condition[]
+     * @var Condition[]|iterable
      */
     protected $conditions = array();
 
     /**
      * Construct.
      *
-     * @param Condition[] $conditions Conditions.
+     * @param Condition[]|iterable $conditions Conditions.
      */
-    public function __construct($conditions = array())
+    public function __construct(iterable $conditions = array())
     {
         $this->addConditions($conditions);
     }
@@ -45,7 +47,7 @@ abstract class ConditionCollection implements Condition
      *
      * @return $this
      */
-    public function addCondition(Condition $condition)
+    public function addCondition(Condition $condition): self
     {
         $this->conditions[] = $condition;
 
@@ -55,13 +57,13 @@ abstract class ConditionCollection implements Condition
     /**
      * Add multiple conditions.
      *
-     * @param Condition[] $conditions Array of conditions.
+     * @param Condition[]|iterable $conditions Array of conditions.
      *
      * @return $this
      */
-    public function addConditions($conditions)
+    public function addConditions(iterable $conditions): self
     {
-        Assertion::allIsInstanceOf($conditions, 'Netzmacht\Workflow\Flow\Condition\Workflow\Condition');
+        Assertion::allIsInstanceOf($conditions, Condition::class);
 
         foreach ($conditions as $condition) {
             $this->addCondition($condition);
@@ -73,9 +75,9 @@ abstract class ConditionCollection implements Condition
     /**
      * Get all conditions.
      *
-     * @return Condition[]
+     * @return Condition[]|iterable
      */
-    public function getConditions()
+    public function getConditions(): iterable
     {
         return $this->conditions;
     }
@@ -87,7 +89,7 @@ abstract class ConditionCollection implements Condition
      *
      * @return $this
      */
-    public function removeCondition(Condition $condition)
+    public function removeCondition(Condition $condition): self
     {
         foreach ($this->conditions as $index => $value) {
             if ($value === $condition) {

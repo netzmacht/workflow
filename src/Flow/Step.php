@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Flow;
 
 use Netzmacht\Workflow\Security\Permission;
@@ -46,9 +48,9 @@ class Step extends Base
     /**
      * Consider if step is final.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isFinal()
+    public function isFinal(): bool
     {
         return $this->final;
     }
@@ -56,13 +58,13 @@ class Step extends Base
     /**
      * Mark step as final.
      *
-     * @param boolean $final Step is a final step.
+     * @param bool $final Step is a final step.
      *
      * @return $this
      */
-    public function setFinal($final)
+    public function setFinal(bool $final): self
     {
-        $this->final = (bool) $final;
+        $this->final = $final;
 
         return $this;
     }
@@ -74,7 +76,7 @@ class Step extends Base
      *
      * @return $this
      */
-    public function allowTransition($transitionName)
+    public function allowTransition(string $transitionName): self
     {
         if (!in_array($transitionName, $this->allowedTransitions)) {
             $this->allowedTransitions[] = $transitionName;
@@ -90,7 +92,7 @@ class Step extends Base
      *
      * @return $this
      */
-    public function disallowTransition($transitionName)
+    public function disallowTransition(string $transitionName): self
     {
         $key = array_search($transitionName, $this->allowedTransitions);
 
@@ -107,7 +109,7 @@ class Step extends Base
      *
      * @return array
      */
-    public function getAllowedTransitions()
+    public function getAllowedTransitions(): array
     {
         if ($this->isFinal()) {
             return array();
@@ -123,7 +125,7 @@ class Step extends Base
      *
      * @return bool
      */
-    public function isTransitionAllowed($transitionName)
+    public function isTransitionAllowed(string $transitionName): bool
     {
         if ($this->isFinal()) {
             return false;
@@ -139,7 +141,7 @@ class Step extends Base
      *
      * @return bool
      */
-    public function hasPermission(Permission $permission)
+    public function hasPermission(Permission $permission): bool
     {
         if ($this->permission) {
             return $this->permission->equals($permission);
@@ -153,7 +155,7 @@ class Step extends Base
      *
      * @return Permission|null
      */
-    public function getPermission()
+    public function getPermission():? Permission
     {
         return $this->permission;
     }
@@ -165,7 +167,7 @@ class Step extends Base
      *
      * @return $this
      */
-    public function setPermission(Permission $permission)
+    public function setPermission(Permission $permission): self
     {
         $this->permission = $permission;
 

@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Flow;
 
 use Netzmacht\Workflow\Data\ErrorCollection;
@@ -77,19 +79,22 @@ class Transition extends Base
     private $workflow;
 
     /**
-     * This method should not be called.
+     * Transition constructor.
      *
-     * It's used to set the workflow reference when transition is added to the workflow.
-     *
-     * @param Workflow $workflow Current workflow.
-     *
-     * @return $this
+     * @param string   $name     Name of the element.
+     * @param Workflow $workflow The workflow to which the transition belongs.
+     * @param Step     $stepTo   The target step.
+     * @param string   $label    Label of the element.
+     * @param array    $config   Configuration values.
      */
-    public function setWorkflow(Workflow $workflow)
+    public function __construct($name, Workflow $workflow, Step $stepTo, $label = null, array $config = [])
     {
-        $this->workflow = $workflow;
+        parent::__construct($name, $label, $config);
 
-        return $this;
+        $workflow->addTransition($this);
+
+        $this->workflow = $workflow;
+        $this->stepTo   = $stepTo;
     }
 
     /**
@@ -97,7 +102,7 @@ class Transition extends Base
      *
      * @return Workflow
      */
-    public function getWorkflow()
+    public function getWorkflow(): Workflow
     {
         return $this->workflow;
     }
@@ -109,7 +114,7 @@ class Transition extends Base
      *
      * @return $this
      */
-    public function addAction(Action $action)
+    public function addAction(Action $action): self
     {
         $this->actions[] = $action;
 
@@ -119,9 +124,9 @@ class Transition extends Base
     /**
      * Get all actions.
      *
-     * @return Action[]
+     * @return Action[]|iterable
      */
-    public function getActions()
+    public function getActions(): iterable
     {
         return $this->actions;
     }
@@ -133,7 +138,7 @@ class Transition extends Base
      *
      * @return $this
      */
-    public function addPostAction(Action $action)
+    public function addPostAction(Action $action): self
     {
         $this->postActions[] = $action;
 
@@ -143,33 +148,29 @@ class Transition extends Base
     /**
      * Get all post actions.
      *
-     * @return Action[]
+     * @return Action[]|iterable
      */
-    public function getPostActions()
+    public function getPostActions(): iterable
     {
         return $this->postActions;
     }
 
     /**
-     * Set the target step.
+     * Get the target step.
      *
-     * @param Step $step The target step.
-     *
-     * @return $this
+     * @return Step
      */
-    public function setStepTo(Step $step)
+    public function getStepTo():? Step
     {
-        $this->stepTo = $step;
-
-        return $this;
+        return $this->stepTo;
     }
 
     /**
      * Get the condition.
      *
-     * @return Condition
+     * @return Condition|null
      */
-    public function getCondition()
+    public function getCondition():? Condition
     {
         return $this->condition;
     }
@@ -196,7 +197,7 @@ class Transition extends Base
      *
      * @return Condition
      */
-    public function getPreCondition()
+    public function getPreCondition():? Condition
     {
         return $this->preCondition;
     }
@@ -208,7 +209,7 @@ class Transition extends Base
      *
      * @return $this
      */
-    public function addPreCondition(Condition $preCondition)
+    public function addPreCondition(Condition $preCondition): self
     {
         if (!$this->preCondition) {
             $this->preCondition = new AndCondition();
@@ -220,23 +221,13 @@ class Transition extends Base
     }
 
     /**
-     * Get the target step.
-     *
-     * @return Step
-     */
-    public function getStepTo()
-    {
-        return $this->stepTo;
-    }
-
-    /**
      * Consider if user input is required.
      *
      * @param Item $item Workflow item.
      *
      * @return array
      */
-    public function getRequiredPayloadProperties(Item $item)
+    public function getRequiredPayloadProperties(Item $item): array
     {
         return array_merge(
             ... array_map(
@@ -257,7 +248,7 @@ class Transition extends Base
      *
      * @return bool
      */
-    public function isAllowed(Item $item, Context $context, ErrorCollection $errorCollection)
+    public function isAllowed(Item $item, Context $context, ErrorCollection $errorCollection): bool
     {
         if ($this->checkPreCondition($item, $context, $errorCollection)) {
             return $this->checkCondition($item, $context, $errorCollection);
@@ -277,7 +268,7 @@ class Transition extends Base
      *
      * @return bool
      */
-    public function isAvailable(Item $item, Context $context, ErrorCollection $errorCollection)
+    public function isAvailable(Item $item, Context $context, ErrorCollection $errorCollection): bool
     {
         if ($this->getRequiredPayloadProperties($item)) {
             return $this->checkPreCondition($item, $context, $errorCollection);
