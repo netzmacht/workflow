@@ -3,7 +3,7 @@
 namespace spec\Netzmacht\Workflow\Manager;
 
 use Netzmacht\Workflow\Data\EntityId;
-use Netzmacht\Workflow\Factory\TransitionHandlerFactory;
+use Netzmacht\Workflow\Handler\TransitionHandlerFactory;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
@@ -203,7 +203,6 @@ class WorkflowManagerSpec extends ObjectBehavior
     }
 
     function it_creates_an_item(
-        EntityId $entityId,
         EntityId $entityId,
         StateRepository $stateRepository,
         State $state

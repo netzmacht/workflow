@@ -5,7 +5,7 @@ namespace spec\Netzmacht\Workflow\Factory;
 use Netzmacht\Workflow\Data\EntityManager;
 use Netzmacht\Workflow\Data\EntityRepository;
 use Netzmacht\Workflow\Data\StateRepository;
-use Netzmacht\Workflow\Factory\RepositoryBasedTransitionHandlerFactory;
+use Netzmacht\Workflow\Handler\RepositoryBasedTransitionHandlerFactory;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Handler\Listener;
@@ -29,7 +29,7 @@ class RepositoryBasedTransitionHandlerFactorySpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Factory\RepositoryBasedTransitionHandlerFactory');
+        $this->shouldHaveType('Netzmacht\Workflow\Handler\RepositoryBasedTransitionHandlerFactory');
     }
 
     function it_gets_entity_manager(EntityManager $entityManager)

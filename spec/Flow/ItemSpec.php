@@ -52,7 +52,7 @@ class ItemSpec extends ObjectBehavior
         $this->isWorkflowStarted()->shouldReturn(false);
     }
 
-    function it_transits_to_a_successful_state(EntityId $entityId, State $state, State $newState, EntityId $entityId, Transition $transition, Context $context, ErrorCollection $errorCollection)
+    function it_transits_to_a_successful_state(EntityId $entityId, State $state, State $newState, Transition $transition, Context $context, ErrorCollection $errorCollection)
     {
         $state->getStepName()->willReturn('start');
         $state->getWorkflowName()->willReturn('workflow_name');
@@ -79,7 +79,6 @@ class ItemSpec extends ObjectBehavior
     function it_starts_a_new_workflow_state(
         EntityId $entityId,
         State $state,
-        EntityId $entityId,
         Transition $transition,
         Workflow $workflow,
         Step $step,

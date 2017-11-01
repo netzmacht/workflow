@@ -70,32 +70,24 @@ class TransitionSpec extends ObjectBehavior
         $this->getStepTo()->shouldReturn($step);
     }
 
-    function it_builds_the_form(Form $form, Item $item, Action $action)
-    {
-        $this->addAction($action);
-        $this->buildForm($form, $item)->shouldReturn($this);
-
-        $action->buildForm($form, $item)->shouldBeCalled();
-    }
-
     function it_knows_if_input_data_is_not_required(Action $action, Item $item)
     {
-        $this->isInputRequired($item)->shouldReturn(false);
+        $this->isPayloadRequired($item)->shouldReturn(false);
 
-        $action->isInputRequired($item)->willReturn(false);
+        $action->isPayloadRequired($item)->willReturn(false);
         $this->addAction($action);
 
-        $this->isInputRequired($item)->shouldReturn(false);
+        $this->isPayloadRequired($item)->shouldReturn(false);
     }
 
     function it_knows_if_input_data_is_required(Action $action, Item $item)
     {
-        $this->isInputRequired($item)->shouldReturn(false);
+        $this->isPayloadRequired($item)->shouldReturn(false);
 
-        $action->isInputRequired($item)->willReturn(true);
+        $action->isPayloadRequired($item)->willReturn(true);
         $this->addAction($action);
 
-        $this->isInputRequired($item)->shouldReturn(true);
+        $this->isPayloadRequired($item)->shouldReturn(true);
     }
 
     function it_checks_a_precondition(Condition $condition, Item $item, Context $context, ErrorCollection $errorCollection)
@@ -288,7 +280,7 @@ class TransitionSpec extends ObjectBehavior
             ->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))
             ->willReturn(false);
 
-        $action->isInputRequired($item)->willReturn(true);
+        $action->isPayloadRequired($item)->willReturn(true);
         $this->addAction($action);
 
 
@@ -368,11 +360,7 @@ class TransitionSpec extends ObjectBehavior
 
 class ThrowingAction implements Action
 {
-    public function isInputRequired(Item $item)
-    {
-    }
-
-    public function buildForm(Form $form, Item $item)
+    public function isPayloadRequired(Item $item)
     {
     }
 

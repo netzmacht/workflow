@@ -54,7 +54,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $workflow->getTransition(static::TRANSITION_NAME)->willReturn($transition);
 
         $transition->getName()->willReturn(static::TRANSITION_NAME);
-        $transition->isInputRequired($item)->willReturn(false);
+        $transition->isPayloadRequired($item)->willReturn(false);
 
         $item->transit(
             $transition,
@@ -133,22 +133,6 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $this->getItem()->shouldReturn($item);
     }
 
-    function it_gets_form_after_validation(Form $form, Workflow $workflow, Transition $transition, Item $item)
-    {
-        $transition->buildForm($form, $item)->shouldBeCalled();
-        $transition->checkPreCondition(
-            $item,
-            Argument::type(static::CONTEXT_CLASS),
-            Argument::type(static::ERROR_COLLECTION_CLASS)
-        )->shouldBeCalled();
-
-        $workflow->getStartTransition()->willReturn($transition);
-
-        $this->getForm()->shouldReturn(null);
-        $this->validate($form);
-        $this->getForm()->shouldReturn($form);
-    }
-
     function it_gets_current_step_for_started_workflow(Item $item, Workflow $workflow, Step $step)
     {
         $item->isWorkflowStarted()->willReturn(true);
@@ -213,16 +197,16 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
     function it_checks_if_input_data_is_required(Workflow $workflow, Transition $transition, Item $item)
     {
         $workflow->getStartTransition()->willReturn($transition);
-        $transition->isInputRequired($item)->willReturn(true);
+        $transition->isPayloadRequired($item)->willReturn(true);
 
-        $this->isInputRequired()->shouldReturn(true);
+        $this->isPayloadRequired()->shouldReturn(true);
     }
     function it_checks_if_input_data_is_not_required(Workflow $workflow, Transition $transition, Item $item)
     {
         $workflow->getStartTransition()->willReturn($transition);
-        $transition->isInputRequired($item)->willReturn(false);
+        $transition->isPayloadRequired($item)->willReturn(false);
 
-        $this->isInputRequired()->shouldReturn(false);
+        $this->isPayloadRequired()->shouldReturn(false);
     }
 
     function it_gets_the_context()
@@ -238,9 +222,8 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
     function it_validates(Form $form, Workflow $workflow, Transition $transition, Item $item, Listener $listener)
     {
         $workflow->getStartTransition()->willReturn($transition);
-        $transition->buildForm($form, $item)->shouldBeCalled();
         $transition->getName()->willReturn(static::TRANSITION_NAME);
-        $transition->isInputRequired($item)->willReturn(true);
+        $transition->isPayloadRequired($item)->willReturn(true);
         $transition->checkPreCondition(
             $item,
             Argument::type(static::CONTEXT_CLASS),
@@ -253,7 +236,6 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             Argument::type(static::ERROR_COLLECTION_CLASS)
         )->shouldBeCalled()->willReturn(true);
 
-        $listener->onBuildForm(Argument::cetera())->shouldBeCalled();
         $listener->onValidate(Argument::cetera())->willReturn(true);
 
         $form->prepare($item, Argument::type(self::CONTEXT_CLASS))->shouldBeCalled();
@@ -272,7 +254,6 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
     function it_transits_to_next_state(
         Form $form, Transition $transition, Item $item, Listener $listener, State $state
     ) {
-        $listener->onBuildForm(Argument::cetera())->shouldBeCalled();
         $listener->onValidate(Argument::cetera())->willReturn(true);
         $listener->onPreTransit(Argument::cetera())->shouldBeCalled();
         $listener->onPostTransit(Argument::cetera())->shouldBeCalled();
@@ -296,7 +277,6 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             Argument::type(static::ERROR_COLLECTION_CLASS)
         )->willReturn(true)->shouldBeCalled();
 
-        $transition->buildForm($form, $item)->shouldBeCalled();
         $transition->checkPreCondition(
             $item,
             Argument::type(static::CONTEXT_CLASS),

@@ -32,7 +32,7 @@ class ContextSpec extends ObjectBehavior
         $data = array('foo' => 'bar');
         $this->beConstructedWith(array(), $data);
 
-        $this->getParams()->shouldBe($data);
+        $this->getPayload()->shouldBe($data);
     }
 
     function it_sets_property()
@@ -116,27 +116,27 @@ class ContextSpec extends ObjectBehavior
     function it_sets_params()
     {
         $data = array('default' => array('foo' => 'bar'));
-        $this->setParams($data)->shouldReturn($this);
-        $this->getParams()->shouldReturn($data);
+        $this->setPayload($data)->shouldReturn($this);
+        $this->getPayload()->shouldReturn($data);
     }
 
     function it_sets_namespaced_params()
     {
         $data = array('default' => array('foo' => 'bar'));
-        $this->setParams($data, 'custom')->shouldReturn($this);
-        $this->getParams('custom')->shouldReturn($data);
+        $this->setPayload($data, 'custom')->shouldReturn($this);
+        $this->getPayload('custom')->shouldReturn($data);
     }
 
     function it_gets_params_as_array()
     {
-        $this->getParams()->shouldBeArray();
+        $this->getPayload()->shouldBeArray();
     }
 
     function it_gets_params_contains_namespaces()
     {
         $data = array('default' => array('foo' => 'bar'));
-        $this->setParams($data, 'custom');
+        $this->setPayload($data, 'custom');
 
-        $this->getParams()->shouldReturn(array('custom' => $data));
+        $this->getPayload()->shouldReturn(array('custom' => $data));
     }
 }
