@@ -16,8 +16,6 @@ use Netzmacht\Workflow\Data\EntityManager;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
-use Netzmacht\Workflow\Handler\Listener;
-use Netzmacht\Workflow\Handler\Listener\NoOpListener;
 use Netzmacht\Workflow\Handler\RepositoryBasedTransitionHandler;
 use Netzmacht\Workflow\Handler\TransitionHandler;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
@@ -35,13 +33,6 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
      * @var TransactionHandler
      */
     private $transactionHandler;
-
-    /**
-     * The event dispatcher.
-     *
-     * @var Listener
-     */
-    private $listener;
 
     /**
      * The entity manager.
@@ -88,8 +79,7 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
             $transitionName,
             $this->entityManager->getRepository($providerName),
             $stateRepository,
-            $this->transactionHandler,
-            $this->getListener()
+            $this->transactionHandler
         );
     }
 
@@ -102,35 +92,6 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
     {
         return $this->entityManager;
     }
-
-    /**
-     * Set the dispatcher which should be used.
-     *
-     * @param Listener $dispatcher The transition handler dispatcher.
-     *
-     * @return $this
-     */
-    public function setListener(Listener $dispatcher)
-    {
-        $this->listener = $dispatcher;
-
-        return $this;
-    }
-
-    /**
-     * Get the event dispatcher.
-     *
-     * @return Listener
-     */
-    public function getListener()
-    {
-        if (!$this->listener) {
-            $this->listener = new NoOpListener();
-        }
-
-        return $this->listener;
-    }
-
     /**
      * Get the transaction handler.
      *
