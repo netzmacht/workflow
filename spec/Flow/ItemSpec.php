@@ -15,16 +15,23 @@ use Prophecy\Argument;
 
 /**
  * Class ItemSpec
+ *
  * @package spec\Netzmacht\Workflow\Flow
- * @mixin Item
  */
 class ItemSpec extends ObjectBehavior
 {
-    protected static $entity = array('id' => 5);
+    protected static $entity = ['id' => 5];
 
-    function let(EntityId $entityId)
+    /**
+     * @var EntityId
+     */
+    private $entityId;
+
+    function let()
     {
-        $this->beConstructedThrough('initialize', array($entityId, static::$entity));
+        $this->entityId = EntityId::fromProviderNameAndId('entity', 4);
+
+        $this->beConstructedThrough('initialize', [$this->entityId, static::$entity]);
     }
 
     function it_is_initializable()
@@ -32,14 +39,14 @@ class ItemSpec extends ObjectBehavior
         $this->shouldHaveType('Netzmacht\Workflow\Flow\Item');
     }
 
-    function it_restores_state_history(EntityId $entityId, State $state)
+    function it_restores_state_history(State $state)
     {
-        $this->beConstructedThrough('reconstitute', array($entityId, static::$entity, array($state)));
+        $this->beConstructedThrough('reconstitute', [$this->entityId, static::$entity, [$state]]);
     }
 
-    function it_has_an_entity_id(EntityId $entityId)
+    function it_has_an_entity_id()
     {
-        $this->getEntityId()->shouldReturn($entityId);
+        $this->getEntityId()->shouldReturn($this->entityId);
     }
 
     function it_has_an_entity()
@@ -52,8 +59,13 @@ class ItemSpec extends ObjectBehavior
         $this->isWorkflowStarted()->shouldReturn(false);
     }
 
-    function it_transits_to_a_successful_state(EntityId $entityId, State $state, State $newState, Transition $transition, Context $context, ErrorCollection $errorCollection)
-    {
+    function it_transits_to_a_successful_state(
+        State $state,
+        State $newState,
+        Transition $transition,
+        Context $context,
+        ErrorCollection $errorCollection
+    ) {
         $state->getStepName()->willReturn('start');
         $state->getWorkflowName()->willReturn('workflow_name');
         $state->isSuccessful()->willReturn(true);
@@ -63,13 +75,13 @@ class ItemSpec extends ObjectBehavior
         $newState->getStepName()->willReturn('target');
         $newState->isSuccessful()->willReturn(true);
 
-        $this->it_restores_state_history($entityId, $state);
+        $this->it_restores_state_history($state);
 
         $this->transit($transition, $context, $errorCollection, true);
 
         $this->getCurrentStepName()->shouldReturn('target');
         $this->getWorkflowName()->shouldReturn('workflow_name');
-        $this->getStateHistory()->shouldReturn(array($state, $newState));
+        $this->getStateHistory()->shouldReturn([$state, $newState]);
 
         $this->getLatestState()->shouldHaveType('Netzmacht\Workflow\Flow\State');
         $this->getLatestState()->shouldNotBe($state);
@@ -77,27 +89,27 @@ class ItemSpec extends ObjectBehavior
 
 
     function it_starts_a_new_workflow_state(
-        EntityId $entityId,
-        State $state,
         Transition $transition,
         Workflow $workflow,
         Step $step,
         Context $context,
         ErrorCollection $errorCollection
-    )
-    {
+    ) {
+        $workflow->getName()->willReturn('workflow');
+        $step->getName()->willReturn('step');
+
         $transition->getWorkflow()->willReturn($workflow);
         $transition->getName()->willReturn('transition_name');
         $transition->getStepTo()->willReturn($step);
 
-        $context->getProperties()->willReturn(array());
-        $errorCollection->toArray()->willReturn(array());
+        $context->getProperties()->willReturn([]);
+        $errorCollection->toArray()->willReturn([]);
 
-        $this->beConstructedThrough('initialize', array($entityId, static::$entity));
+        $this->beConstructedThrough('initialize', [$this->entityId, static::$entity]);
         $this->start($transition, $context, $errorCollection, true)->shouldHaveType('Netzmacht\Workflow\Flow\State');
     }
 
-    function it_get_last_successful_state(EntityId $entityId, State $state, State $failedState)
+    function it_get_last_successful_state(State $state, State $failedState)
     {
         $failedState->isSuccessful()->willReturn(false);
         $failedState->getStepName()->willReturn('failed');
@@ -106,13 +118,13 @@ class ItemSpec extends ObjectBehavior
         $state->getStepName()->willReturn('start');
         $state->getWorkflowName()->shouldBeCalled();
 
-        $this->beConstructedThrough('reconstitute', array($entityId, static::$entity, array($state, $failedState)));
+        $this->beConstructedThrough('reconstitute', [$this->entityId, static::$entity, [$state, $failedState]]);
 
         $this->getCurrentStepName()->shouldReturn('start');
         $this->getLatestState()->shouldReturn($state);
     }
 
-    function it_latest_state_from_history(EntityId $entityId, State $state, State $failedState)
+    function it_latest_state_from_history(State $state, State $failedState)
     {
         $failedState->isSuccessful()->willReturn(false);
         $failedState->getStepName()->willReturn('failed');
@@ -121,7 +133,7 @@ class ItemSpec extends ObjectBehavior
         $state->getStepName()->willReturn('start');
         $state->getWorkflowName()->shouldBeCalled();
 
-        $this->beConstructedThrough('reconstitute', array($entityId, static::$entity, array($state, $failedState)));
+        $this->beConstructedThrough('reconstitute', [$this->entityId, static::$entity, [$state, $failedState]]);
 
         $this->getLatestState(false)->shouldReturn($failedState);
     }

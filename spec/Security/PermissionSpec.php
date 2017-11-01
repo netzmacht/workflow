@@ -10,7 +10,6 @@ use Prophecy\Argument;
 /**
  * Class PermissionSpec
  * @package spec\Netzmacht\Workflow\Security
- * @mixin Permission
  */
 class PermissionSpec extends ObjectBehavior
 {
@@ -54,7 +53,7 @@ class PermissionSpec extends ObjectBehavior
         $this->__toString()->shouldReturn('workflow:perm');
     }
 
-    function it_reconstitutes_form_string()
+    function it_reconstitutes_from_string()
     {
         $this->beConstructedThrough('fromString', array('workflow:perm'));
 

@@ -10,9 +10,6 @@ use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
-use Netzmacht\Workflow\Form\Form;
-use Netzmacht\Workflow\Handler\Listener;
-use Netzmacht\Workflow\Handler\RepositoryBasedTransitionHandler;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -20,7 +17,6 @@ use Prophecy\Argument;
 /**
  * Class RepositoryBasedTransitionHandlerSpec
  * @package spec\Netzmacht\Workflow\Handler
- * @mixin RepositoryBasedTransitionHandler
  */
 class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 {
@@ -34,18 +30,23 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
     protected static $entity = array('id' => 5);
 
+    /**
+     * @var EntityId
+     */
+    private $entityId;
+
     function let(
         Item $item,
-        EntityId $entityId,
         Workflow $workflow,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
         TransactionHandler $transactionHandler,
         Step $step,
         Transition $transition,
-        State $state,
-        Listener $listener
+        State $state
     ) {
+        $this->entityId = EntityId::fromProviderNameAndId('entity', '2');
+
         $workflow->getStep(static::STEP_NAME)->willReturn($step);
         $workflow->getStartTransition()->willReturn($transition);
         $workflow->getName()->willReturn(static::WORKFLOW_NAME);
@@ -54,7 +55,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $workflow->getTransition(static::TRANSITION_NAME)->willReturn($transition);
 
         $transition->getName()->willReturn(static::TRANSITION_NAME);
-        $transition->isPayloadRequired($item)->willReturn(false);
+        $transition->getRequiredPayloadProperties($item)->willReturn([]);
 
         $item->transit(
             $transition,
@@ -67,16 +68,13 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $item->getCurrentStepName()->willReturn(static::STEP_NAME);
         $item->getEntity()->willReturn(static::$entity);
 
-        $entityId->__toString()->willReturn('entity::2');
-
         $this->beConstructedWith(
             $item,
             $workflow,
             static::TRANSITION_NAME,
             $entityRepository,
             $stateRepository,
-            $transactionHandler,
-            $listener
+            $transactionHandler
         );
     }
 
@@ -96,9 +94,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
         TransactionHandler $transactionHandler,
-        Transition $transition,
-        Listener $listener,
-        EntityId $entityId
+        Transition $transition
     ) {
         $this->beConstructedWith(
             $item,
@@ -106,12 +102,11 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             null,
             $entityRepository,
             $stateRepository,
-            $transactionHandler,
-            $listener
+            $transactionHandler
         );
 
         $item->isWorkflowStarted()->willReturn(false);
-        $item->getEntityId()->willReturn($entityId);
+        $item->getEntityId()->willReturn($this->entityId);
 
         $workflow->getStartTransition()->willReturn($transition);
 
@@ -148,8 +143,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         Workflow $workflow,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
-        TransactionHandler $transactionHandler,
-        Listener $listener
+        TransactionHandler $transactionHandler
     ) {
         $this->beConstructedWith(
             $item,
@@ -157,8 +151,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             null,
             $entityRepository,
             $stateRepository,
-            $transactionHandler,
-            $listener
+            $transactionHandler
         );
 
         $item->isWorkflowStarted()->willReturn(false);
@@ -177,8 +170,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         Workflow $workflow,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
-        TransactionHandler $transactionHandler,
-        Listener $listener
+        TransactionHandler $transactionHandler
     ) {
         $this->beConstructedWith(
             $item,
@@ -186,8 +178,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             null,
             $entityRepository,
             $stateRepository,
-            $transactionHandler,
-            $listener
+            $transactionHandler
         );
 
         $item->isWorkflowStarted()->willReturn(false);
@@ -197,16 +188,16 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
     function it_checks_if_input_data_is_required(Workflow $workflow, Transition $transition, Item $item)
     {
         $workflow->getStartTransition()->willReturn($transition);
-        $transition->isPayloadRequired($item)->willReturn(true);
+        $transition->getRequiredPayloadProperties($item)->willReturn(['foo']);
 
-        $this->isPayloadRequired()->shouldReturn(true);
+        $this->getRequiredPayloadProperties()->shouldReturn(['foo']);
     }
     function it_checks_if_input_data_is_not_required(Workflow $workflow, Transition $transition, Item $item)
     {
         $workflow->getStartTransition()->willReturn($transition);
-        $transition->isPayloadRequired($item)->willReturn(false);
+        $transition->getRequiredPayloadProperties($item)->willReturn([]);
 
-        $this->isPayloadRequired()->shouldReturn(false);
+        $this->getRequiredPayloadProperties()->shouldReturn([]);
     }
 
     function it_gets_the_context()
@@ -219,11 +210,11 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $this->getErrorCollection()->shouldHaveType(self::ERROR_COLLECTION_CLASS);
     }
 
-    function it_validates(Form $form, Workflow $workflow, Transition $transition, Item $item, Listener $listener)
+    function it_validates(Workflow $workflow, Transition $transition, Item $item)
     {
         $workflow->getStartTransition()->willReturn($transition);
         $transition->getName()->willReturn(static::TRANSITION_NAME);
-        $transition->isPayloadRequired($item)->willReturn(true);
+        $transition->getRequiredPayloadProperties($item)->willReturn(['foo']);
         $transition->checkPreCondition(
             $item,
             Argument::type(static::CONTEXT_CLASS),
@@ -236,12 +227,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             Argument::type(static::ERROR_COLLECTION_CLASS)
         )->shouldBeCalled()->willReturn(true);
 
-        $listener->onValidate(Argument::cetera())->willReturn(true);
-
-        $form->prepare($item, Argument::type(self::CONTEXT_CLASS))->shouldBeCalled();
-        $form->validate()->shouldBeCalled()->willReturn(true);
-
-        $this->validate($form)->shouldReturn(true);
+        $this->validate([])->shouldReturn(true);
     }
 
     function it_throws_during_transits_if_not_validated(Workflow $workflow, Transition $transition)
@@ -251,13 +237,8 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $this->shouldThrow('Netzmacht\Workflow\Flow\Exception\WorkflowException')->duringTransit();
     }
 
-    function it_transits_to_next_state(
-        Form $form, Transition $transition, Item $item, Listener $listener, State $state
-    ) {
-        $listener->onValidate(Argument::cetera())->willReturn(true);
-        $listener->onPreTransit(Argument::cetera())->shouldBeCalled();
-        $listener->onPostTransit(Argument::cetera())->shouldBeCalled();
-
+    function it_transits_to_next_state(Transition $transition, Item $item, State $state)
+    {
         $item->transit(
             $transition,
             Argument::type(static::CONTEXT_CLASS),
@@ -277,17 +258,23 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             Argument::type(static::ERROR_COLLECTION_CLASS)
         )->willReturn(true)->shouldBeCalled();
 
+        $transition->checkCondition(
+            $item,
+            Argument::type(static::CONTEXT_CLASS),
+            Argument::type(static::ERROR_COLLECTION_CLASS)
+        )->willReturn(true)->shouldBeCalled();
+
         $transition->checkPreCondition(
             $item,
             Argument::type(static::CONTEXT_CLASS),
             Argument::type(static::ERROR_COLLECTION_CLASS)
-            )->shouldBeCalled();
+            )->willReturn(true)->shouldBeCalled();
 
-        $this->validate($form);
+        $this->validate([]);
         $this->transit()->shouldHaveType('Netzmacht\Workflow\Flow\State');
     }
 
-    function it_checks_if_transition_is_available(Form $form, Transition $transition, Item $item)
+    function it_checks_if_transition_is_available(Transition $transition, Item $item)
     {
         $transition->getName()->willReturn(static::TRANSITION_NAME);
         $transition->isAvailable(

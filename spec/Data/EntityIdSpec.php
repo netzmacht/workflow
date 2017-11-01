@@ -9,7 +9,6 @@ use Prophecy\Argument;
 /**
  * Class EntityIdSpec
  * @package spec\Netzmacht\Workflow\Data
- * @mixin EntityId
  */
 class EntityIdSpec extends ObjectBehavior
 {
@@ -37,25 +36,25 @@ class EntityIdSpec extends ObjectBehavior
         $this->getProviderName()->shouldReturn(static::PROVIDER_NAME);
     }
 
-    function it_equals_to_same_entity_id(EntityId $otherEntitdId)
+    function it_equals_to_same_entity_id()
     {
-        $otherEntitdId->__toString()->willReturn(static::PROVIDER_NAME . '::' . static::IDENTIFIER);
+        $otherEntityId = EntityId::fromString(static::PROVIDER_NAME . '::' . static::IDENTIFIER);
 
-        $this->equals($otherEntitdId)->shouldReturn(true);
+        $this->equals($otherEntityId)->shouldReturn(true);
     }
 
-    function it_does_not_equals_to_another_entity_id_with_different_id(EntityId $otherEntitdId)
+    function it_does_not_equals_to_another_entity_id_with_different_id()
     {
-        $otherEntitdId->__toString()->willReturn(static::PROVIDER_NAME . '::' . (static::IDENTIFIER + 5));
+        $otherEntityId = EntityId::fromString(static::PROVIDER_NAME . '::' . (static::IDENTIFIER + 5));
 
-        $this->equals($otherEntitdId)->shouldReturn(false);
+        $this->equals($otherEntityId)->shouldReturn(false);
     }
 
-    function it_does_not_equals_to_another_entity_id_with_different_provider_name(EntityId $otherEntitdId)
+    function it_does_not_equals_to_another_entity_id_with_different_provider_name()
     {
-        $otherEntitdId->__toString()->willReturn(static::PROVIDER_NAME . '_2::' . static::IDENTIFIER);
+        $otherEntityId = EntityId::fromString(static::PROVIDER_NAME . '_2::' . static::IDENTIFIER);
 
-        $this->equals($otherEntitdId)->shouldReturn(false);
+        $this->equals($otherEntityId)->shouldReturn(false);
     }
 
     function it_casts_to_string()

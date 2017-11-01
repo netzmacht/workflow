@@ -8,7 +8,6 @@ use Prophecy\Argument;
 /**
  * Class ContextSpec
  * @package spec\Netzmacht\Contao\Workflow\Flow
- * @mixin \Netzmacht\Workflow\Flow\Context
  */
 class ContextSpec extends ObjectBehavior
 {
@@ -32,7 +31,7 @@ class ContextSpec extends ObjectBehavior
         $data = array('foo' => 'bar');
         $this->beConstructedWith(array(), $data);
 
-        $this->getPayload()->shouldBe($data);
+        $this->getParams()->shouldBe($data);
     }
 
     function it_sets_property()
@@ -116,27 +115,27 @@ class ContextSpec extends ObjectBehavior
     function it_sets_params()
     {
         $data = array('default' => array('foo' => 'bar'));
-        $this->setPayload($data)->shouldReturn($this);
-        $this->getPayload()->shouldReturn($data);
+        $this->setParams($data)->shouldReturn($this);
+        $this->getParams()->shouldReturn($data);
     }
 
     function it_sets_namespaced_params()
     {
         $data = array('default' => array('foo' => 'bar'));
-        $this->setPayload($data, 'custom')->shouldReturn($this);
-        $this->getPayload('custom')->shouldReturn($data);
+        $this->setParams($data, 'custom')->shouldReturn($this);
+        $this->getParams('custom')->shouldReturn($data);
     }
 
     function it_gets_params_as_array()
     {
-        $this->getPayload()->shouldBeArray();
+        $this->getParams()->shouldBeArray();
     }
 
     function it_gets_params_contains_namespaces()
     {
         $data = array('default' => array('foo' => 'bar'));
-        $this->setPayload($data, 'custom');
+        $this->setParams($data, 'custom');
 
-        $this->getPayload()->shouldReturn(array('custom' => $data));
+        $this->getParams()->shouldReturn(array('custom' => $data));
     }
 }

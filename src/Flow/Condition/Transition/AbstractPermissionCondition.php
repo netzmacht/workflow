@@ -40,7 +40,7 @@ abstract class AbstractPermissionCondition implements Condition
      *
      * @var bool
      */
-    private $grantAccessByDefault;
+    protected $grantAccessByDefault;
 
     /**
      * Construct.
@@ -61,13 +61,13 @@ abstract class AbstractPermissionCondition implements Condition
      *
      * @return bool
      */
-    protected function checkPermission(Permission $permission = null): bool
+    public function checkPermission(Permission $permission = null): bool
     {
         if ($permission) {
             if ($this->user->hasPermission($permission)) {
                 return true;
             }
-        } elseif ($this->isGrantedByDefault()) {
+        } elseif ($this->grantAccessByDefault) {
             return true;
         }
 

@@ -69,7 +69,7 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
     public function createTransitionHandler(
         Item $item,
         Workflow $workflow,
-        string $transitionName,
+        ?string $transitionName,
         string $providerName,
         StateRepository $stateRepository
     ): TransitionHandler {

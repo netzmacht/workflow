@@ -13,7 +13,6 @@ use Prophecy\Argument;
 /**
  * Class StateSpec
  * @package spec\Netzmacht\Workflow\Flow
- * @mixin State
  */
 class StateSpec extends ObjectBehavior
 {
@@ -27,12 +26,19 @@ class StateSpec extends ObjectBehavior
         'bar' => false
     );
 
+    /**
+     * @var EntityId
+     */
+    private $entityId;
+
     private static $errors = array(array('error.message', array()));
 
-    function let(EntityId $entityId, \DateTime $dateTime)
+    function let(\DateTimeImmutable $dateTime)
     {
+        $this->entityId = EntityId::fromProviderNameAndId('entity', 4);
+
         $this->beConstructedWith(
-            $entityId,
+            $this->entityId,
             static::WORKFLOW_NAME,
             static::TRANSITION_NAME,
             static::STEP_TO,
@@ -61,7 +67,7 @@ class StateSpec extends ObjectBehavior
 
     function it_knows_reached_time()
     {
-        $this->getReachedAt()->shouldBeAnInstanceOf('DateTime');
+        $this->getReachedAt()->shouldBeAnInstanceOf(\DateTimeImmutable::class);
     }
 
     function it_stores_data()
@@ -69,9 +75,9 @@ class StateSpec extends ObjectBehavior
         $this->getData()->shouldReturn(static::$data);
     }
 
-    function it_knows_entity_id(EntityId $entityId)
+    function it_knows_entity_id()
     {
-        $this->getEntityId()->shouldReturn($entityId);
+        $this->getEntityId()->shouldReturn($this->entityId);
     }
 
     function it_stores_error()
@@ -86,6 +92,8 @@ class StateSpec extends ObjectBehavior
 
     function it_transits_to_next_state(Transition $transition, Context $context, ErrorCollection $errorCollection)
     {
+        $transition->getName()->willReturn('transition');
+
         $context->getProperties()->willReturn(array());
         $errorCollection->getErrors()->willReturn(array());
 

@@ -3,12 +3,10 @@
 namespace spec\Netzmacht\Workflow;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 /**
  * Class BaseSpec
  * @package spec\Netzmacht\Workflow
- * @mixin Base
  */
 class BaseSpec extends ObjectBehavior
 {
@@ -29,7 +27,7 @@ class BaseSpec extends ObjectBehavior
 
     function it_accepts_initial_config()
     {
-        $this->beConstructedWith(static::NAME, null, array('config' => 'test'));
+        $this->beConstructedWith(static::NAME, '', array('config' => 'test'));
         $this->getConfig()->shouldBe(array('config' => 'test'));
     }
 

@@ -1,30 +1,26 @@
 <?php
 
-namespace spec\Netzmacht\Workflow\Factory;
+namespace spec\Netzmacht\Workflow\Handler;
 
 use Netzmacht\Workflow\Data\EntityManager;
 use Netzmacht\Workflow\Data\EntityRepository;
 use Netzmacht\Workflow\Data\StateRepository;
-use Netzmacht\Workflow\Handler\RepositoryBasedTransitionHandlerFactory;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
-use Netzmacht\Workflow\Handler\Listener;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 /**
  * Class EventDispatchingTransitionHandlerFactorySpec
  * @package spec\Netzmacht\Workflow\Factory
- * @mixin RepositoryBasedTransitionHandlerFactory
  */
 class RepositoryBasedTransitionHandlerFactorySpec extends ObjectBehavior
 {
     protected static $entity = array('id' => 5);
 
-    function let(Listener $dispatcher, TransactionHandler $transactionHandler, EntityManager $entityManager)
+    function let(TransactionHandler $transactionHandler, EntityManager $entityManager)
     {
-        $this->beConstructedWith($entityManager, $transactionHandler, $dispatcher);
+        $this->beConstructedWith($entityManager, $transactionHandler);
     }
 
     function it_is_initializable()
@@ -42,31 +38,18 @@ class RepositoryBasedTransitionHandlerFactorySpec extends ObjectBehavior
         $this->getTransactionHandler()->shouldReturn($transactionHandler);
     }
 
-    function it_has_a_listener(Listener $listener)
-    {
-        $this->setListener($listener)->shouldReturn($this);
-        $this->getListener()->shouldReturn($listener);
-    }
-
-    function it_creates_a_no_op_listener_if_none_set()
-    {
-        $this->getListener()->shouldHaveType('Netzmacht\Workflow\Handler\Listener\NoOpListener');
-    }
-
     function it_creates_the_repository_based_transition_handler(
         Item $item,
         Workflow $workflow,
         StateRepository $stateRepository,
         EntityManager $entityManager,
-        EntityRepository $entityRepository,
-        Listener $listener
+        EntityRepository $entityRepository
     ) {
         $entityManager->getRepository('test')->willReturn($entityRepository);
 
         $item->isWorkflowStarted()->willReturn(false);
         $item->getEntity()->willReturn(static::$entity);
 
-        $this->setListener($listener);
         $this->createTransitionHandler(
             $item,
             $workflow,

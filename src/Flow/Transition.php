@@ -87,7 +87,7 @@ class Transition extends Base
      * @param string   $label    Label of the element.
      * @param array    $config   Configuration values.
      */
-    public function __construct($name, Workflow $workflow, Step $stepTo, $label = null, array $config = [])
+    public function __construct($name, Workflow $workflow, Step $stepTo, $label = '', array $config = [])
     {
         parent::__construct($name, $label, $config);
 
@@ -229,6 +229,10 @@ class Transition extends Base
      */
     public function getRequiredPayloadProperties(Item $item): array
     {
+        if (!$this->actions) {
+            return [];
+        }
+
         return array_merge(
             ... array_map(
                 function (Action $action) use ($item) {

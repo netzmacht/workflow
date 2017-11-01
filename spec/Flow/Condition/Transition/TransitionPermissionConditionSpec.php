@@ -15,7 +15,6 @@ use Prophecy\Argument;
 /**
  * Class TransitionPermissionConditionSpec
  * @package spec\Netzmacht\Workflow\Flow\Condition\Transition
- * @mixin TransitionPermissionCondition
  */
 class TransitionPermissionConditionSpec extends ObjectBehavior
 {

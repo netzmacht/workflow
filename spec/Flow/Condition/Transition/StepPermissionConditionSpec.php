@@ -5,7 +5,6 @@ namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Security\User;
-use Netzmacht\Workflow\Flow\Condition\Transition\StepPermissionCondition;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Step;
@@ -17,7 +16,6 @@ use Prophecy\Argument;
 /**
  * Class StepPermissionConditionSpec
  * @package spec\Netzmacht\Workflow\Flow\Condition\Transition
- * @mixin StepPermissionCondition
  */
 class StepPermissionConditionSpec extends ObjectBehavior
 {
@@ -53,20 +51,18 @@ class StepPermissionConditionSpec extends ObjectBehavior
     }
 
     function it_does_match_if_workflow_not_started_is_explicit_allowed(
+        User $user,
         Transition $transition,
         Item $item,
         Context $context,
         ErrorCollection $errorCollection
     ) {
+        $this->beConstructedWith($user, false, false);
         $item->isWorkflowStarted()->willReturn(false);
-        $this->disallowStartTransition()->shouldReturn($this);
 
         $errorCollection->addError(Argument::cetera())->shouldBeCalled();
 
         $this->match($transition, $item, $context, $errorCollection)->shouldReturn(false);
-
-        $this->allowStartTransition()->shouldReturn($this);
-        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(true);
     }
 
     function it_matches_if_step_permission_equals(

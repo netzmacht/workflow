@@ -12,7 +12,6 @@ use Prophecy\Argument;
 /**
  * Class ConditionCollectionSpec
  * @package spec\Netzmacht\Workflow\Flow\Condition\Workflow
- * @mixin ConditionCollection
  */
 class ConditionCollectionSpec extends ObjectBehavior
 {
@@ -54,7 +53,8 @@ class ConditionCollectionSpec extends ObjectBehavior
 
 class ConditionCollection extends AbstractConditionCollection
 {
-    public function match(Workflow $workflow, EntityId $entityId, $entity)
+    public function match(Workflow $workflow, EntityId $entityId, $entity): bool
     {
+        return false;
     }
 }

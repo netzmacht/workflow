@@ -50,7 +50,7 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
      *
      * @param Item               $item               The item.
      * @param Workflow           $workflow           The current workflow.
-     * @param string             $transitionName     The transition to be handled.
+     * @param string|null        $transitionName     The transition to be handled.
      * @param EntityRepository   $entityRepository   EntityRepository which stores changes.
      * @param StateRepository    $stateRepository    StateRepository which stores new states.
      * @param TransactionHandler $transactionHandler TransactionHandler take care of transactions.
@@ -60,7 +60,7 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
     public function __construct(
         Item $item,
         Workflow $workflow,
-        string $transitionName,
+        string $transitionName = null,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
         TransactionHandler $transactionHandler

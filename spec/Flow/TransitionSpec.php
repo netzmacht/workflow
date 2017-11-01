@@ -21,7 +21,6 @@ use Prophecy\Argument;
 /**
  * Class TransitionSpec
  * @package spec\Netzmacht\Workflow\Flow
- * @mixin Transition
  */
 class TransitionSpec extends ObjectBehavior
 {
@@ -31,9 +30,11 @@ class TransitionSpec extends ObjectBehavior
 
     protected static $entity = array('id' => 5);
 
-    function let()
+    function let(Workflow $workflow, Step $step)
     {
-        $this->beConstructedWith(static::NAME);
+        $workflow->addTransition(Argument::any())->willReturn($workflow);
+
+        $this->beConstructedWith(static::NAME, $workflow, $step);
     }
 
     function it_is_initializable()
@@ -48,7 +49,6 @@ class TransitionSpec extends ObjectBehavior
 
     function it_knows_workflow(Workflow $workflow)
     {
-        $this->setWorkflow($workflow)->shouldReturn($this);
         $this->getWorkflow()->shouldReturn($workflow);
     }
 
@@ -66,28 +66,27 @@ class TransitionSpec extends ObjectBehavior
 
     function it_has_a_target_step(Step $step)
     {
-        $this->setStepTo($step)->shouldReturn($this);
         $this->getStepTo()->shouldReturn($step);
     }
 
     function it_knows_if_input_data_is_not_required(Action $action, Item $item)
     {
-        $this->isPayloadRequired($item)->shouldReturn(false);
+        $this->getRequiredPayloadProperties($item)->shouldReturn([]);
 
-        $action->isPayloadRequired($item)->willReturn(false);
+        $action->getRequiredPayloadProperties($item)->willReturn([]);
         $this->addAction($action);
 
-        $this->isPayloadRequired($item)->shouldReturn(false);
+        $this->getRequiredPayloadProperties($item)->shouldReturn([]);
     }
 
     function it_knows_if_input_data_is_required(Action $action, Item $item)
     {
-        $this->isPayloadRequired($item)->shouldReturn(false);
+        $this->getRequiredPayloadProperties($item)->shouldReturn([]);
 
-        $action->isPayloadRequired($item)->willReturn(true);
+        $action->getRequiredPayloadProperties($item)->willReturn(['foo']);
         $this->addAction($action);
 
-        $this->isPayloadRequired($item)->shouldReturn(true);
+        $this->getRequiredPayloadProperties($item)->shouldReturn(['foo']);
     }
 
     function it_checks_a_precondition(Condition $condition, Item $item, Context $context, ErrorCollection $errorCollection)
@@ -280,7 +279,7 @@ class TransitionSpec extends ObjectBehavior
             ->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))
             ->willReturn(false);
 
-        $action->isPayloadRequired($item)->willReturn(true);
+        $action->getRequiredPayloadProperties($item)->willReturn(['foo']);
         $this->addAction($action);
 
 
@@ -360,11 +359,12 @@ class TransitionSpec extends ObjectBehavior
 
 class ThrowingAction implements Action
 {
-    public function isPayloadRequired(Item $item)
+    public function getRequiredPayloadProperties(Item $item): array
     {
+        return [];
     }
 
-    public function transit(Transition $transition, Item $item, Context $context)
+    public function transit(Transition $transition, Item $item, Context $context): void
     {
         throw new ActionFailedException();
     }

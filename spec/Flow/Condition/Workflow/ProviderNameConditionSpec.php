@@ -11,11 +11,15 @@ use Prophecy\Argument;
 /**
  * Class ProviderTypeConditionSpec
  * @package spec\Netzmacht\Workflow\Flow\Condition\Workflow
- * @mixin ProviderNameCondition
  */
 class ProviderNameConditionSpec extends ObjectBehavior
 {
     protected static $entity = array('id' => 5);
+
+    function let()
+    {
+        $this->beConstructedWith('test');
+    }
 
     function it_is_initializable()
     {
@@ -25,26 +29,22 @@ class ProviderNameConditionSpec extends ObjectBehavior
 
     function it_has_a_configurable_provider_name()
     {
-        $this->setProviderName('test')->shouldReturn($this);
         $this->getProviderName()->shouldReturn('test');
     }
 
-    function it_matches_against_configurabled_provider_name(Workflow $workflow, EntityId $entityId)
+    function it_matches_against_configurabled_provider_name(Workflow $workflow)
     {
-        $this->setProviderName('test');
-
-        $entityId->getProviderName()->willReturn('test');
-
+        $entityId = EntityId::fromProviderNameAndId('test', 5);
         $this->match($workflow, $entityId, static::$entity)->shouldReturn(true);
 
-        $this->setProviderName('test2');
+        $entityId = EntityId::fromProviderNameAndId('test2', 5);
         $this->match($workflow, $entityId, static::$entity)->shouldReturn(false);
     }
 
-    function it_matches_against_workflow_provider_name(Workflow $workflow, EntityId $entityId)
+    function it_matches_against_workflow_provider_name(Workflow $workflow)
     {
+        $entityId = EntityId::fromProviderNameAndId('test', 5);
         $workflow->getProviderName()->willReturn('test');
-        $entityId->getProviderName()->willReturn('test');
 
         $this->match($workflow, $entityId, static::$entity)->shouldReturn(true);
     }

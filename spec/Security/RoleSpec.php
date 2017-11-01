@@ -10,7 +10,6 @@ use Prophecy\Argument;
 /**
  * Class RoleSpec
  * @package spec\Netzmacht\Workflow\Acl
- * @mixin Role
  */
 class RoleSpec extends ObjectBehavior
 {

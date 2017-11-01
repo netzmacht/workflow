@@ -3,15 +3,13 @@
 namespace spec\Netzmacht\Workflow\Security;
 
 use Netzmacht\Workflow\Security\Permission;
-use Netzmacht\Workflow\Security\User;
 use Netzmacht\Workflow\Security\Role;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 /**
  * Class UserSpec
+ *
  * @package spec\Netzmacht\Workflow\Acl
- * @mixin User
  */
 class UserSpec extends ObjectBehavior
 {
@@ -47,7 +45,7 @@ class UserSpec extends ObjectBehavior
     function it_contains_roles(Role $role)
     {
         $this->assign($role);
-        $this->getRoles()->shouldReturn(array($role));
+        $this->getRoles()->shouldReturn([$role]);
     }
 
     function it_checks_permission(Role $role, Permission $permission)
@@ -60,8 +58,10 @@ class UserSpec extends ObjectBehavior
 
     function it_checks_permission_until_found(Role $role, Permission $permission, Role $roleB)
     {
-        $this->assign($roleB);
+        $role->equals($roleB)->willReturn(false);
+
         $this->assign($role);
+        $this->assign($roleB);
 
         $roleB->hasPermission($permission)->willReturn(false);
         $role->hasPermission($permission)->willReturn(true);
@@ -82,8 +82,12 @@ class UserSpec extends ObjectBehavior
         $this->hasPermission($permission)->shouldReturn(false);
     }
 
-    function it_checks_multiple_permissions_with_multiple_roles(Role $role, Permission $permission, Permission $permissionA, Role $roleB)
-    {
+    function it_checks_multiple_permissions_with_multiple_roles(
+        Role $role,
+        Permission $permission,
+        Permission $permissionA,
+        Role $roleB
+    ) {
         $role->hasPermission($permission)->willReturn(false);
         $role->hasPermission($permissionA)->willReturn(true);
 
@@ -95,11 +99,15 @@ class UserSpec extends ObjectBehavior
         $this->assign($role);
         $this->assign($roleB);
 
-        $this->hasPermissions(array($permission, $permissionA))->shouldReturn(true);
+        $this->hasPermissions([$permission, $permissionA])->shouldReturn(true);
     }
 
-    function it_requires_all_multiple_permissions(Role $role, Permission $permission, Permission $permissionA, Role $roleB)
-    {
+    function it_requires_all_multiple_permissions(
+        Role $role,
+        Permission $permission,
+        Permission $permissionA,
+        Role $roleB
+    ) {
         $role->hasPermission($permission)->willReturn(false);
         $role->hasPermission($permissionA)->willReturn(true);
 
@@ -111,6 +119,6 @@ class UserSpec extends ObjectBehavior
         $this->assign($role);
         $this->assign($roleB);
 
-        $this->hasPermissions(array($permission, $permissionA))->shouldReturn(false);
+        $this->hasPermissions([$permission, $permissionA])->shouldReturn(false);
     }
 }

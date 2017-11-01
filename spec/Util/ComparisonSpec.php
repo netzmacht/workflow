@@ -9,7 +9,6 @@ use Prophecy\Argument;
 /**
  * Class ComparisonSpec
  * @package spec\Netzmacht\Workflow\Util
- * @mixin Comparison
  */
 class ComparisonSpec extends ObjectBehavior
 {

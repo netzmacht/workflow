@@ -41,12 +41,12 @@ class Role extends Base
     /**
      * Construct.
      *
-     * @param string      $name         Name of the role.
-     * @param string      $workflowName Name of the workflow the role belongs to.
-     * @param string|null $label        Optional role label.
-     * @param array       $config       Optional role configuration.
+     * @param string $name         Name of the role.
+     * @param string $workflowName Name of the workflow the role belongs to.
+     * @param string $label        Optional role label.
+     * @param array  $config       Optional role configuration.
      */
-    public function __construct($name, $workflowName, $label = null, array $config = array())
+    public function __construct(string $name, string $workflowName, string $label = '', array $config = array())
     {
         parent::__construct($name, $label, $config);
 

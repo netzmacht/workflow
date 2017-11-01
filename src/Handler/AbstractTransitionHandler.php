@@ -202,13 +202,12 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         // check pre conditions first
         if ($this->getTransition()->checkPreCondition($this->item, $this->context, $this->errorCollection)) {
             $this->validated = true;
+        }
 
-            // check conditions after validating the form so that context is setup
-            if ($this->validated &&
-                !$this->getTransition()->checkCondition($this->item, $this->context, $this->errorCollection)
-            ) {
-                $this->validated = false;
-            }
+        if ($this->validated
+            && !$this->getTransition()->checkCondition($this->item, $this->context, $this->errorCollection)
+        ) {
+            $this->validated = false;
         }
 
         return $this->validated;
@@ -254,13 +253,13 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * Guard that requested transition is allowed.
      *
-     * @param string $transitionName Transition to be processed.
+     * @param string|null $transitionName Transition to be processed.
      *
      * @throws WorkflowException If Transition is not allowed.
      *
      * @return void
      */
-    private function guardAllowedTransition(string $transitionName): void
+    private function guardAllowedTransition(?string $transitionName): void
     {
         if (!$this->isWorkflowStarted()) {
             if (!$transitionName || $transitionName === $this->getWorkflow()->getStartTransition()->getName()) {

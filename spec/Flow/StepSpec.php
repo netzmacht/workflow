@@ -10,7 +10,6 @@ use Prophecy\Argument;
 /**
  * Class StepSpec
  * @package spec\Netzmacht\Workflow\Flow
- * @mixin Step
  */
 class StepSpec extends ObjectBehavior
 {

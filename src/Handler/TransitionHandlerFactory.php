@@ -30,7 +30,7 @@ interface TransitionHandlerFactory
      *
      * @param Item            $item            Workflow item.
      * @param Workflow        $workflow        Workflow definition.
-     * @param string          $transitionName  Transition name.
+     * @param string|null     $transitionName  Transition name.
      * @param string          $providerName    Provider name.
      * @param StateRepository $stateRepository The state repository.
      *
@@ -39,7 +39,7 @@ interface TransitionHandlerFactory
     public function createTransitionHandler(
         Item $item,
         Workflow $workflow,
-        string $transitionName,
+        ?string $transitionName,
         string $providerName,
         StateRepository $stateRepository
     ): TransitionHandler;

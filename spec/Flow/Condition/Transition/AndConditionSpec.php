@@ -14,7 +14,6 @@ use Prophecy\Argument;
 /**
  * Class AndConditionSpec
  * @package spec\Netzmacht\Workflow\Flow\Condition\Transition
- * @mixin AndCondition
  */
 class AndConditionSpec extends ObjectBehavior
 {

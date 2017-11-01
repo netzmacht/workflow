@@ -12,7 +12,6 @@ use Prophecy\Argument;
 /**
  * Class AndConditionSpec
  * @package spec\Netzmacht\Workflow\Flow\Condition\Workflow
- * @mixin AndCondition
  */
 class AndConditionSpec extends ObjectBehavior
 {
@@ -31,9 +30,10 @@ class AndConditionSpec extends ObjectBehavior
     function it_matches_if_all_children_matches(
         Condition $conditionA,
         Condition $conditionB,
-        Workflow $workflow,
-        EntityId $entityId
+        Workflow $workflow
     ) {
+        $entityId = EntityId::fromProviderNameAndId('test', 5);
+
         $conditionA->match($workflow, $entityId, static::$entity)->willReturn(true);
         $conditionB->match($workflow, $entityId, static::$entity)->willReturn(true);
 
@@ -46,9 +46,10 @@ class AndConditionSpec extends ObjectBehavior
     function it_does_not_match_if_one_child_does_not(
         Condition $conditionA,
         Condition $conditionB,
-        Workflow $workflow,
-        EntityId $entityId
+        Workflow $workflow
     ) {
+        $entityId = EntityId::fromProviderNameAndId('test', 5);
+
         $conditionA->match($workflow, $entityId, static::$entity)->willReturn(true);
         $conditionB->match($workflow, $entityId, static::$entity)->willReturn(false);
 
@@ -58,8 +59,10 @@ class AndConditionSpec extends ObjectBehavior
         $this->match($workflow, $entityId, static::$entity)->shouldReturn(false);
     }
 
-    function it_matches_if_no_children_exists(Workflow $workflow, EntityId $entityId)
+    function it_matches_if_no_children_exists(Workflow $workflow)
     {
+        $entityId = EntityId::fromProviderNameAndId('test', 5);
+
         $this->match($workflow, $entityId, static::$entity)->shouldReturn(true);
     }
 }

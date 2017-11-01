@@ -14,7 +14,6 @@ use Prophecy\Argument;
 /**
  * Class OrConditionSpec
  * @package spec\Netzmacht\Workflow\Flow\Condition\Transition
- * @mixin OrCondition
  */
 class OrConditionSpec extends ObjectBehavior
 {

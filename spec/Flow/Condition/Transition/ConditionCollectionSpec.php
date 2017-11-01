@@ -14,7 +14,6 @@ use Prophecy\Argument;
 /**
  * Class ConditionCollectionSpec
  * @package spec\Netzmacht\Workflow\Flow\Condition\Transition
- * @mixin ConditionCollection
  */
 class ConditionCollectionSpec extends ObjectBehavior
 {
@@ -57,7 +56,8 @@ class ConditionCollectionSpec extends ObjectBehavior
 
 class ConditionCollection extends AbstractConditionCollection
 {
-    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection)
+    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection): bool
     {
+        return false;
     }
 }

@@ -78,12 +78,12 @@ class Workflow extends Base
     /**
      * Construct.
      *
-     * @param string      $name         The name of the workflow.
-     * @param string      $providerName Name of the provider.
-     * @param string|null $label        The label of the workflow.
-     * @param array       $config       Extra config.
+     * @param string $name         The name of the workflow.
+     * @param string $providerName Name of the provider.
+     * @param string $label        The label of the workflow.
+     * @param array  $config       Extra config.
      */
-    public function __construct(string $name, string $providerName, string $label = null, array $config = array())
+    public function __construct(string $name, string $providerName, string $label = '', array $config = array())
     {
         parent::__construct($name, $label, $config);
 

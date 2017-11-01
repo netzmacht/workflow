@@ -11,12 +11,10 @@ use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
 use Netzmacht\Workflow\Flow\Step;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 /**
  * Class WorkflowSpec
  * @package spec\Netzmacht\Workflow\Flow
- * @mixin \Netzmacht\Workflow\Flow\Workflow
  */
 class WorkflowSpec extends ObjectBehavior
 {
@@ -31,11 +29,8 @@ class WorkflowSpec extends ObjectBehavior
         $transitionStep->getName()->willReturn(static::START_STEP);
 
         $transition->getName()->willReturn('start');
-        $transition->setStepTo($transitionStep);
 
         $this->beConstructedWith(static::NAME, static::PROVIDER);
-
-        $transition->setWorkflow($this)->shouldBeCalled();
 
         $this->addStep($transitionStep);
         $this->addTransition($transition, true);
@@ -67,7 +62,6 @@ class WorkflowSpec extends ObjectBehavior
     function it_adds_a_transition(Transition $anotherTransition)
     {
         $anotherTransition->getName()->willReturn('another');
-        $anotherTransition->setWorkflow($this)->shouldBeCalled();
 
         $this->addTransition($anotherTransition)->shouldReturn($this);
         $this->getTransition('another')->shouldReturn($anotherTransition);
@@ -187,21 +181,26 @@ class WorkflowSpec extends ObjectBehavior
         $this->getProviderName()->shouldReturn(static::PROVIDER);
     }
 
-    function it_matches_if_no_condition_is_set(EntityId $entityId)
+    function it_matches_if_no_condition_is_set()
     {
+        $entityId = EntityId::fromProviderNameAndId('entity', 2);
+
         $this->match($entityId, static::$entity)->shouldReturn(true);
     }
 
-    function it_matches_if_condition_does(Condition $condition, EntityId $entityId)
+    function it_matches_if_condition_does(Condition $condition)
     {
+        $entityId = EntityId::fromProviderNameAndId('entity', 2);
         $condition->match($this, $entityId, static::$entity)->willReturn(true);
 
         $this->addCondition($condition);
         $this->match($entityId, static::$entity)->shouldReturn(true);
     }
 
-    function it_does_not_match_if_condition_does_not(Condition $condition, EntityId $entityId)
+    function it_does_not_match_if_condition_does_not(Condition $condition)
     {
+        $entityId = EntityId::fromProviderNameAndId('entity', 2);
+
         $condition->match($this, $entityId, static::$entity)->willReturn(false);
 
         $this->addCondition($condition);

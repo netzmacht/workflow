@@ -3,24 +3,20 @@
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
 use Netzmacht\Workflow\Data\ErrorCollection;
-use Netzmacht\Workflow\Security\Permission;
-use Netzmacht\Workflow\Security\Role;
 use Netzmacht\Workflow\Security\User;
 use Netzmacht\Workflow\Flow\Condition\Transition\AbstractPermissionCondition;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 /**
  * Class AbstractPermissionConditionSpec
  * @package spec\Netzmacht\Workflow\Flow\Condition\Transition
- * @mixin PermissionCondition
  */
 class AbstractPermissionConditionSpec extends ObjectBehavior
 {
-    function let(User $user, Permission $permission)
+    function let(User $user)
     {
         $this->beAnInstanceOf('spec\Netzmacht\Workflow\Flow\Condition\Transition\PermissionCondition');
         $this->beConstructedWith($user);
@@ -36,19 +32,22 @@ class AbstractPermissionConditionSpec extends ObjectBehavior
         $this->shouldImplement('Netzmacht\Workflow\Flow\Condition\Transition\Condition');
     }
 
-    function it_has_a_default()
+    function it_does_not_grant_by_default_for_an_empty_permission()
     {
-        $this->grantAccessByDefault(false)->shouldReturn($this);
-        $this->isGrantedByDefault()->shouldReturn(false);
+        $this->checkPermission()->shouldReturn(false);
+    }
 
-        $this->grantAccessByDefault(true);
-        $this->isGrantedByDefault()->shouldReturn(true);
+    function it_has_option_to_grant_permission_by_default(User $user)
+    {
+        $this->beConstructedWith($user, true);
+        $this->checkPermission()->shouldReturn(true);
     }
 }
 
 class PermissionCondition extends AbstractPermissionCondition
 {
-    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection)
+    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection): bool
     {
+        return false;
     }
 }
