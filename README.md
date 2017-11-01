@@ -45,12 +45,11 @@ Features
  * Collection based repositories.
  * Transaction save transitions.
  * Flexible config system for workflows, steps and transitions.
- * Symfony event dispatcher based events to hook into process.
-
-
-Dependencies
+ 
+Requirements
 ------------
-This workflow library uses the Symfony Event dispatcher component. If you really want, you don't have to use it.
+
+This library requires at least PHP 7.1.
 
 Credits
 -------
