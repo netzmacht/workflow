@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Data;
 
 use Netzmacht\Workflow\Flow\State;
@@ -37,5 +39,5 @@ interface StateRepository
      *
      * @return void
      */
-    public function add(State $state);
+    public function add(State $state): void;
 }

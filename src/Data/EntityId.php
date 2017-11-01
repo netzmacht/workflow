@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Data;
 
 /**
@@ -17,12 +19,12 @@ namespace Netzmacht\Workflow\Data;
  *
  * @package Netzmacht\Workflow\Data
  */
-class EntityId
+final class EntityId
 {
     /**
      * The identifier. Usually a database id.
      *
-     * @var int
+     * @var mixed
      */
     private $identifier;
 
@@ -37,9 +39,9 @@ class EntityId
      * Construct.
      *
      * @param string $providerName The provider name.
-     * @param int    $identifier   The identifier.
+     * @param mixed  $identifier   The identifier.
      */
-    private function __construct($providerName, $identifier)
+    private function __construct(string $providerName, $identifier)
     {
         // cast to int, but not for uuids
         if (is_numeric($identifier)) {
@@ -57,7 +59,7 @@ class EntityId
      *
      * @return static
      */
-    public static function fromString($entityId)
+    public static function fromString(string $entityId): self
     {
         list($providerName, $identifier) = explode('::', $entityId, 2);
 
@@ -68,11 +70,11 @@ class EntityId
      * Create the entity id by provider name and identifier.
      *
      * @param string $providerName The provider name.
-     * @param int    $identifier   The identifier.
+     * @param mixed    $identifier   The identifier.
      *
      * @return static
      */
-    public static function fromProviderNameAndId($providerName, $identifier)
+    public static function fromProviderNameAndId(string $providerName, $identifier): self
     {
         return new static($providerName, $identifier);
     }
@@ -80,7 +82,7 @@ class EntityId
     /**
      * Get the identifier.
      *
-     * @return int
+     * @return mixed
      */
     public function getIdentifier()
     {
@@ -92,7 +94,7 @@ class EntityId
      *
      * @return string
      */
-    public function getProviderName()
+    public function getProviderName(): string
     {
         return $this->providerName;
     }
@@ -104,7 +106,7 @@ class EntityId
      *
      * @return bool
      */
-    public function equals(EntityId $entityId)
+    public function equals(EntityId $entityId): bool
     {
         return ((string) $this == (string) $entityId);
     }
@@ -114,7 +116,7 @@ class EntityId
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->providerName . '::' . $this->identifier;
     }

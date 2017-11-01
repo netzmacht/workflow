@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Data;
 
 /**
@@ -26,5 +28,5 @@ interface Specification
      *
      * @return bool
      */
-    public function isSatisfiedBy($entity);
+    public function isSatisfiedBy($entity): bool;
 }

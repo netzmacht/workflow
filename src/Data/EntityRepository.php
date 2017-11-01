@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Data;
 
 /**
@@ -22,7 +24,7 @@ interface EntityRepository
     /**
      * Find an entity by id.
      *
-     * @param int $entityId The Entity id.
+     * @param mixed $entityId The Entity id.
      *
      * @return mixed
      */

@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Data;
 
 /**
@@ -28,5 +30,5 @@ interface EntityManager
      *
      * @return EntityRepository
      */
-    public function getRepository($providerName);
+    public function getRepository(string $providerName): EntityRepository;
 }

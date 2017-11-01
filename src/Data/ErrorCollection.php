@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Data;
 
 /**
@@ -45,7 +47,7 @@ class ErrorCollection implements \IteratorAggregate
      *
      * @return $this
      */
-    public function addError($message, array $params = array(), ErrorCollection $collection = null)
+    public function addError(string $message, array $params = array(), ErrorCollection $collection = null)
     {
         $this->errors[] = array($message, $params, $collection);
 
@@ -57,7 +59,7 @@ class ErrorCollection implements \IteratorAggregate
      *
      * @return bool
      */
-    public function hasErrors()
+    public function hasErrors(): bool
     {
         return !empty($this->errors);
     }
@@ -67,7 +69,7 @@ class ErrorCollection implements \IteratorAggregate
      *
      * @return int
      */
-    public function countErrors()
+    public function countErrors(): int
     {
         return count($this->errors);
     }
@@ -81,7 +83,7 @@ class ErrorCollection implements \IteratorAggregate
      *
      * @return array
      */
-    public function getError($index)
+    public function getError(int $index): array
     {
         if (isset($this->errors[$index])) {
             return $this->errors[$index];
@@ -95,7 +97,7 @@ class ErrorCollection implements \IteratorAggregate
      *
      * @return $this
      */
-    public function reset()
+    public function reset(): self
     {
         $this->errors = array();
 
@@ -109,7 +111,7 @@ class ErrorCollection implements \IteratorAggregate
      *
      * @return $this
      */
-    public function addErrors(array $errors)
+    public function addErrors(array $errors): self
     {
         foreach ($errors as $error) {
             list($message, $params, $collection) = (array) $error;
@@ -125,7 +127,7 @@ class ErrorCollection implements \IteratorAggregate
      *
      * @return array
      */
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->errors;
     }
@@ -133,7 +135,7 @@ class ErrorCollection implements \IteratorAggregate
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): iterable
     {
         return new \ArrayIterator($this->errors);
     }
@@ -143,7 +145,7 @@ class ErrorCollection implements \IteratorAggregate
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return array_map(
             function ($error) {
