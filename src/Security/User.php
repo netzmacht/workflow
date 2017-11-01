@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Security;
 
 use Assert\Assertion;
@@ -35,7 +37,7 @@ class User
      *
      * @return bool
      */
-    public function hasRole(Role $role)
+    public function hasRole(Role $role): bool
     {
         foreach ($this->roles as $granted) {
             if ($granted->equals($role)) {
@@ -53,7 +55,7 @@ class User
      *
      * @return bool
      */
-    public function hasPermission(Permission $permission)
+    public function hasPermission(Permission $permission): bool
     {
         foreach ($this->roles as $role) {
             if ($role->hasPermission($permission)) {
@@ -67,13 +69,13 @@ class User
     /**
      * Check if user has all required permissions.
      *
-     * @param Permission[] $permissions Permissions which are required.
+     * @param iterable|Permission[] $permissions Permissions which are required.
      *
      * @return bool
      */
-    public function hasPermissions($permissions)
+    public function hasPermissions(iterable $permissions): bool
     {
-        Assertion::allIsInstanceOf($permissions, 'Netzmacht\Workflow\Security\Permission');
+        Assertion::allIsInstanceOf($permissions, Permission::class);
 
         $granted = array();
 
@@ -97,7 +99,7 @@ class User
      *
      * @return $this
      */
-    public function assign(Role $role)
+    public function assign(Role $role): self
     {
         if (!$this->hasRole($role)) {
             $this->roles[] = $role;
@@ -109,9 +111,9 @@ class User
     /**
      * Get user roles.
      *
-     * @return Role[]
+     * @return Role[]|iterable
      */
-    public function getRoles()
+    public function getRoles(): iterable
     {
         return $this->roles;
     }
@@ -123,7 +125,7 @@ class User
      *
      * @return $this
      */
-    public function reject(Role $role)
+    public function reject(Role $role): self
     {
         foreach ($this->roles as $index => $granted) {
             if ($granted->equals($role)) {

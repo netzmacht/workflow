@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow;
 
 /**
@@ -47,7 +49,7 @@ abstract class Base
      * @param string $label  Label of the element.
      * @param array  $config Configuration values.
      */
-    public function __construct($name, $label = null, array $config = array())
+    public function __construct(string $name, string $label = '', array $config = array())
     {
         $this->name   = $name;
         $this->label  = $label ?: $name;
@@ -59,7 +61,7 @@ abstract class Base
      *
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->label;
     }
@@ -71,7 +73,7 @@ abstract class Base
      *
      * @return $this
      */
-    public function setLabel($label)
+    public function setLabel(string $label): self
     {
         $this->label = $label;
 
@@ -83,7 +85,7 @@ abstract class Base
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -96,7 +98,7 @@ abstract class Base
      *
      * @return $this
      */
-    public function setConfigValue($name, $value)
+    public function setConfigValue(string $name, $value): self
     {
         $this->config[$name] = $value;
 
@@ -109,9 +111,9 @@ abstract class Base
      * @param string $name    Config property name.
      * @param mixed  $default Default value which is returned if config is not set.
      *
-     * @return null
+     * @return mixed
      */
-    public function getConfigValue($name, $default = null)
+    public function getConfigValue(string $name, $default = null)
     {
         if (isset($this->config[$name])) {
             return $this->config[$name];
@@ -127,7 +129,7 @@ abstract class Base
      *
      * @return bool
      */
-    public function hasConfigValue($name)
+    public function hasConfigValue(string $name): bool
     {
         return isset($this->config[$name]);
     }
@@ -139,7 +141,7 @@ abstract class Base
      *
      * @return $this
      */
-    public function addConfig(array $values)
+    public function addConfig(array $values): self
     {
         foreach ($values as $name => $value) {
             $this->setConfigValue($name, $value);
@@ -155,7 +157,7 @@ abstract class Base
      *
      * @return $this
      */
-    public function removeConfigValue($name)
+    public function removeConfigValue(string $name): self
     {
         unset($this->config[$name]);
 
@@ -167,7 +169,7 @@ abstract class Base
      *
      * @return array
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return $this->config;
     }

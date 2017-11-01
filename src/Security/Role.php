@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Security;
 
 use Assert\Assertion;
@@ -58,7 +60,7 @@ class Role extends Base
      *
      * @return $this
      */
-    public function addPermission(Permission $permission)
+    public function addPermission(Permission $permission): self
     {
         if (!$this->hasPermission($permission)) {
             $this->permissions[] = $permission;
@@ -74,7 +76,7 @@ class Role extends Base
      *
      * @return bool
      */
-    public function hasPermission(Permission $permission)
+    public function hasPermission(Permission $permission): bool
     {
         foreach ($this->permissions as $assigned) {
             if ($assigned->equals($permission)) {
@@ -88,13 +90,13 @@ class Role extends Base
     /**
      * Consider if role has a set of permissions.
      *
-     * @param Permission[] $permissions Set of permissions.
+     * @param iterable|Permission[] $permissions Set of permissions.
      *
      * @return bool
      */
-    public function hasPermissions($permissions)
+    public function hasPermissions(iterable $permissions): bool
     {
-        Assertion::allIsInstanceOf($permissions, 'Netzmacht\Workflow\Security\Permission');
+        Assertion::allIsInstanceOf($permissions, Permission::class);
 
         foreach ($permissions as $permission) {
             if (!$this->hasPermission($permission)) {
@@ -108,9 +110,9 @@ class Role extends Base
     /**
      * Get all permissions.
      *
-     * @return Permission[]
+     * @return Permission[]|iterable
      */
-    public function getPermissions()
+    public function getPermissions(): iterable
     {
         return $this->permissions;
     }
@@ -122,7 +124,7 @@ class Role extends Base
      *
      * @return $this
      */
-    public function removePermission(Permission $permission)
+    public function removePermission(Permission $permission): self
     {
         foreach ($this->permissions as $key => $assigned) {
             if ($assigned->equals($permission)) {
@@ -142,7 +144,7 @@ class Role extends Base
      *
      * @return bool
      */
-    public function equals(Role $role)
+    public function equals(Role $role): bool
     {
         return $this->getFullName() == $role->getFullName();
     }
@@ -152,7 +154,7 @@ class Role extends Base
      *
      * @return string
      */
-    public function getWorkflowName()
+    public function getWorkflowName(): string
     {
         return $this->workflowName;
     }
@@ -162,7 +164,7 @@ class Role extends Base
      *
      * @return string
      */
-    public function getFullName()
+    public function getFullName(): string
     {
         return $this->workflowName . ':' . $this->getName();
     }

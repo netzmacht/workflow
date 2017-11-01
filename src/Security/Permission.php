@@ -10,6 +10,8 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Security;
 
 use Assert\Assertion;
@@ -42,7 +44,7 @@ class Permission
      * @param string $workflowName The workflow name.
      * @param string $permissionId The permission id.
      */
-    protected function __construct($workflowName, $permissionId)
+    protected function __construct(string $workflowName, string $permissionId)
     {
         $this->workflowName = $workflowName;
         $this->permissionId = $permissionId;
@@ -56,7 +58,7 @@ class Permission
      *
      * @return static
      */
-    public static function forWorkflow(Workflow $workflow, $permissionId)
+    public static function forWorkflow(Workflow $workflow, string $permissionId): self
     {
         return static::forWorkflowName($workflow->getName(), $permissionId);
     }
@@ -69,7 +71,7 @@ class Permission
      *
      * @return static
      */
-    public static function forWorkflowName($workflowName, $permissionId)
+    public static function forWorkflowName(string $workflowName, string $permissionId): self
     {
         Assertion::notBlank($workflowName);
         Assertion::notBlank($permissionId);
@@ -86,7 +88,7 @@ class Permission
      *
      * @return static
      */
-    public static function fromString($permission)
+    public static function fromString(string $permission): self
     {
         list($workflowName, $permissionId) = explode(':', $permission);
 
@@ -105,7 +107,7 @@ class Permission
      *
      * @return string
      */
-    public function getPermissionId()
+    public function getPermissionId(): string
     {
         return $this->permissionId;
     }
@@ -115,7 +117,7 @@ class Permission
      *
      * @return string
      */
-    public function getWorkflowName()
+    public function getWorkflowName(): string
     {
         return $this->workflowName;
     }
@@ -125,7 +127,7 @@ class Permission
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->workflowName . ':' . $this->permissionId;
     }
@@ -137,7 +139,7 @@ class Permission
      *
      * @return bool
      */
-    public function equals(Permission $permission)
+    public function equals(Permission $permission): bool
     {
         return ((string) $this === (string) $permission);
     }
@@ -151,7 +153,7 @@ class Permission
      *
      * @return void
      */
-    protected static function guardValidPermission($workflowName, $permissionId, $message = null)
+    protected static function guardValidPermission(string $workflowName, string $permissionId, string $message = null)
     {
         Assertion::notBlank($workflowName, $message);
         Assertion::notBlank($permissionId, $message);
