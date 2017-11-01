@@ -12,8 +12,6 @@
 
 namespace Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Form\Form;
-
 /**
  * Interface Action describes an action which is executed during transition.
  *
@@ -22,23 +20,13 @@ use Netzmacht\Workflow\Form\Form;
 interface Action
 {
     /**
-     * Consider if user input is required.
+     * Get the required payload properties.
      *
      * @param Item $item Workflow item.
      *
-     * @return bool
+     * @return array
      */
-    public function isInputRequired(Item $item);
-
-    /**
-     * Build the corresponding form.
-     *
-     * @param Form $form Transition form.
-     * @param Item $item Workflow item.
-     *
-     * @return void
-     */
-    public function buildForm(Form $form, Item $item);
+    public function getRequiredPayloadProperties(Item $item);
 
     /**
      * Transit will execute the action.

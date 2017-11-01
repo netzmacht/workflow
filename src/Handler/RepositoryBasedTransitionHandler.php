@@ -51,7 +51,6 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
      * @param EntityRepository   $entityRepository   EntityRepository which stores changes.
      * @param StateRepository    $stateRepository    StateRepository which stores new states.
      * @param TransactionHandler $transactionHandler TransactionHandler take care of transactions.
-     * @param Listener           $listener           Transition handler dispatcher.
      *
      * @throws WorkflowException If invalid transition name is given.
      */
@@ -61,10 +60,9 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
         $transitionName,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
-        TransactionHandler $transactionHandler,
-        Listener $listener
+        TransactionHandler $transactionHandler
     ) {
-        parent::__construct($item, $workflow, $transitionName, $transactionHandler, $listener);
+        parent::__construct($item, $workflow, $transitionName, $transactionHandler);
         
         $this->entityRepository = $entityRepository;
         $this->stateRepository  = $stateRepository;
@@ -82,13 +80,6 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
         $this->transactionHandler->begin();
 
         try {
-            $this->listener->onPreTransit(
-                $this->getWorkflow(),
-                $this->getItem(),
-                $this->getContext(),
-                $this->getTransition()->getName()
-            );
-
             $state = $this->executeTransition();
 
             $this->stateRepository->add($state);
@@ -100,8 +91,6 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
         }
 
         $this->transactionHandler->commit();
-
-        $this->listener->onPostTransit($this->getWorkflow(), $this->getItem(), $this->getContext(), $state);
 
         return $state;
     }

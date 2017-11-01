@@ -18,7 +18,6 @@ use Netzmacht\Workflow\Flow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Workflow;
-use Netzmacht\Workflow\Form\Form;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 
 /**
@@ -50,13 +49,6 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     private $transitionName;
 
     /**
-     * The form object for user input.
-     *
-     * @var Form
-     */
-    private $form;
-
-    /**
      * Validation state.
      *
      * @var bool
@@ -85,20 +77,12 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     private $errorCollection;
 
     /**
-     * Transition handler listener.
-     *
-     * @var Listener
-     */
-    protected $listener;
-
-    /**
      * Construct.
      *
      * @param Item               $item               The item.
      * @param Workflow           $workflow           The current workflow.
      * @param string             $transitionName     The transition to be handled.
      * @param TransactionHandler $transactionHandler TransactionHandler take care of transactions.
-     * @param Listener           $listener           Transition handler dispatcher.
      *
      * @throws WorkflowException If invalid transition name is given.
      */
@@ -106,8 +90,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         Item $item,
         Workflow $workflow,
         $transitionName,
-        TransactionHandler $transactionHandler,
-        Listener $listener
+        TransactionHandler $transactionHandler
     ) {
         $this->item               = $item;
         $this->workflow           = $workflow;
@@ -115,7 +98,6 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         $this->transactionHandler = $transactionHandler;
         $this->context            = new Context();
         $this->errorCollection    = new ErrorCollection();
-        $this->listener           = $listener;
 
         $this->guardAllowedTransition($transitionName);
     }
@@ -151,14 +133,6 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * {@inheritdoc}
      */
-    public function getForm()
-    {
-        return $this->form;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getContext()
     {
         return $this->context;
@@ -175,9 +149,9 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * {@inheritdoc}
      */
-    public function isInputRequired()
+    public function getRequiredPayloadProperties()
     {
-        return $this->getTransition()->isInputRequired($this->item);
+        return $this->getTransition()->getRequiredPayloadProperties($this->item);
     }
 
     /**
@@ -215,29 +189,15 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * {@inheritdoc}
      */
-    public function validate(Form $form)
+    public function validate(array $payload)
     {
         // first build the form
         $this->errorCollection->reset();
-        $this->buildForm($form);
         $this->validated = false;
 
         // check pre conditions first
         if ($this->getTransition()->checkPreCondition($this->item, $this->context, $this->errorCollection)) {
             $this->validated = true;
-
-            // validate form input now
-            if ($this->isInputRequired()) {
-                $this->validated = $this->getForm()->validate();
-
-                if (!$this->validated) {
-                    $this->errorCollection->addError(
-                        'transition.validate.form.failed',
-                        array(),
-                        $form->getErrorCollection()
-                    );
-                }
-            }
 
             // check conditions after validating the form so that context is setup
             if ($this->validated &&
@@ -246,16 +206,6 @@ abstract class AbstractTransitionHandler implements TransitionHandler
                 $this->validated = false;
             }
         }
-
-        // trigger the listener, no matter if validated so far
-        $this->validated = $this->listener->onValidate(
-            $form,
-            $this->validated,
-            $this->workflow,
-            $this->item,
-            $this->context,
-            $this->getTransition()->getName()
-        );
 
         return $this->validated;
     }
@@ -295,28 +245,6 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         } elseif (!$this->validated) {
             throw new WorkflowException('Transition is in a invalid state and can\'t be processed.');
         }
-    }
-
-    /**
-     * Build transition form.
-     *
-     * @param Form $form The form being built.
-     *
-     * @return void
-     */
-    private function buildForm(Form $form)
-    {
-        $this->form = $form;
-        $this->getTransition()->buildForm($this->form, $this->item);
-        $form->prepare($this->item, $this->context);
-
-        $this->listener->onBuildForm(
-            $form,
-            $this->workflow,
-            $this->item,
-            $this->context,
-            $this->getTransition()->getName()
-        );
     }
 
     /**

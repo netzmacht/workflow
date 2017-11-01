@@ -12,7 +12,6 @@
 
 namespace Netzmacht\Workflow\Handler;
 
-use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Exception\TransitionNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
@@ -20,7 +19,6 @@ use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
-use Netzmacht\Workflow\Form\Form;
 
 /**
  * Class TransitionHandler handles the transition to another step in the workflow.
@@ -42,13 +40,6 @@ interface TransitionHandler
      * @return Item
      */
     public function getItem();
-
-    /**
-     * Get the input form.
-     *
-     * @return Form
-     */
-    public function getForm();
 
     /**
      * Get the transition.
@@ -78,7 +69,7 @@ interface TransitionHandler
      *
      * @return bool
      */
-    public function isInputRequired();
+    public function getRequiredPayloadProperties();
 
     /**
      * Consider if transition is available.
@@ -95,20 +86,13 @@ interface TransitionHandler
     public function getContext();
 
     /**
-     * Get the error collection.
-     *
-     * @return ErrorCollection
-     */
-    public function getErrorCollection();
-
-    /**
      * Validate the input.
      *
-     * @param Form $form The transition form instance.
+     * @param array $payload The payload.
      *
      * @return bool
      */
-    public function validate(Form $form);
+    public function validate(array $payload);
 
     /**
      * Transit to next step.

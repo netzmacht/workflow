@@ -12,9 +12,7 @@
 
 namespace Netzmacht\Workflow;
 
-use Netzmacht\Workflow\Factory\Event\CreateFormEvent;
 use Netzmacht\Workflow\Factory\Event\CreateManagerEvent;
-use Netzmacht\Workflow\Form\Form;
 use Netzmacht\Workflow\Manager\Manager;
 use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface as EventDispatcher;
@@ -62,24 +60,6 @@ class Factory
             $event->getManager(),
             sprintf('Could not create manager for provider "%s" and type "%s" ', $providerName, $type)
         );
-    }
-
-    /**
-     * Create a form.
-     *
-     * @param string $type The form type.
-     * @param string $name The form name.
-     *
-     * @return Form
-     *
-     * @throws RuntimeException If form was not created.
-     */
-    public function createForm($type, $name)
-    {
-        $event = new CreateFormEvent($type, $name);
-        $this->eventDispatcher->dispatch($event::NAME, $event);
-
-        return $this->guardCreated($event->getForm(), sprintf('Could not create form type "%s"', $type));
     }
 
     /**

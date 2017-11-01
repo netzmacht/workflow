@@ -18,7 +18,6 @@ use Netzmacht\Workflow\Base;
 use Netzmacht\Workflow\Flow\Condition\Transition\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
-use Netzmacht\Workflow\Form\Form;
 
 /**
  * Class Transition handles the transition from a step to another.
@@ -231,44 +230,22 @@ class Transition extends Base
     }
 
     /**
-     * Build the form.
-     *
-     * @param Form $form The form being build.
-     * @param Item $item The workflow item.
-     *
-     * @return $this
-     */
-    public function buildForm(Form $form, Item $item)
-    {
-        foreach ($this->actions as $action) {
-            $action->buildForm($form, $item);
-        }
-
-        return $this;
-    }
-
-    /**
      * Consider if user input is required.
      *
      * @param Item $item Workflow item.
      *
-     * @return bool
+     * @return array
      */
-    public function isInputRequired(Item $item)
+    public function getRequiredPayloadProperties(Item $item)
     {
-        foreach ($this->actions as $action) {
-            if ($action->isInputRequired($item)) {
-                return true;
-            }
-        }
-
-        foreach ($this->postActions as $action) {
-            if ($action->isInputRequired($item)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_merge(
+            ... array_map(
+                function (Action $action) use ($item) {
+                    return $action->getRequiredPayloadProperties($item);
+                },
+                $this->actions
+            )
+        );
     }
 
     /**
@@ -302,7 +279,7 @@ class Transition extends Base
      */
     public function isAvailable(Item $item, Context $context, ErrorCollection $errorCollection)
     {
-        if ($this->isInputRequired($item)) {
+        if ($this->getRequiredPayloadProperties($item)) {
             return $this->checkPreCondition($item, $context, $errorCollection);
         }
 
