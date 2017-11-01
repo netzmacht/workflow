@@ -60,7 +60,7 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
      *
      * @param Item            $item            Workflow item.
      * @param Workflow        $workflow        Workflow definition.
-     * @param string          $transitionName  Transition name.
+     * @param string|null     $transitionName  Transition name.
      * @param string          $providerName    Provider name.
      * @param StateRepository $stateRepository The state repository.
      *

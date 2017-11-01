@@ -70,7 +70,7 @@ final class EntityId
      * Create the entity id by provider name and identifier.
      *
      * @param string $providerName The provider name.
-     * @param mixed    $identifier   The identifier.
+     * @param mixed  $identifier   The identifier.
      *
      * @return static
      */

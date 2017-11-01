@@ -24,7 +24,6 @@ use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
 /**
  * Class Transition handles the transition from a step to another.
  *
- * @package Netzmacht\Workflow\Flow
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class Transition extends Base

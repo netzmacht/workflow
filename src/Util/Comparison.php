@@ -46,16 +46,15 @@ class Comparison
      *
      * @return bool
      */
-    public static function compare($valueA, $valueB, $operator)
+    public static function compare($valueA, $valueB, string $operator): bool
     {
         $method = self::getOperatorMethod($operator);
 
         if ($method) {
-            return call_user_func(array(get_called_class(), $method), $valueA, $valueB);
+            return call_user_func([get_called_class(), $method], $valueA, $valueB);
         }
 
         return false;
-
     }
 
     /**
