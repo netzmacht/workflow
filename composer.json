@@ -8,8 +8,8 @@
         {
             "name":"David Molineus",
             "email":"mail@netzmacht.de",
-            "homepage":"http://www.netzmacht.de",
-            "role":"Project leader"
+            "homepage":"https://netzmacht.de",
+            "role":"Developer"
         }
     ],
     "support":{
@@ -18,28 +18,22 @@
         "source":"https://github.com/netzmacht/workflow"
     },
     "require":{
-        "php":">=5.4",
-        "symfony/event-dispatcher": "~2.3",
+        "php":">=7.1",
+        "symfony/event-dispatcher": "~2.3 || 3.0",
         "beberlei/assert": "~2.0"
     },
     "require-dev": {
-        "phpspec/phpspec": "~2.1",
-        "netzmacht/contao-build-tools": "~1.1",
-        "henrikbjorn/phpspec-code-coverage": "~2"
+        "phpcq/all-tasks": "^1.2"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "autoload": {
-        "psr-0": {
+        "psr-4": {
             "Netzmacht\\Workflow\\": "src/"
         }
     },
-    "config": {
-        "bin-dir": "bin"
-    },
     "extra":{
         "branch-alias": {
-            "dev-master": "1.0.x-dev"
+            "dev-master": "1.0.x-dev",
+            "dev-develop": "2.0.x-dev"
         }
     }
 }
