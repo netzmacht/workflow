@@ -63,7 +63,7 @@ class WorkflowManager implements Manager
         StateRepository $stateRepository,
         $workflows = array()
     ) {
-        Assertion::allIsInstanceOf($workflows, 'Netzmacht\Workflow\Flow\Workflow');
+        Assertion::allIsInstanceOf($workflows, Workflow::class);
 
         $this->workflows       = $workflows;
         $this->handlerFactory  = $handlerFactory;
