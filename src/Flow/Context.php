@@ -248,6 +248,6 @@ class Context
      */
     public function withEmptyErrorCollection(): Context
     {
-        return new Context($this->properties, $this->payload, $this->errorCollection);
+        return new Context($this->properties, $this->payload, new ErrorCollection());
     }
 }
