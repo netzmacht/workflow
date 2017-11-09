@@ -19,7 +19,7 @@ use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
 
 /**
- * Interface Condition describes an condition which used for transtion conditions.
+ * Interface Condition describes an condition which used for transition conditions.
  *
  * @package Netzmacht\Workflow\Flow\Transition
  */
