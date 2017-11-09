@@ -16,7 +16,6 @@ namespace Netzmacht\Workflow\Flow;
 
 use Assert\Assertion;
 use Netzmacht\Workflow\Data\EntityId;
-use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
 
 /**
@@ -114,10 +113,9 @@ class Item
     /**
      * Start an item and return current state.
      *
-     * @param Transition      $transition      The transition being executed.
-     * @param Context         $context         The transition context.
-     * @param ErrorCollection $errorCollection The error collection.
-     * @param bool            $success         The transition success.
+     * @param Transition $transition The transition being executed.
+     * @param Context    $context    The transition context.
+     * @param bool       $success    The transition success.
      *
      * @return State
      *
@@ -126,12 +124,11 @@ class Item
     public function start(
         Transition $transition,
         Context $context,
-        ErrorCollection $errorCollection,
         bool $success
     ): State {
         $this->guardNotStarted();
 
-        $state = State::start($this->entityId, $transition, $context, $errorCollection, $success);
+        $state = State::start($this->entityId, $transition, $context, $success);
         $this->apply($state);
 
         return $state;
@@ -140,10 +137,9 @@ class Item
     /**
      * Transits to a new state and return it.
      *
-     * @param Transition      $transition      The transition being executed.
-     * @param Context         $context         The transition context.
-     * @param ErrorCollection $errorCollection The error collection.
-     * @param bool            $success         The transition success.
+     * @param Transition $transition The transition being executed.
+     * @param Context    $context    The transition context.
+     * @param bool       $success    The transition success.
      *
      * @throws WorkflowException If workflow is not started.
      *
@@ -152,13 +148,12 @@ class Item
     public function transit(
         Transition $transition,
         Context $context,
-        ErrorCollection $errorCollection,
         bool $success
     ): State {
         $this->guardStarted();
 
         $state = $this->getLatestState();
-        $state = $state->transit($transition, $context, $errorCollection, $success);
+        $state = $state->transit($transition, $context, $success);
 
         $this->apply($state);
 

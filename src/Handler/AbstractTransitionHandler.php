@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Handler;
 
-use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Item;
@@ -74,13 +73,6 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     private $context;
 
     /**
-     * Error collection of errors occurred during transition handling.
-     *
-     * @var ErrorCollection
-     */
-    private $errorCollection;
-
-    /**
      * Construct.
      *
      * @param Item               $item               The item.
@@ -101,7 +93,6 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         $this->transitionName     = $transitionName;
         $this->transactionHandler = $transactionHandler;
         $this->context            = new Context();
-        $this->errorCollection    = new ErrorCollection();
 
         $this->guardAllowedTransition($transitionName);
     }
@@ -165,15 +156,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
      */
     public function isAvailable(): bool
     {
-        return $this->getTransition()->isAvailable($this->item, $this->context, $this->errorCollection);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getErrorCollection(): ErrorCollection
-    {
-        return $this->errorCollection;
+        return $this->getTransition()->isAvailable($this->item, $this->context);
     }
 
     /**
@@ -196,16 +179,16 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     public function validate(array $payload): bool
     {
         // first build the form
-        $this->errorCollection->reset();
+        $this->context   = $this->context->withEmptyErrorCollection();
         $this->validated = false;
 
         // check pre conditions first
-        if ($this->getTransition()->checkPreCondition($this->item, $this->context, $this->errorCollection)) {
+        if ($this->getTransition()->checkPreCondition($this->item, $this->context)) {
             $this->validated = true;
         }
 
         if ($this->validated
-            && !$this->getTransition()->checkCondition($this->item, $this->context, $this->errorCollection)
+            && !$this->getTransition()->checkCondition($this->item, $this->context)
         ) {
             $this->validated = false;
         }
@@ -221,15 +204,15 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     protected function executeTransition(): State
     {
         $transition = $this->getTransition();
-        $success    = $transition->executeActions($this->item, $this->context, $this->errorCollection);
+        $success    = $transition->executeActions($this->item, $this->context);
 
         if ($this->isWorkflowStarted()) {
-            $state = $this->getItem()->transit($transition, $this->context, $this->errorCollection, $success);
+            $state = $this->getItem()->transit($transition, $this->context, $success);
         } else {
-            $state = $this->getItem()->start($transition, $this->context, $this->errorCollection, $success);
+            $state = $this->getItem()->start($transition, $this->context, $success);
         }
 
-        $transition->executePostActions($this->item, $this->context, $this->errorCollection);
+        $transition->executePostActions($this->item, $this->context);
 
         return $state;
     }

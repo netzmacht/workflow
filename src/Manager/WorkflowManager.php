@@ -15,10 +15,10 @@ namespace Netzmacht\Workflow\Manager;
 use Assert\Assertion;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\StateRepository;
-use Netzmacht\Workflow\Handler\TransitionHandlerFactory;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
+use Netzmacht\Workflow\Handler\TransitionHandlerFactory;
 
 /**
  * Class Manager handles a set of workflows.

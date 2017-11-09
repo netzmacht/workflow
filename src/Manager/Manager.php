@@ -14,11 +14,11 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Manager;
 
-use Netzmacht\Workflow\Handler\TransitionHandler;
 use Netzmacht\Workflow\Data\EntityId;
-use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Flow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Item;
+use Netzmacht\Workflow\Flow\Workflow;
+use Netzmacht\Workflow\Handler\TransitionHandler;
 
 /**
  * Class Manager handles a set of workflows.

@@ -14,11 +14,10 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
-use Netzmacht\Workflow\Data\ErrorCollection;
-use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
+use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Security\User;
 
 /**
@@ -56,7 +55,7 @@ class StepPermissionCondition extends AbstractPermissionCondition
     /**
      * {@inheritdoc}
      */
-    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection): bool
+    public function match(Transition $transition, Item $item, Context $context): bool
     {
         // workflow is not started, so no start step exists
         if (!$item->isWorkflowStarted()) {
@@ -64,7 +63,7 @@ class StepPermissionCondition extends AbstractPermissionCondition
                 return true;
             }
 
-            $errorCollection->addError(
+            $context->addError(
                 'transition.condition.step.failed.not-started'
             );
 
@@ -76,7 +75,7 @@ class StepPermissionCondition extends AbstractPermissionCondition
             return true;
         }
 
-        $errorCollection->addError(
+        $context->addError(
             'transition.condition.step.failed',
             array(
                 $item->getCurrentStepName(),

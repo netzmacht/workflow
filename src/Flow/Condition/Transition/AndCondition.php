@@ -14,10 +14,9 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
 
-use Netzmacht\Workflow\Data\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context;
-use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Item;
+use Netzmacht\Workflow\Flow\Transition;
 
 /**
  * Class AndCondition matches if all child conditions does.
@@ -29,19 +28,23 @@ class AndCondition extends ConditionCollection
     /**
      * {@inheritdoc}
      */
-    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection): bool
+    public function match(Transition $transition, Item $item, Context $context): bool
     {
-        $errors  = new ErrorCollection();
-        $success = true;
+        $localContext = $context->withEmptyErrorCollection();
+        $success      = true;
 
         foreach ($this->conditions as $condition) {
-            if (!$condition->match($transition, $item, $context, $errors)) {
+            if (!$condition->match($transition, $item, $localContext)) {
                 $success = false;
             }
         }
 
         if (!$success) {
-            $errorCollection->addError('transition.condition.and.failed', array(), $errors);
+            $context->addError(
+                'transition.condition.and.failed',
+                [],
+                $localContext->getErrorCollection()
+            );
         }
 
         return $success;

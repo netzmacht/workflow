@@ -14,12 +14,11 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Data\ErrorCollection;
-use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Base;
 use Netzmacht\Workflow\Flow\Condition\Transition\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
+use Netzmacht\Workflow\Security\Permission;
 
 /**
  * Class Transition handles the transition from a step to another.
@@ -33,14 +32,14 @@ class Transition extends Base
      *
      * @var Action[]
      */
-    private $actions = array();
+    private $actions = [];
 
     /**
      * Post actions which will be executed when new step is reached.
      *
      * @var Action[]
      */
-    private $postActions = array();
+    private $postActions = [];
 
     /**
      * The step the transition is moving to.
@@ -86,7 +85,7 @@ class Transition extends Base
      * @param string   $label    Label of the element.
      * @param array    $config   Configuration values.
      */
-    public function __construct($name, Workflow $workflow, Step $stepTo, $label = '', array $config = [])
+    public function __construct(string $name, Workflow $workflow, Step $stepTo, string $label = '', array $config = [])
     {
         parent::__construct($name, $label, $config);
 
@@ -181,7 +180,7 @@ class Transition extends Base
      *
      * @return $this
      */
-    public function addCondition(Condition $condition)
+    public function addCondition(Condition $condition): self
     {
         if (!$this->condition) {
             $this->condition = new AndCondition();
@@ -245,16 +244,15 @@ class Transition extends Base
     /**
      * Consider if transition is allowed.
      *
-     * @param Item            $item            The Item.
-     * @param Context         $context         The transition context.
-     * @param ErrorCollection $errorCollection The error collection.
+     * @param Item    $item    The Item.
+     * @param Context $context The transition context.
      *
      * @return bool
      */
-    public function isAllowed(Item $item, Context $context, ErrorCollection $errorCollection): bool
+    public function isAllowed(Item $item, Context $context): bool
     {
-        if ($this->checkPreCondition($item, $context, $errorCollection)) {
-            return $this->checkCondition($item, $context, $errorCollection);
+        if ($this->checkPreCondition($item, $context)) {
+            return $this->checkCondition($item, $context);
         }
 
         return false;
@@ -265,47 +263,44 @@ class Transition extends Base
      *
      * If a transition can be available but it is not allowed depending on the user input.
      *
-     * @param Item            $item            The Item.
-     * @param Context         $context         The transition context.
-     * @param ErrorCollection $errorCollection The error collection.
+     * @param Item    $item    The Item.
+     * @param Context $context The transition context.
      *
      * @return bool
      */
-    public function isAvailable(Item $item, Context $context, ErrorCollection $errorCollection): bool
+    public function isAvailable(Item $item, Context $context): bool
     {
         if ($this->getRequiredPayloadProperties($item)) {
-            return $this->checkPreCondition($item, $context, $errorCollection);
+            return $this->checkPreCondition($item, $context);
         }
 
-        return $this->isAllowed($item, $context, $errorCollection);
+        return $this->isAllowed($item, $context);
     }
 
     /**
      * Check the precondition.
      *
-     * @param Item            $item            The Item.
-     * @param Context         $context         The transition context.
-     * @param ErrorCollection $errorCollection The error collection.
+     * @param Item    $item    The Item.
+     * @param Context $context The transition context.
      *
      * @return bool
      */
-    public function checkPreCondition(Item $item, Context $context, ErrorCollection $errorCollection)
+    public function checkPreCondition(Item $item, Context $context): bool
     {
-        return $this->performConditionCheck($this->preCondition, $item, $context, $errorCollection);
+        return $this->performConditionCheck($this->preCondition, $item, $context);
     }
 
     /**
      * Check the condition.
      *
-     * @param Item            $item            The Item.
-     * @param Context         $context         The transition context.
-     * @param ErrorCollection $errorCollection The error collection.
+     * @param Item    $item    The Item.
+     * @param Context $context The transition context.
      *
      * @return bool
      */
-    public function checkCondition(Item $item, Context $context, ErrorCollection $errorCollection)
+    public function checkCondition(Item $item, Context $context): bool
     {
-        return $this->performConditionCheck($this->condition, $item, $context, $errorCollection);
+        return $this->performConditionCheck($this->condition, $item, $context);
     }
 
     /**
@@ -315,7 +310,7 @@ class Transition extends Base
      *
      * @return $this
      */
-    public function setPermission(Permission $permission)
+    public function setPermission(Permission $permission): self
     {
         $this->permission = $permission;
 
@@ -329,7 +324,7 @@ class Transition extends Base
      *
      * @return bool
      */
-    public function hasPermission(Permission $permission)
+    public function hasPermission(Permission $permission): bool
     {
         if ($this->permission) {
             return $this->permission->equals($permission);
@@ -343,7 +338,7 @@ class Transition extends Base
      *
      * @return Permission|null
      */
-    public function getPermission()
+    public function getPermission():? Permission
     {
         return $this->permission;
     }
@@ -351,63 +346,59 @@ class Transition extends Base
     /**
      * Execute all actions.
      *
-     * @param Item            $item            The workflow item.
-     * @param Context         $context         The transition context.
-     * @param ErrorCollection $errorCollection The error collection.
+     * @param Item    $item    The workflow item.
+     * @param Context $context The transition context.
      *
      * @return bool
      */
-    public function executeActions(Item $item, Context $context, ErrorCollection $errorCollection)
+    public function executeActions(Item $item, Context $context): bool
     {
-        return $this->doExecuteActions($item, $context, $errorCollection, $this->actions);
+        return $this->doExecuteActions($item, $context, $this->actions);
     }
 
     /**
      * Execute all actions.
      *
-     * @param Item            $item            The workflow item.
-     * @param Context         $context         The transition context.
-     * @param ErrorCollection $errorCollection The error collection.
+     * @param Item    $item    The workflow item.
+     * @param Context $context The transition context.
      *
      * @return bool
      */
-    public function executePostActions(Item $item, Context $context, ErrorCollection $errorCollection)
+    public function executePostActions(Item $item, Context $context): bool
     {
-        return $this->doExecuteActions($item, $context, $errorCollection, $this->postActions);
+        return $this->doExecuteActions($item, $context, $this->postActions);
     }
 
     /**
      * Perform condition check.
      *
-     * @param Condition|null  $condition       Condition to be checked.
-     * @param Item            $item            Workflow item.
-     * @param Context         $context         Condition context.
-     * @param ErrorCollection $errorCollection Error collection.
+     * @param Condition|null $condition Condition to be checked.
+     * @param Item           $item      Workflow item.
+     * @param Context        $context   Condition context.
      *
      * @return bool
      */
-    private function performConditionCheck($condition, $item, $context, ErrorCollection $errorCollection)
+    private function performConditionCheck($condition, $item, $context): bool
     {
         if (!$condition) {
             return true;
         }
 
-        return $condition->match($this, $item, $context, $errorCollection);
+        return $condition->match($this, $item, $context);
     }
 
     /**
      * Execute the actions.
      *
-     * @param Item            $item            Workflow item.
-     * @param Context         $context         Condition context.
-     * @param ErrorCollection $errorCollection Error collection.
-     * @param Action[]        $actions         Action to execute.
+     * @param Item     $item    Workflow item.
+     * @param Context  $context Condition context.
+     * @param Action[] $actions Action to execute.
      *
      * @return bool
      */
-    private function doExecuteActions(Item $item, Context $context, ErrorCollection $errorCollection, $actions)
+    private function doExecuteActions(Item $item, Context $context, $actions): bool
     {
-        $success = $this->isAllowed($item, $context, $errorCollection);
+        $success = $this->isAllowed($item, $context);
 
         if ($success) {
             try {
@@ -415,8 +406,8 @@ class Transition extends Base
                     $action->transit($this, $item, $context);
                 }
             } catch (ActionFailedException $e) {
-                $params = array('exception' => $e->getMessage());
-                $errorCollection->addError('transition.action.failed', $params);
+                $params = ['exception' => $e->getMessage()];
+                $context->addError('transition.action.failed', $params);
 
                 return false;
             }

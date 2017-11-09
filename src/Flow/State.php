@@ -16,7 +16,6 @@ namespace Netzmacht\Workflow\Flow;
 
 use DateTimeImmutable;
 use Netzmacht\Workflow\Data\EntityId;
-use Netzmacht\Workflow\Data\ErrorCollection;
 
 /**
  * Class State stores information of a current state of an entity.
@@ -131,7 +130,6 @@ class State
      * @param EntityId        $entityId        The entity id.
      * @param Transition      $transition      The current executed transition.
      * @param Context         $context         The context.
-     * @param ErrorCollection $errorCollection The error collection.
      * @param bool            $success         Success state.
      *
      * @return State
@@ -140,7 +138,6 @@ class State
         EntityId $entityId,
         Transition $transition,
         Context $context,
-        ErrorCollection $errorCollection,
         $success
     ) {
         $state = new State(
@@ -151,7 +148,7 @@ class State
             $success,
             $context->getProperties(),
             new \DateTimeImmutable(),
-            $errorCollection->toArray()
+            $context->getErrorCollection()->toArray()
         );
 
         return $state;
@@ -252,7 +249,6 @@ class State
      *
      * @param Transition      $transition      The transition being performed.
      * @param Context         $context         The transition context.
-     * @param ErrorCollection $errorCollection The error collection.
      * @param bool            $success         The success state.
      *
      * @return State
@@ -260,7 +256,6 @@ class State
     public function transit(
         Transition $transition,
         Context $context,
-        ErrorCollection $errorCollection,
         bool $success = true
     ): State {
         $dateTime = new DateTimeImmutable();
@@ -274,7 +269,7 @@ class State
             $success,
             $context->getProperties(),
             $dateTime,
-            $errorCollection->getErrors()
+            $context->getErrorCollection()->getErrors()
         );
     }
 }

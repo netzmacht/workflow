@@ -18,12 +18,11 @@ use Assert\Assertion;
 use Assert\InvalidArgumentException;
 use Netzmacht\Workflow\Base;
 use Netzmacht\Workflow\Data\EntityId;
-use Netzmacht\Workflow\Data\ErrorCollection;
+use Netzmacht\Workflow\Flow\Condition\Workflow\AndCondition;
+use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
 use Netzmacht\Workflow\Flow\Exception\RoleNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\StepNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\TransitionNotFoundException;
-use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
-use Netzmacht\Workflow\Flow\Condition\Workflow\AndCondition;
 use Netzmacht\Workflow\Security\Role;
 
 /**
@@ -146,8 +145,11 @@ class Workflow extends Base
      */
     public function getAvailableTransitions(Item $item, Context $context = null): iterable
     {
-        $context         = $context ?: new Context();
-        $errorCollection = new ErrorCollection();
+        if ($context) {
+            $context = $context->withEmptyErrorCollection();
+        } else {
+            $context = new Context();
+        }
 
         if (!$item->isWorkflowStarted()) {
             $transitions = array($this->getStartTransition());
@@ -163,8 +165,8 @@ class Workflow extends Base
 
         return array_filter(
             $transitions,
-            function (Transition $transition) use ($item, $context, $errorCollection) {
-                return $transition->isAvailable($item, $context, $errorCollection);
+            function (Transition $transition) use ($item, $context) {
+                return $transition->isAvailable($item, $context);
             }
         );
     }
@@ -202,7 +204,6 @@ class Workflow extends Base
      *
      * @param Item            $item            The workflow item.
      * @param Context         $context         Transition context.
-     * @param ErrorCollection $errorCollection Error collection.
      * @param string          $transitionName  The transition name.
      *
      * @return bool
@@ -210,7 +211,6 @@ class Workflow extends Base
     public function isTransitionAvailable(
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
         string $transitionName
     ): bool {
         if (!$item->isWorkflowStarted()) {
@@ -223,7 +223,8 @@ class Workflow extends Base
         }
 
         $transition = $this->getTransition($transitionName);
-        return $transition->isAvailable($item, $context, $errorCollection);
+
+        return $transition->isAvailable($item, $context);
     }
 
     /**

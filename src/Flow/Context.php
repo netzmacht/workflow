@@ -10,7 +10,11 @@
  * @filesource
  */
 
+declare(strict_types=1);
+
 namespace Netzmacht\Workflow\Flow;
+
+use Netzmacht\Workflow\Data\ErrorCollection;
 
 /**
  * Class Context provides extra information for a transition.
@@ -31,23 +35,31 @@ class Context
     private $properties = array();
 
     /**
-     * Params being passed.
+     * Transition payload.
      *
      * @var array
      */
-    private $params = array();
+    private $payload = array();
 
+    /**
+     * Error collection.
+     *
+     * @var ErrorCollection
+     */
+    private $errorCollection;
 
     /**
      * Construct.
      *
-     * @param array $properties The properties to be stored.
-     * @param array $params     The given parameters.
+     * @param array                $properties      The properties to be stored.
+     * @param array                $payload         The given parameters.
+     * @param ErrorCollection|null $errorCollection Error collection.
      */
-    public function __construct(array $properties = array(), array $params = array())
+    public function __construct(array $properties = [], array $payload = [], ErrorCollection $errorCollection = null)
     {
-        $this->properties = $properties;
-        $this->params     = $params;
+        $this->properties      = $properties;
+        $this->payload         = $payload;
+        $this->errorCollection = $errorCollection ?: new ErrorCollection();
     }
 
     /**
@@ -59,7 +71,7 @@ class Context
      *
      * @return $this
      */
-    public function setProperty($name, $value, $namespace = self::NAMESPACE_DEFAULT)
+    public function setProperty(string $name, $value, string $namespace = self::NAMESPACE_DEFAULT): self
     {
         $this->properties[$namespace][$name] = $value;
 
@@ -74,7 +86,7 @@ class Context
      *
      * @return mixed
      */
-    public function getProperty($name, $namespace = self::NAMESPACE_DEFAULT)
+    public function getProperty(string $name, string $namespace = self::NAMESPACE_DEFAULT)
     {
         if ($this->hasProperty($name, $namespace)) {
             return $this->properties[$namespace][$name];
@@ -91,7 +103,7 @@ class Context
      *
      * @return bool
      */
-    public function hasProperty($name, $namespace = self::NAMESPACE_DEFAULT)
+    public function hasProperty(string $name, string $namespace = self::NAMESPACE_DEFAULT): bool
     {
         return isset($this->properties[$namespace][$name]);
     }
@@ -103,7 +115,7 @@ class Context
      *
      * @return array
      */
-    public function getProperties($namespace = null)
+    public function getProperties(?string $namespace = null): array
     {
         if (!$namespace) {
             return $this->properties;
@@ -125,9 +137,9 @@ class Context
      *
      * @return $this
      */
-    public function setParam($name, $value, $namespace = self::NAMESPACE_DEFAULT)
+    public function setParam(string $name, $value, string $namespace = self::NAMESPACE_DEFAULT): self
     {
-        $this->params[$namespace][$name] = $value;
+        $this->payload[$namespace][$name] = $value;
 
         return $this;
     }
@@ -140,31 +152,31 @@ class Context
      *
      * @return bool
      */
-    public function hasParam($name, $namespace = self::NAMESPACE_DEFAULT)
+    public function hasParam(string $name, string $namespace = self::NAMESPACE_DEFAULT): bool
     {
-        return isset($this->params[$namespace][$name]);
+        return isset($this->payload[$namespace][$name]);
     }
 
     /**
      * Get all params.
      *
-     * If namespace is given only a specific namespace is returned. Otherwise all namesapces are returned.
+     * If namespace is given only a specific namespace is returned. Otherwise all namespaces are returned.
      *
      * @param string|null $namespace Optional namespace.
      *
      * @return array
      */
-    public function getParams($namespace = null)
+    public function getPayload(?string $namespace = null): array
     {
         if ($namespace) {
-            if (isset($this->params[$namespace])) {
-                return $this->params[$namespace];
+            if (isset($this->payload[$namespace])) {
+                return $this->payload[$namespace];
             }
 
             return array();
         }
 
-        return $this->params;
+        return $this->payload;
     }
 
     /**
@@ -175,10 +187,10 @@ class Context
      *
      * @return mixed
      */
-    public function getParam($name, $namespace = self::NAMESPACE_DEFAULT)
+    public function getParam(string $name, ?string $namespace = self::NAMESPACE_DEFAULT)
     {
         if ($this->hasParam($name, $namespace)) {
-            return $this->params[$namespace][$name];
+            return $this->payload[$namespace][$name];
         }
 
         return null;
@@ -192,14 +204,50 @@ class Context
      *
      * @return $this
      */
-    public function setParams(array $params, $namespace = null)
+    public function setPayload(array $params, ?string $namespace = null): self
     {
         if ($namespace) {
-            $this->params[$namespace] = $params;
+            $this->payload[$namespace] = $params;
         } else {
-            $this->params = $params;
+            $this->payload = $params;
         }
 
         return $this;
+    }
+
+    /**
+     * Get error collection.
+     *
+     * @return ErrorCollection
+     */
+    public function getErrorCollection(): ErrorCollection
+    {
+        return $this->errorCollection;
+    }
+
+    /**
+     * Add an error.
+     *
+     * @param string          $message    Error message.
+     * @param array           $params     Params for the error message.
+     * @param ErrorCollection $collection Option. Child collection of the error.
+     *
+     * @return self
+     */
+    public function addError(string $message, array $params = array(), ErrorCollection $collection = null): self
+    {
+        $this->errorCollection->addError($message, $params, $collection);
+
+        return $this;
+    }
+
+    /**
+     * Get a new context with an empty error collection.
+     *
+     * @return Context
+     */
+    public function withEmptyErrorCollection(): Context
+    {
+        return new Context($this->properties, $this->payload, $this->errorCollection);
     }
 }
