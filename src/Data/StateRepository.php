@@ -24,7 +24,7 @@ use Netzmacht\Workflow\Flow\State;
 interface StateRepository
 {
     /**
-     * Find last worfklow state of an entity.
+     * Find last workflow state of an entity.
      *
      * @param EntityId $entityId The entity id.
      *
