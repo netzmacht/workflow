@@ -2,7 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
-use Netzmacht\Workflow\Data\ErrorCollection;
+use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Security\User;
 use Netzmacht\Workflow\Flow\Context;

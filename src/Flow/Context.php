@@ -14,7 +14,8 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Data\ErrorCollection;
+use Netzmacht\Workflow\Flow\Context\ErrorCollection;
+use Netzmacht\Workflow\Flow\Context\Properties;
 
 /**
  * Class Context provides extra information for a transition.
@@ -30,16 +31,16 @@ class Context
     /**
      * Properties which will be stored as state data.
      *
-     * @var array
+     * @var Properties
      */
-    private $properties = array();
+    private $properties;
 
     /**
      * Transition payload.
      *
-     * @var array
+     * @var Properties
      */
-    private $payload = array();
+    private $payload;
 
     /**
      * Error collection.
@@ -51,168 +52,38 @@ class Context
     /**
      * Construct.
      *
-     * @param array                $properties      The properties to be stored.
-     * @param array                $payload         The given parameters.
+     * @param Properties           $properties      The properties to be stored.
+     * @param Properties           $payload         The given parameters.
      * @param ErrorCollection|null $errorCollection Error collection.
      */
-    public function __construct(array $properties = [], array $payload = [], ErrorCollection $errorCollection = null)
-    {
-        $this->properties      = $properties;
-        $this->payload         = $payload;
+    public function __construct(
+        Properties $properties = null,
+        Properties $payload = null,
+        ErrorCollection $errorCollection = null
+    ) {
+        $this->properties      = $properties ?: new Properties();
+        $this->payload         = $payload ?: new Properties();
         $this->errorCollection = $errorCollection ?: new ErrorCollection();
     }
 
     /**
-     * Set a property value.
+     * Get properties.
      *
-     * @param string $name      Name of the property.
-     * @param mixed  $value     Value of the property.
-     * @param string $namespace Namespace the property belongs to.
-     *
-     * @return $this
+     * @return Properties
      */
-    public function setProperty(string $name, $value, string $namespace = self::NAMESPACE_DEFAULT): self
+    public function getProperties()
     {
-        $this->properties[$namespace][$name] = $value;
-
-        return $this;
+        return $this->properties;
     }
 
     /**
-     * Get the property value.
+     * Get payload.
      *
-     * @param string $name      Property name.
-     * @param string $namespace Namespace the property belongs to.
-     *
-     * @return mixed
+     * @return Properties
      */
-    public function getProperty(string $name, string $namespace = self::NAMESPACE_DEFAULT)
+    public function getPayload()
     {
-        if ($this->hasProperty($name, $namespace)) {
-            return $this->properties[$namespace][$name];
-        }
-
-        return null;
-    }
-
-    /**
-     * Consider if property is set.
-     *
-     * @param string $name      Property name.
-     * @param string $namespace Namespace the property belongs to.
-     *
-     * @return bool
-     */
-    public function hasProperty(string $name, string $namespace = self::NAMESPACE_DEFAULT): bool
-    {
-        return isset($this->properties[$namespace][$name]);
-    }
-
-    /**
-     * Get all properties. If namespace isset only properties of a namespace.
-     *
-     * @param string $namespace Namespace the property belongs to.
-     *
-     * @return array
-     */
-    public function getProperties(?string $namespace = null): array
-    {
-        if (!$namespace) {
-            return $this->properties;
-        }
-
-        if (isset($this->properties[$namespace])) {
-            return $this->properties[$namespace];
-        }
-
-        return array();
-    }
-
-    /**
-     * Set a parameter.
-     *
-     * @param string $name      Param name.
-     * @param mixed  $value     Param value.
-     * @param string $namespace Namespace the param belongs to.
-     *
-     * @return $this
-     */
-    public function setParam(string $name, $value, string $namespace = self::NAMESPACE_DEFAULT): self
-    {
-        $this->payload[$namespace][$name] = $value;
-
-        return $this;
-    }
-
-    /**
-     * Consider if a param isset.
-     *
-     * @param string $name      Param name.
-     * @param string $namespace Namespace the param belongs to.
-     *
-     * @return bool
-     */
-    public function hasParam(string $name, string $namespace = self::NAMESPACE_DEFAULT): bool
-    {
-        return isset($this->payload[$namespace][$name]);
-    }
-
-    /**
-     * Get all params.
-     *
-     * If namespace is given only a specific namespace is returned. Otherwise all namespaces are returned.
-     *
-     * @param string|null $namespace Optional namespace.
-     *
-     * @return array
-     */
-    public function getPayload(?string $namespace = null): array
-    {
-        if ($namespace) {
-            if (isset($this->payload[$namespace])) {
-                return $this->payload[$namespace];
-            }
-
-            return array();
-        }
-
         return $this->payload;
-    }
-
-    /**
-     * Get a param by name.
-     *
-     * @param string $name      Param name.
-     * @param string $namespace Namespace the param belongs to.
-     *
-     * @return mixed
-     */
-    public function getParam(string $name, ?string $namespace = self::NAMESPACE_DEFAULT)
-    {
-        if ($this->hasParam($name, $namespace)) {
-            return $this->payload[$namespace][$name];
-        }
-
-        return null;
-    }
-
-    /**
-     * Set multiple params.
-     *
-     * @param array  $params    Array of params.
-     * @param string $namespace Namespace the params belongs to.
-     *
-     * @return $this
-     */
-    public function setPayload(array $params, ?string $namespace = null): self
-    {
-        if ($namespace) {
-            $this->payload[$namespace] = $params;
-        } else {
-            $this->payload = $params;
-        }
-
-        return $this;
     }
 
     /**

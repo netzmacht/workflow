@@ -202,9 +202,9 @@ class Workflow extends Base
     /**
      * Check if a specific transition is available.
      *
-     * @param Item            $item            The workflow item.
-     * @param Context         $context         Transition context.
-     * @param string          $transitionName  The transition name.
+     * @param Item    $item           The workflow item.
+     * @param Context $context        Transition context.
+     * @param string  $transitionName The transition name.
      *
      * @return bool
      */

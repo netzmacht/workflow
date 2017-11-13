@@ -2,7 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
-use Netzmacht\Workflow\Data\ErrorCollection;
+use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
@@ -17,7 +17,7 @@ use Prophecy\Argument;
  */
 class OrConditionSpec extends ObjectBehavior
 {
-    const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Data\ErrorCollection';
+    const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Flow\Context\ErrorCollection';
 
     function it_is_initializable()
     {

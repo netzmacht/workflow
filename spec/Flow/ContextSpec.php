@@ -86,30 +86,30 @@ class ContextSpec extends ObjectBehavior
 
     function it_sets_param()
     {
-        $this->setParam('param', 'val')->shouldReturn($this);
-        $this->getParam('param')->shouldReturn('val');
+        $this->setPayloadParam('param', 'val')->shouldReturn($this);
+        $this->getPayloadParam('param')->shouldReturn('val');
     }
 
     function it_sets_namespaces_param()
     {
-        $this->setParam('param', 'val', 'custom')->shouldReturn($this);
-        $this->getParam('param', 'custom')->shouldReturn('val');
+        $this->setPayloadParam('param', 'val', 'custom')->shouldReturn($this);
+        $this->getPayloadParam('param', 'custom')->shouldReturn('val');
     }
 
     function it_knows_if_param_exists()
     {
-        $this->hasParam('param')->shouldReturn(false);
-        $this->hasParam('param', 'custom')->shouldReturn(false);
+        $this->hasPayloadParam('param')->shouldReturn(false);
+        $this->hasPayloadParam('param', 'custom')->shouldReturn(false);
 
-        $this->setParam('param', 'val', 'custom');
+        $this->setPayloadParam('param', 'val', 'custom');
 
-        $this->hasParam('param')->shouldReturn(false);
-        $this->hasParam('param', 'custom')->shouldReturn(true);
+        $this->hasPayloadParam('param')->shouldReturn(false);
+        $this->hasPayloadParam('param', 'custom')->shouldReturn(true);
     }
 
     function it_gets_null_if_param_not_exists()
     {
-        $this->getParam('foo')->shouldReturn(null);
+        $this->getPayloadParam('foo')->shouldReturn(null);
     }
 
     function it_sets_params()

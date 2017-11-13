@@ -22,7 +22,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 {
     const TRANSITION_NAME = 'transition_name';
 
-    const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Data\ErrorCollection';
+    const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Flow\Context\ErrorCollection';
 
     const CONTEXT_CLASS = 'Netzmacht\Workflow\Flow\Context';
     const STEP_NAME = 'step_name';

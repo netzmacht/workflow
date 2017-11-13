@@ -6,7 +6,7 @@ use Netzmacht\Workflow\Security\Permission;
 use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Data\EntityId;
-use Netzmacht\Workflow\Data\ErrorCollection;
+use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use Netzmacht\Workflow\Flow\Action;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Context;
@@ -26,7 +26,7 @@ class TransitionSpec extends ObjectBehavior
 {
     const NAME = 'transition_name';
 
-    const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Data\ErrorCollection';
+    const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Flow\Context\ErrorCollection';
 
     protected static $entity = array('id' => 5);
 
@@ -73,7 +73,7 @@ class TransitionSpec extends ObjectBehavior
     {
         $this->getRequiredPayloadProperties($item)->shouldReturn([]);
 
-        $action->getRequiredPayloadProperties($item)->willReturn([]);
+        $action->getRequiredPayloadParamNames($item)->willReturn([]);
         $this->addAction($action);
 
         $this->getRequiredPayloadProperties($item)->shouldReturn([]);
@@ -83,7 +83,7 @@ class TransitionSpec extends ObjectBehavior
     {
         $this->getRequiredPayloadProperties($item)->shouldReturn([]);
 
-        $action->getRequiredPayloadProperties($item)->willReturn(['foo']);
+        $action->getRequiredPayloadParamNames($item)->willReturn(['foo']);
         $this->addAction($action);
 
         $this->getRequiredPayloadProperties($item)->shouldReturn(['foo']);
@@ -279,7 +279,7 @@ class TransitionSpec extends ObjectBehavior
             ->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))
             ->willReturn(false);
 
-        $action->getRequiredPayloadProperties($item)->willReturn(['foo']);
+        $action->getRequiredPayloadParamNames($item)->willReturn(['foo']);
         $this->addAction($action);
 
 
@@ -359,7 +359,7 @@ class TransitionSpec extends ObjectBehavior
 
 class ThrowingAction implements Action
 {
-    public function getRequiredPayloadProperties(Item $item): array
+    public function getRequiredPayloadParamNames(Item $item): array
     {
         return [];
     }

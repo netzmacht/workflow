@@ -2,7 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Data;
 
-use Netzmacht\Workflow\Data\ErrorCollection;
+use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -14,7 +14,7 @@ class ErrorCollectionSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Data\ErrorCollection');
+        $this->shouldHaveType('Netzmacht\Workflow\Flow\Context\ErrorCollection');
     }
 
     function it_adds_error()

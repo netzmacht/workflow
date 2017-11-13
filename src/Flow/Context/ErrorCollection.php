@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-namespace Netzmacht\Workflow\Data;
+namespace Netzmacht\Workflow\Flow\Context;
 
 /**
  * Class ErrorCollection collects error messages being raised during transition.

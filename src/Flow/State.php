@@ -127,10 +127,10 @@ class State
     /**
      * Create an initial state.
      *
-     * @param EntityId        $entityId        The entity id.
-     * @param Transition      $transition      The current executed transition.
-     * @param Context         $context         The context.
-     * @param bool            $success         Success state.
+     * @param EntityId   $entityId   The entity id.
+     * @param Transition $transition The current executed transition.
+     * @param Context    $context    The context.
+     * @param bool       $success    Success state.
      *
      * @return State
      */
@@ -247,9 +247,9 @@ class State
     /**
      * Transit to a new state.
      *
-     * @param Transition      $transition      The transition being performed.
-     * @param Context         $context         The transition context.
-     * @param bool            $success         The success state.
+     * @param Transition $transition The transition being performed.
+     * @param Context    $context    The transition context.
+     * @param bool       $success    The success state.
      *
      * @return State
      */
