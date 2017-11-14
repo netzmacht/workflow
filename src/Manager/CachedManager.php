@@ -80,7 +80,7 @@ class CachedManager implements Manager
      */
     public function getWorkflow(EntityId $entityId, $entity): Workflow
     {
-        $key = $entityId->__toString();
+        $key = (string) $entityId;
 
         if (!isset($this->workflows[$key])) {
             $this->workflows[$key] = $this->manager->getWorkflow($entityId, $entity);

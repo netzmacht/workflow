@@ -98,7 +98,6 @@ class WorkflowManager implements Manager
         return $handler;
     }
 
-
     /**
      * {@inheritdoc}
      */
