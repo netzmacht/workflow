@@ -19,7 +19,7 @@ namespace Netzmacht\Workflow\Util;
  *
  * @package Netzmacht\Workflow\Util
  */
-class Comparison
+final class Comparison
 {
     const EQUALS                 = '==';
     const IDENTICAL              = '===';
@@ -42,7 +42,7 @@ class Comparison
      *
      * @param mixed  $valueA   Value a.
      * @param mixed  $valueB   Value b.
-     * @param string $operator The operator vor the comparison.
+     * @param string $operator The operator for the comparison.
      *
      * @return bool
      */
@@ -65,7 +65,7 @@ class Comparison
      *
      * @return bool
      */
-    public static function equals($valueA, $valueB)
+    public static function equals($valueA, $valueB): bool
     {
         return $valueA == $valueB;
     }
@@ -80,7 +80,7 @@ class Comparison
      *
      * @return bool
      */
-    public static function identical($valueA, $valueB)
+    public static function identical($valueA, $valueB): bool
     {
         return $valueA === $valueB;
     }
@@ -93,7 +93,7 @@ class Comparison
      *
      * @return bool
      */
-    public static function notEquals($valueA, $valueB)
+    public static function notEquals($valueA, $valueB): bool
     {
         return !static::equals($valueA, $valueB);
     }
@@ -106,7 +106,7 @@ class Comparison
      *
      * @return bool
      */
-    public static function notIdentical($valueA, $valueB)
+    public static function notIdentical($valueA, $valueB): bool
     {
         return !static::identical($valueA, $valueB);
     }
@@ -119,7 +119,7 @@ class Comparison
      *
      * @return bool
      */
-    public static function greaterThan($valueA, $valueB)
+    public static function greaterThan($valueA, $valueB): bool
     {
         return $valueA > $valueB;
     }
@@ -132,7 +132,7 @@ class Comparison
      *
      * @return bool
      */
-    public static function greaterThanOrEquals($valueA, $valueB)
+    public static function greaterThanOrEquals($valueA, $valueB): bool
     {
         return $valueA >= $valueB;
     }
@@ -145,7 +145,7 @@ class Comparison
      *
      * @return bool
      */
-    public static function lesserThan($valueA, $valueB)
+    public static function lesserThan($valueA, $valueB): bool
     {
         return $valueA < $valueB;
     }
@@ -158,7 +158,7 @@ class Comparison
      *
      * @return bool
      */
-    public static function lesserThanOrEquals($valueA, $valueB)
+    public static function lesserThanOrEquals($valueA, $valueB): bool
     {
         return $valueA <= $valueB;
     }
@@ -170,7 +170,7 @@ class Comparison
      *
      * @return string|bool
      */
-    private static function getOperatorMethod($operator)
+    private static function getOperatorMethod($operator): bool
     {
         $operators = self::getOperators();
 
@@ -186,7 +186,7 @@ class Comparison
      *
      * @return array
      */
-    private static function getOperators()
+    private static function getOperators(): array
     {
         if (!is_array(self::$operators)) {
             $reflector = new \ReflectionClass(get_called_class());
