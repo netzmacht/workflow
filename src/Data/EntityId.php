@@ -14,6 +14,8 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Data;
 
+use Assert\Assertion;
+
 /**
  * Class EntityId identifies an entity by using its row id and provider name.
  *
@@ -62,6 +64,9 @@ final class EntityId
     public static function fromString(string $entityId): self
     {
         list($providerName, $identifier) = explode('::', $entityId, 2);
+
+        Assertion::notEmpty($providerName);
+        Assertion::notEmpty($identifier);
 
         return new static($providerName, $identifier);
     }
