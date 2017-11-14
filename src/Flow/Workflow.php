@@ -22,7 +22,7 @@ use Netzmacht\Workflow\Flow\Condition\Workflow\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
 use Netzmacht\Workflow\Flow\Exception\RoleNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\StepNotFoundException;
-use Netzmacht\Workflow\Flow\Exception\TransitionNotFoundException;
+use Netzmacht\Workflow\Flow\Exception\TransitionNotFound;
 use Netzmacht\Workflow\Security\Role;
 
 /**
@@ -117,7 +117,7 @@ class Workflow extends Base
      *
      * @param string $transitionName The name of the transition.
      *
-     * @throws TransitionNotFoundException If transition is not found.
+     * @throws TransitionNotFound If transition is not found.
      *
      * @return \Netzmacht\Workflow\Flow\Transition If transition is not found.
      */
@@ -129,7 +129,7 @@ class Workflow extends Base
             }
         }
 
-        throw new TransitionNotFoundException($transitionName, $this->getName());
+        throw TransitionNotFound::withName($transitionName, $this->getName());
     }
 
     /**
@@ -139,7 +139,7 @@ class Workflow extends Base
      * @param Context $context Transition context.
      *
      * @throws StepNotFoundException If Step does not exists.
-     * @throws TransitionNotFoundException If transition does not exists.
+     * @throws TransitionNotFound If transition does not exists.
      *
      * @return Transition[]|iterable
      */
@@ -266,7 +266,7 @@ class Workflow extends Base
      *
      * @param string $transitionName Name of start transition.
      *
-     * @throws TransitionNotFoundException If transition is not part of the workflow.
+     * @throws TransitionNotFound If transition is not part of the workflow.
      *
      * @return $this
      */

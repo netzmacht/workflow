@@ -16,7 +16,8 @@ namespace Netzmacht\Workflow\Flow;
 
 use Assert\Assertion;
 use Netzmacht\Workflow\Data\EntityId;
-use Netzmacht\Workflow\Flow\Exception\WorkflowException;
+use Netzmacht\Workflow\Exception\WorkflowException;
+use Netzmacht\Workflow\Flow\Exception\FlowException;
 
 /**
  * Class Item stores workflow related data of an entity. It knows the state history and the current state.
@@ -247,12 +248,12 @@ class Item
      *
      * @return void
      *
-     * @throws WorkflowException If item workflow process was already started.
+     * @throws FlowException If item workflow process was already started.
      */
     private function guardNotStarted(): void
     {
         if ($this->isWorkflowStarted()) {
-            throw new WorkflowException('Item is already started.');
+            throw new FlowException('Item is already started.');
         }
     }
 
@@ -261,15 +262,14 @@ class Item
      *
      * @return void
      *
-     * @throws WorkflowException If item workflow process was not started.
+     * @throws FlowException If item workflow process was not started.
      */
     private function guardStarted(): void
     {
         if (!$this->isWorkflowStarted()) {
-            throw new WorkflowException('Item has not started yet.');
+            throw new FlowException('Item has not started yet.');
         }
     }
-
 
     /**
      * Apply a new state.

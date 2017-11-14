@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace Netzmacht\Workflow\Handler;
 
 use Netzmacht\Workflow\Flow\Context;
-use Netzmacht\Workflow\Flow\Exception\WorkflowException;
+use Netzmacht\Workflow\Flow\Exception\FlowException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
@@ -80,7 +80,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
      * @param string             $transitionName     The transition to be handled.
      * @param TransactionHandler $transactionHandler TransactionHandler take care of transactions.
      *
-     * @throws WorkflowException If invalid transition name is given.
+     * @throws FlowException If invalid transition name is given.
      */
     public function __construct(
         Item $item,
@@ -220,16 +220,16 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * Guard that transition was validated before.
      *
-     * @throws WorkflowException If transition.
+     * @throws FlowException If transition.
      *
      * @return void
      */
     protected function guardValidated(): void
     {
         if ($this->validated === null) {
-            throw new WorkflowException('Transition was not validated so far.');
+            throw new FlowException('Transition was not validated so far.');
         } elseif (!$this->validated) {
-            throw new WorkflowException('Transition is in a invalid state and can\'t be processed.');
+            throw new FlowException('Transition is in a invalid state and can\'t be processed.');
         }
     }
 
@@ -238,7 +238,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
      *
      * @param string|null $transitionName Transition to be processed.
      *
-     * @throws WorkflowException If Transition is not allowed.
+     * @throws FlowException If Transition is not allowed.
      *
      * @return void
      */
@@ -249,7 +249,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
                 return;
             }
 
-            throw new WorkflowException(
+            throw new FlowException(
                 sprintf(
                     'Not allowed to process transition "%s". Workflow "%s" not started for item "%s"',
                     $transitionName,
@@ -262,7 +262,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         $step = $this->getCurrentStep();
 
         if (!$step->isTransitionAllowed($transitionName)) {
-            throw new WorkflowException(
+            throw new FlowException(
                 sprintf(
                     'Not allowed to process transition "%s". Transition is not allowed in step "%s"',
                     $transitionName,

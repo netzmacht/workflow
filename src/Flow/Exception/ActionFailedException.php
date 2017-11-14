@@ -19,7 +19,7 @@ namespace Netzmacht\Workflow\Flow\Exception;
  *
  * @package Netzmacht\Workflow\Flow\Transition
  */
-class ActionFailedException extends WorkflowException
+class ActionFailedException extends FlowException
 {
 
 }

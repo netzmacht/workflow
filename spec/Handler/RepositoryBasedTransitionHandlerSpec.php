@@ -234,7 +234,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
     {
         $workflow->getStartTransition()->willReturn($transition);
 
-        $this->shouldThrow('Netzmacht\Workflow\Flow\Exception\WorkflowException')->duringTransit();
+        $this->shouldThrow('Netzmacht\Workflow\Exception\WorkflowException')->duringTransit();
     }
 
     function it_transits_to_next_state(Transition $transition, Item $item, State $state)

@@ -15,7 +15,8 @@ declare(strict_types=1);
 namespace Netzmacht\Workflow\Manager;
 
 use Netzmacht\Workflow\Data\EntityId;
-use Netzmacht\Workflow\Flow\Exception\WorkflowException;
+use Netzmacht\Workflow\Exception\WorkflowException;
+use Netzmacht\Workflow\Exception\WorkflowNotFound;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Handler\TransitionHandler;
@@ -33,23 +34,23 @@ interface Manager
     /**
      * Handle a workflow transition of an entity will createRepository a transition handler.
      *
-     * If no matching workflow definition is found false will be returned.
+     * If no matching workflow definition is found null will be returned.
      *
      * @param Item   $item           The current workflow item.
      * @param string $transitionName Transition name, required if workflow has already started.
      *
      * @throws WorkflowException If something went wrong.
      *
-     * @return bool|TransitionHandler
+     * @return TransitionHandler
      */
-    public function handle(Item $item, $transitionName = null);
+    public function handle(Item $item, ?string $transitionName = null):? TransitionHandler;
 
     /**
      * Add a workflow to the manager.
      *
      * @param Workflow $workflow The workflow being added.
      *
-     * @return Manager
+     * @return $this
      */
     public function addWorkflow(Workflow $workflow): self;
 
@@ -59,27 +60,33 @@ interface Manager
      * @param EntityId $entityId The entity id.
      * @param mixed    $entity   The entity.
      *
-     * @return Workflow|bool
+     * @return Workflow
+     *
+     * @throws WorkflowNotFound When no workflow is found.
      */
-    public function getWorkflow(EntityId $entityId, $entity);
+    public function getWorkflow(EntityId $entityId, $entity): Workflow;
 
     /**
      * Get Workflow by its name.
      *
      * @param string $name Name of workflow.
      *
-     * @return bool|Workflow
+     * @return Workflow
+     *
+     * @throws WorkflowNotFound When no workflow is found.
      */
-    public function getWorkflowByName(string $name);
+    public function getWorkflowByName(string $name): Workflow;
 
     /**
      * Get workflow by item.
      *
      * @param Item $item Workflow item.
      *
-     * @return bool|Workflow
+     * @return Workflow
+     *
+     * @throws WorkflowNotFound When no workflow is found.
      */
-    public function getWorkflowByItem(Item $item);
+    public function getWorkflowByItem(Item $item): Workflow;
 
     /**
      * Consider if entity has an workflow.

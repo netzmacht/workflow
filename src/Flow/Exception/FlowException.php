@@ -10,15 +10,17 @@
  * @filesource
  */
 
-declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow\Exception;
 
+use Netzmacht\Workflow\Exception\WorkflowException;
+
 /**
- * Class WorkflowException is thrown if something went wrong during workflow.
+ * Class FlowException.
  *
- * @package Netzmacht\Workflow\Exception\Flow
+ * @package Netzmacht\Workflow\Flow\Exception
  */
-class WorkflowException extends \Exception
+class FlowException extends \RuntimeException implements WorkflowException
 {
+
 }

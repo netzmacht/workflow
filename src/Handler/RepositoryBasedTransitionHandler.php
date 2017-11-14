@@ -16,7 +16,7 @@ namespace Netzmacht\Workflow\Handler;
 
 use Netzmacht\Workflow\Data\EntityRepository;
 use Netzmacht\Workflow\Data\StateRepository;
-use Netzmacht\Workflow\Flow\Exception\WorkflowException;
+use Netzmacht\Workflow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Workflow;

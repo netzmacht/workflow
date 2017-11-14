@@ -15,8 +15,8 @@ declare(strict_types=1);
 namespace Netzmacht\Workflow\Handler;
 
 use Netzmacht\Workflow\Flow\Context;
-use Netzmacht\Workflow\Flow\Exception\TransitionNotFoundException;
-use Netzmacht\Workflow\Flow\Exception\WorkflowException;
+use Netzmacht\Workflow\Flow\Exception\TransitionNotFound;
+use Netzmacht\Workflow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
@@ -49,7 +49,7 @@ interface TransitionHandler
      *
      * @return Transition
      *
-     * @throws TransitionNotFoundException If transition was not found.
+     * @throws TransitionNotFound If transition was not found.
      */
     public function getTransition(): Transition;
 

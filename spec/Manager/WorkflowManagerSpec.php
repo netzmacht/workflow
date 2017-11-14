@@ -205,7 +205,7 @@ class WorkflowManagerSpec extends ObjectBehavior
         $workflow->getName()->willReturn('workflow_b');
 
         $this
-            ->shouldThrow('Netzmacht\Workflow\Flow\Exception\WorkflowException')
+            ->shouldThrow('Netzmacht\Workflow\Exception\WorkflowException')
             ->duringHandle($item, 'next');
     }
 

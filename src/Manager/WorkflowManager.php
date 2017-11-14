@@ -15,9 +15,11 @@ namespace Netzmacht\Workflow\Manager;
 use Assert\Assertion;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\StateRepository;
-use Netzmacht\Workflow\Flow\Exception\WorkflowException;
+use Netzmacht\Workflow\Exception\WorkflowNotFound;
+use Netzmacht\Workflow\Flow\Exception\FlowException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
+use Netzmacht\Workflow\Handler\TransitionHandler;
 use Netzmacht\Workflow\Handler\TransitionHandlerFactory;
 
 /**
@@ -61,7 +63,7 @@ class WorkflowManager implements Manager
     public function __construct(
         TransitionHandlerFactory $handlerFactory,
         StateRepository $stateRepository,
-        $workflows = array()
+        $workflows = []
     ) {
         Assertion::allIsInstanceOf($workflows, Workflow::class);
 
@@ -73,14 +75,15 @@ class WorkflowManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function handle(Item $item, $transitionName = null)
+    public function handle(Item $item, string $transitionName = null): ?TransitionHandler
     {
-        $entity   = $item->getEntity();
-        $workflow = $this->getWorkflow($item->getEntityId(), $entity);
+        $entity = $item->getEntity();
 
-        if (!$workflow) {
-            return false;
+        if (!$this->hasWorkflow($item->getEntityId(), $entity)) {
+            return null;
         }
+
+        $workflow = $this->getWorkflow($item->getEntityId(), $entity);
 
         $this->guardSameWorkflow($item, $workflow);
 
@@ -109,7 +112,7 @@ class WorkflowManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function getWorkflow(EntityId $entityId, $entity)
+    public function getWorkflow(EntityId $entityId, $entity): Workflow
     {
         foreach ($this->workflows as $workflow) {
             if ($workflow->match($entityId, $entity)) {
@@ -117,13 +120,13 @@ class WorkflowManager implements Manager
             }
         }
 
-        return false;
+        throw WorkflowNotFound::forEntity($entityId);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getWorkflowByName(string $name)
+    public function getWorkflowByName(string $name): Workflow
     {
         foreach ($this->workflows as $workflow) {
             if ($workflow->getName() == $name) {
@@ -131,13 +134,13 @@ class WorkflowManager implements Manager
             }
         }
 
-        return false;
+        throw WorkflowNotFound::withName($name);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getWorkflowByItem(Item $item)
+    public function getWorkflowByItem(Item $item): Workflow
     {
         return $this->getWorkflow($item->getEntityId(), $item->getEntity());
     }
@@ -180,7 +183,7 @@ class WorkflowManager implements Manager
      * @param Item     $item     Current workflow item.
      * @param Workflow $workflow Selected workflow.
      *
-     * @throws WorkflowException If item workflow is not the same as current workflow.
+     * @throws FlowException If item workflow is not the same as current workflow.
      *
      * @return void
      */
@@ -194,7 +197,7 @@ class WorkflowManager implements Manager
                 $workflow->getName()
             );
 
-            throw new WorkflowException($message);
+            throw new FlowException($message);
         }
     }
 }

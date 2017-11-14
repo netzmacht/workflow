@@ -17,6 +17,7 @@ namespace Netzmacht\Workflow\Manager;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
+use Netzmacht\Workflow\Handler\TransitionHandler;
 
 /**
  * Workflow manager decorator caching the items and the relation between workflows and entities.
@@ -59,7 +60,7 @@ class CachedManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function handle(Item $item, $transitionName = null)
+    public function handle(Item $item, ?string $transitionName = null): ?TransitionHandler
     {
         return $this->manager->handle($item, $transitionName);
     }
@@ -77,7 +78,7 @@ class CachedManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function getWorkflow(EntityId $entityId, $entity)
+    public function getWorkflow(EntityId $entityId, $entity): Workflow
     {
         $key = $entityId->__toString();
 
@@ -91,7 +92,7 @@ class CachedManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function getWorkflowByName(string $name)
+    public function getWorkflowByName(string $name): Workflow
     {
         return $this->manager->getWorkflowByName($name);
     }
@@ -99,7 +100,7 @@ class CachedManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function getWorkflowByItem(Item $item)
+    public function getWorkflowByItem(Item $item): Workflow
     {
         return $this->getWorkflow($item->getEntityId(), $item->getEntity());
     }
@@ -109,7 +110,7 @@ class CachedManager implements Manager
      */
     public function hasWorkflow(EntityId $entityId, $entity): bool
     {
-        $key = $entityId->__toString();
+        $key = (string) $entityId;
 
         if (isset($this->workflows[$key])) {
             return true;
@@ -131,7 +132,7 @@ class CachedManager implements Manager
      */
     public function createItem(EntityId $entityId, $entity): Item
     {
-        $key = $entityId->__toString();
+        $key = (string) $entityId;
 
         if (!isset($this->items[$key])) {
             $this->items[$key] = $this->manager->createItem($entityId, $entity);

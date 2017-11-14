@@ -70,7 +70,7 @@ class WorkflowSpec extends ObjectBehavior
     function it_throws_if_transition_not_exists()
     {
         $this
-            ->shouldThrow('Netzmacht\Workflow\Flow\Exception\TransitionNotFoundException')
+            ->shouldThrow('Netzmacht\Workflow\Flow\Exception\TransitionNotFound')
             ->duringGetTransition('not_set');
     }
 
@@ -83,7 +83,7 @@ class WorkflowSpec extends ObjectBehavior
     function it_throws_if_start_transition_is_not_part_of_workflow()
     {
         $this
-            ->shouldThrow('Netzmacht\Workflow\Flow\Exception\TransitionNotFoundException')
+            ->shouldThrow('Netzmacht\Workflow\Flow\Exception\TransitionNotFound')
             ->duringSetStartTransition('not_set');
     }
 

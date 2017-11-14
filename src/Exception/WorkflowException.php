@@ -12,13 +12,13 @@
 
 declare(strict_types=1);
 
-namespace Netzmacht\Workflow\Flow\Exception;
+namespace Netzmacht\Workflow\Exception;
 
 /**
- * Class RoleNotFoundException is thrown when role is not found.
+ * Class WorkflowException is thrown if something went wrong during workflow.
  *
- * @package Netzmacht\Workflow\Flow\Exception
+ * @package Netzmacht\Workflow\Exception\Flow
  */
-class RoleNotFoundException extends FlowException
+interface WorkflowException
 {
 }

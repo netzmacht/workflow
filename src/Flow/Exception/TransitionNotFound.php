@@ -21,19 +21,25 @@ use Exception;
  *
  * @package Netzmacht\Workflow\Flow\Exception
  */
-class TransitionNotFoundException extends \Exception
+class TransitionNotFound extends FlowException
 {
     /**
      * Construct.
      *
-     * @param string    $transitionName The not found transition name.
-     * @param string    $workflowName   Current workflow name.
-     * @param int       $code           Error code.
-     * @param Exception $previous       Previous thrown exception.
+     * @param string $transitionName The not found transition name.
+     * @param string $workflowName   Current workflow name.
+     * @param int $code              Error code.
+     * @param Exception $previous    Previous thrown exception.
+     *
+     * @return TransitionNotFound
      */
-    public function __construct(string $transitionName, string $workflowName, int $code = 0, Exception $previous = null)
-    {
-        parent::__construct(
+    public static function withName(
+        string $transitionName,
+        string $workflowName,
+        int $code = 0,
+        Exception $previous = null
+    ) {
+        return new self(
             sprintf('Transition "%s" not found in workflow "%s"', $transitionName, $workflowName),
             $code,
             $previous

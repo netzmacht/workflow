@@ -21,7 +21,7 @@ use Exception;
  *
  * @package Netzmacht\Workflow\Flow\Exception
  */
-class StepNotFoundException extends WorkflowException
+class StepNotFoundException extends FlowException
 {
     /**
      * Construct.
