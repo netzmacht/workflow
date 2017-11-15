@@ -75,7 +75,7 @@ class WorkflowManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function handle(Item $item, string $transitionName = null): ?TransitionHandler
+    public function handle(Item $item, string $transitionName = null, bool $changeWorkflow = false): ?TransitionHandler
     {
         $entity = $item->getEntity();
 
@@ -85,7 +85,9 @@ class WorkflowManager implements Manager
 
         $workflow = $this->getWorkflow($item->getEntityId(), $entity);
 
-        $this->guardSameWorkflow($item, $workflow);
+        if ($this->hasWorkflowChanged($item, $workflow, !$changeWorkflow) && $changeWorkflow) {
+            $item->detach();
+        }
 
         $handler = $this->handlerFactory->createTransitionHandler(
             $item,
@@ -181,12 +183,13 @@ class WorkflowManager implements Manager
      *
      * @param Item     $item     Current workflow item.
      * @param Workflow $workflow Selected workflow.
+     * @param bool     $throw    If true an error is thrown
      *
      * @throws FlowException If item workflow is not the same as current workflow.
      *
-     * @return void
+     * @return bool
      */
-    private function guardSameWorkflow(Item $item, Workflow $workflow): void
+    private function hasWorkflowChanged(Item $item, Workflow $workflow, bool $throw = true): bool
     {
         if ($item->isWorkflowStarted() && $item->getWorkflowName() != $workflow->getName()) {
             $message = sprintf(
@@ -196,7 +199,13 @@ class WorkflowManager implements Manager
                 $workflow->getName()
             );
 
-            throw new FlowException($message);
+            if ($throw) {
+                throw new FlowException($message);
+            }
+
+            return true;
         }
+
+        return false;
     }
 }

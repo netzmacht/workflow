@@ -60,7 +60,7 @@ class CachedManager implements Manager
     /**
      * {@inheritdoc}
      */
-    public function handle(Item $item, ?string $transitionName = null): ?TransitionHandler
+    public function handle(Item $item, ?string $transitionName = null, bool $changeWorkflow = false): ?TransitionHandler
     {
         return $this->manager->handle($item, $transitionName);
     }

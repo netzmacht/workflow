@@ -38,12 +38,13 @@ interface Manager
      *
      * @param Item   $item           The current workflow item.
      * @param string $transitionName Transition name, required if workflow has already started.
+     * @param bool   $changeWorkflow If true the item is detached from current workflow if another workflow is used.
      *
      * @throws WorkflowException If something went wrong.
      *
      * @return TransitionHandler
      */
-    public function handle(Item $item, ?string $transitionName = null):? TransitionHandler;
+    public function handle(Item $item, string $transitionName = null, bool $changeWorkflow = false): ?TransitionHandler;
 
     /**
      * Add a workflow to the manager.

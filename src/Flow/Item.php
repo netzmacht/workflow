@@ -166,7 +166,7 @@ class Item
      *
      * @return string
      */
-    public function getCurrentStepName(): string
+    public function getCurrentStepName(): ?string
     {
         return $this->currentStepName;
     }
@@ -228,7 +228,7 @@ class Item
      *
      * @return string
      */
-    public function getWorkflowName(): string
+    public function getWorkflowName(): ?string
     {
         return $this->workflowName;
     }
@@ -241,6 +241,19 @@ class Item
     public function isWorkflowStarted(): bool
     {
         return !empty($this->currentStepName);
+    }
+
+    /**
+     * Detach item from current workflow.
+     *
+     * You should only use it with care if the workflow has changed and there is no way to finish it.
+     *
+     * @return void
+     */
+    public function detach(): void
+    {
+        $this->currentStepName = null;
+        $this->workflowName    = null;
     }
 
     /**
