@@ -47,7 +47,7 @@ class Properties
      *
      * @return array
      */
-    public function getProperties(?string $namespace = null): array
+    public function toArray(?string $namespace = null): array
     {
         if (!$namespace) {
             return $this->properties;
@@ -68,7 +68,7 @@ class Properties
      *
      * @return bool
      */
-    public function hasProperty(string $propertyName, string $namespace = self::NAMESPACE_DEFAULT): bool
+    public function has(string $propertyName, string $namespace = self::NAMESPACE_DEFAULT): bool
     {
         if (!array_key_exists($namespace, $this->properties)) {
             return false;
@@ -86,7 +86,7 @@ class Properties
      *
      * @return Properties
      */
-    public function setProperty(string $propertyName, $value, string $namespace = self::NAMESPACE_DEFAULT): self
+    public function set(string $propertyName, $value, string $namespace = self::NAMESPACE_DEFAULT): self
     {
         $this->properties[$namespace][$propertyName] = $value;
 
@@ -101,7 +101,7 @@ class Properties
      *
      * @return mixed
      */
-    public function getProperty(string $propertyName, string $namespace = self::NAMESPACE_DEFAULT)
+    public function get(string $propertyName, string $namespace = self::NAMESPACE_DEFAULT)
     {
         if (isset($this->properties[$namespace][$propertyName])) {
             return $this->properties[$namespace][$propertyName];
