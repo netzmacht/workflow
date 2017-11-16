@@ -92,4 +92,21 @@ class Properties
 
         return $this;
     }
+
+    /**
+     * Get the property value. If property does not exist, null is returned.
+     *
+     * @param string $propertyName Name of the property.
+     * @param string $namespace    Property namespace.
+     *
+     * @return mixed
+     */
+    public function getProperty(string $propertyName, string $namespace = self::NAMESPACE_DEFAULT)
+    {
+        if (isset($this->properties[$namespace][$propertyName])) {
+            return $this->properties[$namespace][$propertyName];
+        }
+
+        return null;
+    }
 }
