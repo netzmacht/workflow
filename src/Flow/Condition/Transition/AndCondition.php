@@ -30,7 +30,7 @@ class AndCondition extends ConditionCollection
      */
     public function match(Transition $transition, Item $item, Context $context): bool
     {
-        $localContext = $context->withEmptyErrorCollection();
+        $localContext = $context->createCleanCopy();
         $success      = true;
 
         foreach ($this->conditions as $condition) {

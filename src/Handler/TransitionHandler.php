@@ -95,7 +95,7 @@ interface TransitionHandler
      *
      * @return bool
      */
-    public function validate(array $payload): bool;
+    public function validate(array $payload = []): bool;
 
     /**
      * Transit to next step.

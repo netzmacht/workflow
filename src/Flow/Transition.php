@@ -242,6 +242,25 @@ class Transition extends Base
     }
 
     /**
+     * Validate the given item and context (payload properties).
+     *
+     * @param Item    $item    Workflow item.
+     * @param Context $context Transition context.
+     *
+     * @return bool
+     */
+    public function validate(Item $item, Context $context): bool
+    {
+        $validated = true;
+
+        foreach ($this->actions as $action) {
+            $validated = $validated && $action->validate($item, $context);
+        }
+
+        return $validated;
+    }
+
+    /**
      * Consider if transition is allowed.
      *
      * @param Item    $item    The Item.

@@ -31,6 +31,16 @@ interface Action
     public function getRequiredPayloadProperties(Item $item): array;
 
     /**
+     * Validate the given item and context (payload properties).
+     *
+     * @param Item    $item    Workflow item.
+     * @param Context $context Transition context.
+     *
+     * @return bool
+     */
+    public function validate(Item $item, Context $context): bool;
+
+    /**
      * Transit will execute the action.
      *
      * @param Transition $transition Current transition.

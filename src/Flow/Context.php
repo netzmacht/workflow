@@ -115,10 +115,18 @@ class Context
     /**
      * Get a new context with an empty error collection.
      *
+     * @param array|null $payload Optional pass a new set of payload.
+     *
      * @return Context
      */
-    public function withEmptyErrorCollection(): Context
+    public function createCleanCopy(array $payload = null): Context
     {
-        return new Context($this->properties, $this->payload, new ErrorCollection());
+        if ($payload !== null) {
+            $payload = new Properties($payload);
+        } else {
+            $payload = $this->payload;
+        }
+
+        return new Context($this->properties, $payload, new ErrorCollection());
     }
 }

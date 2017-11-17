@@ -35,7 +35,7 @@ class Properties
      *
      * @param array $properties Properties.
      */
-    public function __construct(array $properties = null)
+    public function __construct(array $properties = [])
     {
         $this->properties = $properties;
     }

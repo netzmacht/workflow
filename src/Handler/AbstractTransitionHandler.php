@@ -176,20 +176,24 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * {@inheritdoc}
      */
-    public function validate(array $payload): bool
+    public function validate(array $payload = []): bool
     {
         // first build the form
-        $this->context   = $this->context->withEmptyErrorCollection();
+        $this->context   = $this->context->createCleanCopy($payload);
         $this->validated = false;
+        $transition      = $this->getTransition();
 
         // check pre conditions first
-        if ($this->getTransition()->checkPreCondition($this->item, $this->context)) {
+        if ($transition->checkPreCondition($this->item, $this->context)) {
             $this->validated = true;
         }
 
-        if ($this->validated
-            && !$this->getTransition()->checkCondition($this->item, $this->context)
-        ) {
+        // Validate the actions
+        if (!$transition->validate($this->item, $this->context)) {
+            $this->validated = false;
+        }
+
+        if ($this->validated && !$transition->checkCondition($this->item, $this->context)) {
             $this->validated = false;
         }
 

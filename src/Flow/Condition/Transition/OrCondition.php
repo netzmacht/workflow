@@ -34,7 +34,7 @@ class OrCondition extends ConditionCollection
             return true;
         }
 
-        $localContext = $context->withEmptyErrorCollection();
+        $localContext = $context->createCleanCopy();
 
         foreach ($this->conditions as $condition) {
             if ($condition->match($transition, $item, $localContext)) {

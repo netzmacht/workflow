@@ -146,7 +146,7 @@ class Workflow extends Base
     public function getAvailableTransitions(Item $item, Context $context = null): iterable
     {
         if ($context) {
-            $context = $context->withEmptyErrorCollection();
+            $context = $context->createCleanCopy();
         } else {
             $context = new Context();
         }
