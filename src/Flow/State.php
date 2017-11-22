@@ -146,7 +146,7 @@ class State
             $transition->getName(),
             $transition->getStepTo()->getName(),
             $success,
-            $context->getProperties(),
+            $context->getProperties()->toArray(),
             new \DateTimeImmutable(),
             $context->getErrorCollection()->toArray()
         );
