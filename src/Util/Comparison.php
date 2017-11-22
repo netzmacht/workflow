@@ -170,7 +170,7 @@ final class Comparison
      *
      * @return string|bool
      */
-    private static function getOperatorMethod($operator): bool
+    private static function getOperatorMethod(string $operator)
     {
         $operators = self::getOperators();
 
