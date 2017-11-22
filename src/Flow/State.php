@@ -267,7 +267,7 @@ class State
             $transition->getName(),
             $stepName,
             $success,
-            $context->getProperties(),
+            $context->getProperties()->toArray(),
             $dateTime,
             $context->getErrorCollection()->getErrors()
         );
