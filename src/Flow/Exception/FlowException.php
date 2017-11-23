@@ -10,6 +10,7 @@
  * @filesource
  */
 
+declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow\Exception;
 

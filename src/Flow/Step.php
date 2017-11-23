@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Flow\Base;
 use Netzmacht\Workflow\Flow\Security\Permission;
 
 /**

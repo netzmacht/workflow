@@ -14,9 +14,9 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Handler;
 
+use Netzmacht\Workflow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Exception\TransitionNotFound;
-use Netzmacht\Workflow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;

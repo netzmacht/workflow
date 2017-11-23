@@ -28,9 +28,9 @@ interface StateRepository
      *
      * @param EntityId $entityId The entity id.
      *
-     * @return State[]
+     * @return State[]|iterable
      */
-    public function find(EntityId $entityId);
+    public function find(EntityId $entityId): iterable;
 
     /**
      * Add a new state.

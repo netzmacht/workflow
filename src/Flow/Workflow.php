@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Flow\Base;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Condition\Workflow\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;

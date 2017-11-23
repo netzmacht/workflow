@@ -35,9 +35,9 @@ interface EntityRepository
      *
      * @param Specification $specification The specification.
      *
-     * @return array
+     * @return iterable
      */
-    public function findBySpecification(Specification $specification);
+    public function findBySpecification(Specification $specification): iterable;
 
     /**
      * Add an entity to the repository.
@@ -46,7 +46,7 @@ interface EntityRepository
      *
      * @return void
      */
-    public function add($entity);
+    public function add($entity): void;
 
     /**
      * Remove an entity from the repository.
@@ -55,5 +55,5 @@ interface EntityRepository
      *
      * @return void
      */
-    public function remove($entity);
+    public function remove($entity): void;
 }

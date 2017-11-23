@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Flow\Base;
 use Netzmacht\Workflow\Flow\Condition\Transition\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Exception\ActionFailedException;

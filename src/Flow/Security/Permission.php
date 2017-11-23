@@ -145,7 +145,7 @@ class Permission
     }
 
     /**
-     * Guard that permissoin values are valid.
+     * Guard that permission values are valid.
      *
      * @param string      $workflowName The workflow name.
      * @param string      $permissionId The permission id.
@@ -153,8 +153,11 @@ class Permission
      *
      * @return void
      */
-    protected static function guardValidPermission(string $workflowName, string $permissionId, string $message = null)
-    {
+    protected static function guardValidPermission(
+        string $workflowName,
+        string $permissionId,
+        string $message = null
+    ): void {
         Assertion::notBlank($workflowName, $message);
         Assertion::notBlank($permissionId, $message);
     }
