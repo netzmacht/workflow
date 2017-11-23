@@ -26,10 +26,10 @@ class TransitionNotFound extends FlowException
     /**
      * Construct.
      *
-     * @param string $transitionName The not found transition name.
-     * @param string $workflowName   Current workflow name.
-     * @param int $code              Error code.
-     * @param Exception $previous    Previous thrown exception.
+     * @param string    $transitionName The not found transition name.
+     * @param string    $workflowName   Current workflow name.
+     * @param int       $code           Error code.
+     * @param Exception $previous       Previous thrown exception.
      *
      * @return TransitionNotFound
      */

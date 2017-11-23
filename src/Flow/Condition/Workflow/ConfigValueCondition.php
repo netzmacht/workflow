@@ -12,10 +12,9 @@
 
 declare(strict_types=1);
 
-namespace Netzmacht\Contao\Workflow\Condition\Workflow;
+namespace Netzmacht\Workflow\Flow\Condition\Workflow;
 
 use Netzmacht\Workflow\Data\EntityId;
-use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
 use Netzmacht\Workflow\Flow\Workflow;
 
 /**

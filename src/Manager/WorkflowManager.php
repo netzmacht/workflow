@@ -114,6 +114,8 @@ class WorkflowManager implements Manager
 
     /**
      * {@inheritdoc}
+     *
+     * @throws WorkflowNotFound When no supporting workflow is found.
      */
     public function getWorkflow(EntityId $entityId, $entity): Workflow
     {
@@ -128,6 +130,8 @@ class WorkflowManager implements Manager
 
     /**
      * {@inheritdoc}
+     *
+     * @throws WorkflowNotFound When no workflow with name is found.
      */
     public function getWorkflowByName(string $name): Workflow
     {
@@ -185,7 +189,7 @@ class WorkflowManager implements Manager
      *
      * @param Item     $item     Current workflow item.
      * @param Workflow $workflow Selected workflow.
-     * @param bool     $throw    If true an error is thrown
+     * @param bool     $throw    If true an error is thrown.
      *
      * @throws FlowException If item workflow is not the same as current workflow.
      *
