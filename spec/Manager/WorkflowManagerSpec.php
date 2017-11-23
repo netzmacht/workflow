@@ -45,7 +45,7 @@ class WorkflowManagerSpec extends ObjectBehavior
     {
         $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
 
-        $workflow->match($entityId, static::$entity)->willReturn(true);
+        $workflow->supports($entityId, static::$entity)->willReturn(true);
 
         $this->getWorkflow($entityId, static::$entity)->shouldReturn($workflow);
     }
@@ -57,7 +57,7 @@ class WorkflowManagerSpec extends ObjectBehavior
         $item->getEntityId()->willReturn($entityId);
         $item->getEntity()->willReturn(static::$entity);
 
-        $workflow->match($entityId, static::$entity)->willReturn(true);
+        $workflow->supports($entityId, static::$entity)->willReturn(true);
 
         $this->getWorkflowByItem($item)->shouldReturn($workflow);
     }
@@ -74,7 +74,7 @@ class WorkflowManagerSpec extends ObjectBehavior
     {
         $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
 
-        $workflow->match($entityId, static::$entity)->willReturn(false);
+        $workflow->supports($entityId, static::$entity)->willReturn(false);
 
         $this->getWorkflow($entityId, static::$entity)->shouldReturn(false);
     }
@@ -83,7 +83,7 @@ class WorkflowManagerSpec extends ObjectBehavior
     {
         $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
 
-        $workflow->match($entityId, static::$entity)->willReturn(true);
+        $workflow->supports($entityId, static::$entity)->willReturn(true);
         $this->hasWorkflow($entityId, static::$entity)->shouldReturn(true);
     }
 
@@ -91,7 +91,7 @@ class WorkflowManagerSpec extends ObjectBehavior
     {
         $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
 
-        $workflow->match($entityId, static::$entity)->willReturn(false);
+        $workflow->supports($entityId, static::$entity)->willReturn(false);
         $this->hasWorkflow($entityId, static::$entity)->shouldReturn(false);
     }
 
@@ -111,7 +111,7 @@ class WorkflowManagerSpec extends ObjectBehavior
         $item->getEntityId()->willReturn($entityId);
         $item->getEntity()->willReturn(static::$entity);
 
-        $workflow->match($entityId, static::$entity)->willReturn(false);
+        $workflow->supports($entityId, static::$entity)->willReturn(false);
         $this->handle($item)->shouldReturn(false);
     }
 
@@ -129,7 +129,7 @@ class WorkflowManagerSpec extends ObjectBehavior
         $item->getEntity()->willReturn(static::$entity);
         $item->isWorkflowStarted()->willReturn(false);
 
-        $workflow->match($entityId, static::$entity)->willReturn(true);
+        $workflow->supports($entityId, static::$entity)->willReturn(true);
 
         $transitionHandlerFactory->createTransitionHandler(
             $item,
@@ -163,7 +163,7 @@ class WorkflowManagerSpec extends ObjectBehavior
         $item->getCurrentStepName()->willReturn('start');
         $item->getWorkflowName()->willReturn('workflow_a');
 
-        $workflow->match($entityId, static::$entity)->willReturn(true);
+        $workflow->supports($entityId, static::$entity)->willReturn(true);
         $workflow->getStep('start')->willReturn($step);
         $workflow->getTransition('next')->willReturn($transition);
         $workflow->getName()->willReturn('workflow_a');
@@ -199,7 +199,7 @@ class WorkflowManagerSpec extends ObjectBehavior
         $item->getCurrentStepName()->willReturn('start');
         $item->getWorkflowName()->willReturn('workflow_a');
 
-        $workflow->match($entityId, static::$entity)->willReturn(true);
+        $workflow->supports($entityId, static::$entity)->willReturn(true);
         $workflow->getStep('start')->willReturn($step);
         $workflow->getTransition('next')->willReturn($transition);
         $workflow->getName()->willReturn('workflow_b');

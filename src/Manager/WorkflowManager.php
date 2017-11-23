@@ -118,7 +118,7 @@ class WorkflowManager implements Manager
     public function getWorkflow(EntityId $entityId, $entity): Workflow
     {
         foreach ($this->workflows as $workflow) {
-            if ($workflow->match($entityId, $entity)) {
+            if ($workflow->supports($entityId, $entity)) {
                 return $workflow;
             }
         }
@@ -154,7 +154,7 @@ class WorkflowManager implements Manager
     public function hasWorkflow(EntityId $entityId, $entity): bool
     {
         foreach ($this->workflows as $workflow) {
-            if ($workflow->match($entityId, $entity)) {
+            if ($workflow->supports($entityId, $entity)) {
                 return true;
             }
         }

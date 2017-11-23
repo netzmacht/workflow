@@ -185,7 +185,7 @@ class WorkflowSpec extends ObjectBehavior
     {
         $entityId = EntityId::fromProviderNameAndId('entity', 2);
 
-        $this->match($entityId, static::$entity)->shouldReturn(true);
+        $this->supports($entityId, static::$entity)->shouldReturn(true);
     }
 
     function it_matches_if_condition_does(Condition $condition)
@@ -194,7 +194,7 @@ class WorkflowSpec extends ObjectBehavior
         $condition->match($this, $entityId, static::$entity)->willReturn(true);
 
         $this->addCondition($condition);
-        $this->match($entityId, static::$entity)->shouldReturn(true);
+        $this->supports($entityId, static::$entity)->shouldReturn(true);
     }
 
     function it_does_not_match_if_condition_does_not(Condition $condition)
@@ -204,6 +204,6 @@ class WorkflowSpec extends ObjectBehavior
         $condition->match($this, $entityId, static::$entity)->willReturn(false);
 
         $this->addCondition($condition);
-        $this->match($entityId, static::$entity)->shouldReturn(false);
+        $this->supports($entityId, static::$entity)->shouldReturn(false);
     }
 }

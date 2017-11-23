@@ -49,7 +49,7 @@ class Workflow extends Base
     private $startTransition;
 
     /**
-     * Condition to match if workflow can handle an entity.
+     * Condition to supports if workflow can handle an entity.
      *
      * @var AndCondition
      */
@@ -332,14 +332,14 @@ class Workflow extends Base
     }
 
     /**
-     * Consider if workflow is responsible for the entity.
+     * Consider if workflow is supports an entity.
      *
      * @param EntityId $entityId The entity id.
      * @param mixed    $entity   The entity.
      *
      * @return bool
      */
-    public function match(EntityId $entityId, $entity): bool
+    public function supports(EntityId $entityId, $entity): bool
     {
         if (!$this->condition) {
             return true;
