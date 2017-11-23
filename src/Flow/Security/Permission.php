@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-namespace Netzmacht\Workflow\Security;
+namespace Netzmacht\Workflow\Flow\Security;
 
 use Assert\Assertion;
 use Netzmacht\Workflow\Flow\Workflow;

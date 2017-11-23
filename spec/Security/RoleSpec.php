@@ -2,7 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Security;
 
-use Netzmacht\Workflow\Security\Permission;
+use Netzmacht\Workflow\Flow\Security\Permission;
 use Netzmacht\Workflow\Security\Role;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;

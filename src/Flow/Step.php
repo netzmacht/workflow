@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace Netzmacht\Workflow\Flow;
 
 use Netzmacht\Workflow\Base;
-use Netzmacht\Workflow\Security\Permission;
+use Netzmacht\Workflow\Flow\Security\Permission;
 
 /**
  * Class Step defines fixed step in the workflow process.

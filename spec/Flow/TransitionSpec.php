@@ -2,7 +2,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Security\Permission;
+use Netzmacht\Workflow\Flow\Security\Permission;
 use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Data\EntityId;

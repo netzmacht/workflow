@@ -3,7 +3,7 @@
 namespace spec\Netzmacht\Workflow\Security;
 
 use Netzmacht\Workflow\Flow\Workflow;
-use Netzmacht\Workflow\Security\Permission;
+use Netzmacht\Workflow\Flow\Security\Permission;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -21,7 +21,7 @@ class PermissionSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Security\Permission');
+        $this->shouldHaveType('Netzmacht\Workflow\Flow\Security\Permission');
     }
 
     function it_has_a_workflow_name()

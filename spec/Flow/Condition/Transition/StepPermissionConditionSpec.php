@@ -3,7 +3,7 @@
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
 use Netzmacht\Workflow\Flow\Context\ErrorCollection;
-use Netzmacht\Workflow\Security\Permission;
+use Netzmacht\Workflow\Flow\Security\Permission;
 use Netzmacht\Workflow\Security\User;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;

@@ -14,16 +14,12 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow;
 
-use Assert\Assertion;
-use Assert\InvalidArgumentException;
 use Netzmacht\Workflow\Base;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Condition\Workflow\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
-use Netzmacht\Workflow\Flow\Exception\RoleNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\StepNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\TransitionNotFound;
-use Netzmacht\Workflow\Security\Role;
 
 /**
  * Class Workflow stores all information of a step processing workflow.
@@ -59,13 +55,6 @@ class Workflow extends Base
      * @var AndCondition
      */
     private $condition;
-
-    /**
-     * Acl roles.
-     *
-     * @var Role[]
-     */
-    private $roles;
 
     /**
      * Name of the provider.
@@ -306,52 +295,6 @@ class Workflow extends Base
     }
 
     /**
-     * Add an acl role.
-     *
-     * @param Role $role Role to be added.
-     *
-     * @return $this
-     */
-    public function addRole(Role $role): self
-    {
-        $this->guardWorkflowRole($role);
-
-        $this->roles[] = $role;
-
-        return $this;
-    }
-
-    /**
-     * Get A role by its name.
-     *
-     * @param string $roleName Name of the role being requested.
-     *
-     * @return Role
-     *
-     * @throws RoleNotFoundException If role is not set.
-     */
-    public function getRole(string $roleName): Role
-    {
-        foreach ($this->roles as $role) {
-            if ($role->getName() == $roleName) {
-                return $role;
-            }
-        }
-
-        throw new RoleNotFoundException($roleName);
-    }
-
-    /**
-     * Get all available roles.
-     *
-     * @return Role[]|iterable
-     */
-    public function getRoles(): iterable
-    {
-        return $this->roles;
-    }
-
-    /**
      * Get the current condition.
      *
      * @return AndCondition
@@ -404,19 +347,5 @@ class Workflow extends Base
         }
 
         return $this->condition->match($this, $entityId, $entity);
-    }
-
-    /**
-     * Gard that role belongs to the workflow.
-     *
-     * @param Role $role Role to be a valid workflow role.
-     *
-     * @return void
-     *
-     * @throws InvalidArgumentException If role is not the same workflow.
-     */
-    private function guardWorkflowRole(Role $role): void
-    {
-        Assertion::eq($role->getWorkflowName(), $this->getName());
     }
 }

@@ -18,7 +18,7 @@ use Netzmacht\Workflow\Base;
 use Netzmacht\Workflow\Flow\Condition\Transition\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
-use Netzmacht\Workflow\Security\Permission;
+use Netzmacht\Workflow\Flow\Security\Permission;
 
 /**
  * Class Transition handles the transition from a step to another.
