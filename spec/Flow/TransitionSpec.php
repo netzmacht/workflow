@@ -1,20 +1,17 @@
 <?php
 
-namespace spec\Netzmacht\Workflow\Flow;
+namespace spec\Netzmacht\Workflow\Flow\Context;
 
 use Netzmacht\Workflow\Flow\Security\Permission;
 use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
 use Netzmacht\Workflow\Flow\Item;
-use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use Netzmacht\Workflow\Flow\Action;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Context;
-use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
-use Netzmacht\Workflow\Form\Form;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -359,9 +356,13 @@ class TransitionSpec extends ObjectBehavior
 
 class ThrowingAction implements Action
 {
-    public function getRequiredPayloadParamNames(Item $item): array
+    public function getRequiredPayloadProperties(Item $item): array
     {
-        return [];
+        return [];    }
+
+    public function validate(Item $item, Context $context): bool
+    {
+        return true;
     }
 
     public function transit(Transition $transition, Item $item, Context $context): void

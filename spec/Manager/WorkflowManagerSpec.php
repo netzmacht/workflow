@@ -3,6 +3,7 @@
 namespace spec\Netzmacht\Workflow\Manager;
 
 use Netzmacht\Workflow\Data\EntityId;
+use Netzmacht\Workflow\Exception\WorkflowNotFound;
 use Netzmacht\Workflow\Handler\TransitionHandlerFactory;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
@@ -70,13 +71,19 @@ class WorkflowManagerSpec extends ObjectBehavior
         $this->getWorkflowByName('another')->shouldReturn($anotherWorkflow);
     }
 
-    function it_returns_false_if_no_workflow_found(Workflow $workflow)
+    function it_returns_false_if_no_supported_workflow_found(Workflow $workflow)
     {
         $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
 
         $workflow->supports($entityId, static::$entity)->willReturn(false);
+    }
 
-        $this->getWorkflow($entityId, static::$entity)->shouldReturn(false);
+    function it_throws_workflow_not_found_when_specific_workflow_not_exists()
+    {
+        $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
+
+        $this->shouldThrow(WorkflowNotFound::class)
+            ->during('getWorkflowByName', [$entityId, static::$entity]);
     }
 
     function it_knows_if_matching_workflow_exists(Workflow $workflow)
@@ -112,7 +119,7 @@ class WorkflowManagerSpec extends ObjectBehavior
         $item->getEntity()->willReturn(static::$entity);
 
         $workflow->supports($entityId, static::$entity)->willReturn(false);
-        $this->handle($item)->shouldReturn(false);
+        $this->handle($item)->shouldReturn(null);
     }
 
     function it_creates_handler_for_start_transition(

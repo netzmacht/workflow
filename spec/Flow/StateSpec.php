@@ -5,6 +5,7 @@ namespace spec\Netzmacht\Workflow\Flow;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context;
+use Netzmacht\Workflow\Flow\Context\Properties;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Transition;
 use PhpSpec\ObjectBehavior;
@@ -90,13 +91,28 @@ class StateSpec extends ObjectBehavior
         $this->getStateId()->shouldReturn(static::STATE_ID);
     }
 
-    function it_transits_to_next_state(Transition $transition, Context $context, ErrorCollection $errorCollection)
-    {
-        $transition->getName()->willReturn('transition');
+    function it_transits_to_next_state(
+        Transition $transition,
+        Context $context,
+        ErrorCollection $errorCollection,
+        Properties $properties
+    ) {
+        $transition->getName()
+            ->willReturn('transition');
 
-        $context->getProperties()->willReturn(array());
-        $errorCollection->getErrors()->willReturn(array());
+        $context->getProperties()
+            ->willReturn($properties);
 
-        $this->transit($transition, $context, $errorCollection, false)->shouldBeAnInstanceOf('Netzmacht\Workflow\Flow\State');
+        $properties->toArray()
+            ->willReturn([]);
+
+        $context->getErrorCollection()
+            ->willReturn($errorCollection);
+
+        $errorCollection->getErrors()
+            ->willReturn([]);
+
+        $this->transit($transition, $context, false)
+            ->shouldBeAnInstanceOf('Netzmacht\Workflow\Flow\State');
     }
 }

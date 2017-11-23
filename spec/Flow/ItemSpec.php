@@ -5,6 +5,7 @@ namespace spec\Netzmacht\Workflow\Flow;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context;
+use Netzmacht\Workflow\Flow\Context\Properties;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
@@ -77,7 +78,7 @@ class ItemSpec extends ObjectBehavior
 
         $this->it_restores_state_history($state);
 
-        $this->transit($transition, $context, $errorCollection, true);
+        $this->transit($transition, $context, true);
 
         $this->getCurrentStepName()->shouldReturn('target');
         $this->getWorkflowName()->shouldReturn('workflow_name');
@@ -93,7 +94,8 @@ class ItemSpec extends ObjectBehavior
         Workflow $workflow,
         Step $step,
         Context $context,
-        ErrorCollection $errorCollection
+        ErrorCollection $errorCollection,
+        Properties $properties
     ) {
         $workflow->getName()->willReturn('workflow');
         $step->getName()->willReturn('step');
@@ -102,11 +104,14 @@ class ItemSpec extends ObjectBehavior
         $transition->getName()->willReturn('transition_name');
         $transition->getStepTo()->willReturn($step);
 
-        $context->getProperties()->willReturn([]);
+        $properties->toArray()->willReturn([]);
+        $context->getProperties()->willReturn($properties);
+
+        $context->getErrorCollection()->willReturn($errorCollection);
         $errorCollection->toArray()->willReturn([]);
 
         $this->beConstructedThrough('initialize', [$this->entityId, static::$entity]);
-        $this->start($transition, $context, $errorCollection, true)->shouldHaveType('Netzmacht\Workflow\Flow\State');
+        $this->start($transition, $context, true)->shouldHaveType('Netzmacht\Workflow\Flow\State');
     }
 
     function it_get_last_successful_state(State $state, State $failedState)

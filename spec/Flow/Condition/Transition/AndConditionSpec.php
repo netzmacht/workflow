@@ -37,13 +37,16 @@ class AndConditionSpec extends ObjectBehavior
         Context $context,
         ErrorCollection $errorCollection
     ) {
-        $conditionA->match($transition, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(true);
-        $conditionB->match($transition, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(true);
+        $context->createCleanCopy()->willReturn($context);
+        $context->getErrorCollection()->willReturn($errorCollection);
+
+        $conditionA->match($transition, $item, $context)->willReturn(true);
+        $conditionB->match($transition, $item, $context)->willReturn(true);
 
         $this->addCondition($conditionA);
         $this->addCondition($conditionB);
 
-        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(true);
+        $this->match($transition, $item, $context)->shouldReturn(true);
     }
 
     function it_does_not_match_if_one_child_does_not(
@@ -54,15 +57,18 @@ class AndConditionSpec extends ObjectBehavior
         Context $context,
         ErrorCollection $errorCollection
     ) {
-        $conditionA->match($transition, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(true);
-        $conditionB->match($transition, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(false);
+        $context->createCleanCopy()->willReturn($context);
+        $context->getErrorCollection()->willReturn($errorCollection);
 
-        $errorCollection->addError(Argument::cetera())->shouldBeCalled();
+        $conditionA->match($transition, $item, $context)->willReturn(true);
+        $conditionB->match($transition, $item, $context)->willReturn(false);
+
+        $context->addError(Argument::cetera())->shouldBeCalled();
 
         $this->addCondition($conditionA);
         $this->addCondition($conditionB);
 
-        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(false);
+        $this->match($transition, $item, $context)->shouldReturn(false);
     }
 
     function it_matches_if_no_children_exists(
@@ -71,6 +77,9 @@ class AndConditionSpec extends ObjectBehavior
         Context $context,
         ErrorCollection $errorCollection)
     {
-        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(true);
+        $context->createCleanCopy()->willReturn($context);
+        $context->getErrorCollection()->willReturn($errorCollection);
+
+        $this->match($transition, $item, $context)->shouldReturn(true);
     }
 }

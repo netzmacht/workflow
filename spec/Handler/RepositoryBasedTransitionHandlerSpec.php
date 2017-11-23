@@ -5,6 +5,8 @@ namespace spec\Netzmacht\Workflow\Handler;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Data\EntityRepository;
+use Netzmacht\Workflow\Flow\Context;
+use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
@@ -21,10 +23,7 @@ use Prophecy\Argument;
 class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 {
     const TRANSITION_NAME = 'transition_name';
-
-    const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Flow\Context\ErrorCollection';
-
-    const CONTEXT_CLASS = 'Netzmacht\Workflow\Flow\Context';
+    
     const STEP_NAME = 'step_name';
     const WORKFLOW_NAME = 'workflow_name';
 
@@ -57,11 +56,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $transition->getName()->willReturn(static::TRANSITION_NAME);
         $transition->getRequiredPayloadProperties($item)->willReturn([]);
 
-        $item->transit(
-            $transition,
-            Argument::type(static::CONTEXT_CLASS),
-            Argument::type(static::ERROR_COLLECTION_CLASS)
-            )
+        $item->transit($transition, Argument::type(Context::class))
             ->willReturn($state);
 
         $item->isWorkflowStarted()->willReturn(true);
@@ -202,30 +197,27 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
     function it_gets_the_context()
     {
-        $this->getContext()->shouldHaveType(self::CONTEXT_CLASS);
-    }
-
-    function it_gets_the_error_collection()
-    {
-        $this->getErrorCollection()->shouldHaveType(self::ERROR_COLLECTION_CLASS);
+        $this->getContext()->shouldHaveType(Context::class);
     }
 
     function it_validates(Workflow $workflow, Transition $transition, Item $item)
     {
         $workflow->getStartTransition()->willReturn($transition);
         $transition->getName()->willReturn(static::TRANSITION_NAME);
-        $transition->getRequiredPayloadProperties($item)->willReturn(['foo']);
-        $transition->checkPreCondition(
-            $item,
-            Argument::type(static::CONTEXT_CLASS),
-            Argument::type(static::ERROR_COLLECTION_CLASS)
-        )->shouldBeCalled()->willReturn(true);
 
-        $transition->checkCondition(
-            $item,
-            Argument::type(static::CONTEXT_CLASS),
-            Argument::type(static::ERROR_COLLECTION_CLASS)
-        )->shouldBeCalled()->willReturn(true);
+        $transition->getRequiredPayloadProperties($item)->willReturn(['foo']);
+
+        $transition->validate($item, Argument::type(Context::class))
+            ->willReturn(true)
+            ->shouldBeCalled();
+
+        $transition->checkPreCondition($item, Argument::type(Context::class))
+            ->shouldBeCalled()
+            ->willReturn(true);
+
+        $transition->checkCondition($item, Argument::type(Context::class))
+            ->shouldBeCalled()
+            ->willReturn(true);
 
         $this->validate([])->shouldReturn(true);
     }
@@ -239,36 +231,29 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
     function it_transits_to_next_state(Transition $transition, Item $item, State $state)
     {
-        $item->transit(
-            $transition,
-            Argument::type(static::CONTEXT_CLASS),
-            Argument::type(static::ERROR_COLLECTION_CLASS),
-            true
-            )->shouldBeCalled()->willReturn($state);
+        $item->transit($transition, Argument::type(Context::class), true)
+            ->shouldBeCalled()
+            ->willReturn($state);
 
-        $transition->executeActions(
-            $item,
-            Argument::type(static::CONTEXT_CLASS),
-            Argument::type(static::ERROR_COLLECTION_CLASS)
-            )->willReturn(true)->shouldBeCalled();
+        $transition->validate($item, Argument::type(Context::class))
+            ->willReturn(true)
+            ->shouldBeCalled();
 
-        $transition->executePostActions(
-            $item,
-            Argument::type(static::CONTEXT_CLASS),
-            Argument::type(static::ERROR_COLLECTION_CLASS)
-        )->willReturn(true)->shouldBeCalled();
+        $transition->executeActions($item, Argument::type(Context::class))
+            ->willReturn(true)
+            ->shouldBeCalled();
 
-        $transition->checkCondition(
-            $item,
-            Argument::type(static::CONTEXT_CLASS),
-            Argument::type(static::ERROR_COLLECTION_CLASS)
-        )->willReturn(true)->shouldBeCalled();
+        $transition->executePostActions($item, Argument::type(Context::class))
+            ->willReturn(true)
+            ->shouldBeCalled();
 
-        $transition->checkPreCondition(
-            $item,
-            Argument::type(static::CONTEXT_CLASS),
-            Argument::type(static::ERROR_COLLECTION_CLASS)
-            )->willReturn(true)->shouldBeCalled();
+        $transition->checkCondition($item, Argument::type(Context::class))
+            ->willReturn(true)
+            ->shouldBeCalled();
+
+        $transition->checkPreCondition($item, Argument::type(Context::class))
+            ->willReturn(true)
+            ->shouldBeCalled();
 
         $this->validate([]);
         $this->transit()->shouldHaveType('Netzmacht\Workflow\Flow\State');
@@ -279,8 +264,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $transition->getName()->willReturn(static::TRANSITION_NAME);
         $transition->isAvailable(
             $item,
-            Argument::type(self::CONTEXT_CLASS),
-            Argument::type(self::ERROR_COLLECTION_CLASS)
+            Argument::type(Context::class)
         )->willReturn(true);
 
         $this->isAvailable()->shouldReturn(true);

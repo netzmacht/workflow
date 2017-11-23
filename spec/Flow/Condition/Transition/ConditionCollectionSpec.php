@@ -56,7 +56,7 @@ class ConditionCollectionSpec extends ObjectBehavior
 
 class ConditionCollection extends AbstractConditionCollection
 {
-    public function match(Transition $transition, Item $item, Context $context, ErrorCollection $errorCollection): bool
+    public function match(Transition $transition, Item $item, Context $context): bool
     {
         return false;
     }

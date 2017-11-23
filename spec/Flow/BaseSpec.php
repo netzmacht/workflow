@@ -1,11 +1,23 @@
 <?php
 
-namespace spec\Netzmacht\Workflow;
+/**
+ * workflow.
+ *
+ * @package    workflow
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @copyright  2017 netzmacht David Molineus. All rights reserved.
+ * @license    LGPL-3.0 https://github.com/netzmacht/contao-leaflet-maps/blob/master/LICENSE
+ * @filesource
+ */
 
+namespace spec\Netzmacht\Workflow\Flow;
+
+use Netzmacht\Workflow\Flow\Base;
 use PhpSpec\ObjectBehavior;
 
 /**
  * Class BaseSpec
+ *
  * @package spec\Netzmacht\Workflow
  */
 class BaseSpec extends ObjectBehavior
@@ -16,19 +28,19 @@ class BaseSpec extends ObjectBehavior
 
     function let()
     {
-        $this->beAnInstanceOf('spec\Netzmacht\Workflow\Base');
+        $this->beAnInstanceOf(BaseExample::class);
         $this->beConstructedWith(static::NAME);
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Flow\Base');
+        $this->shouldHaveType(Base::class);
     }
 
     function it_accepts_initial_config()
     {
-        $this->beConstructedWith(static::NAME, '', array('config' => 'test'));
-        $this->getConfig()->shouldBe(array('config' => 'test'));
+        $this->beConstructedWith(static::NAME, '', ['config' => 'test']);
+        $this->getConfig()->shouldBe(['config' => 'test']);
     }
 
     function it_accepts_initial_label()
@@ -68,7 +80,7 @@ class BaseSpec extends ObjectBehavior
 
     function it_adds_multiple_config_values()
     {
-        $this->addConfig(array('config' => 'foo', 'test' => 'bar'))->shouldReturn($this);
+        $this->addConfig(['config' => 'foo', 'test' => 'bar'])->shouldReturn($this);
         $this->getConfigValue('config')->shouldReturn('foo');
         $this->getConfigValue('test')->shouldReturn('bar');
     }
@@ -84,11 +96,11 @@ class BaseSpec extends ObjectBehavior
     function it_returns_config()
     {
         $this->setConfigValue('config', 'test');
-        $this->getConfig()->shouldBe(array('config' => 'test'));
+        $this->getConfig()->shouldBe(['config' => 'test']);
     }
 }
 
-class Base extends \Netzmacht\Workflow\Flow\Base
+class BaseExample extends Base
 {
 
 }

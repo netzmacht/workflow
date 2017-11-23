@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Netzmacht\Workflow\Security;
+namespace spec\Netzmacht\Workflow\Flow\Security;
 
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Flow\Security\Permission;

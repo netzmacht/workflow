@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\Netzmacht\Workflow\Data;
+namespace spec\Netzmacht\Workflow\Flow\Context;
 
 use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use PhpSpec\ObjectBehavior;
@@ -14,7 +14,7 @@ class ErrorCollectionSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Flow\Context\ErrorCollection');
+        $this->shouldHaveType(ErrorCollection::class);
     }
 
     function it_adds_error()
