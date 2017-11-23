@@ -262,6 +262,24 @@ class Workflow extends Base
     }
 
     /**
+     * Check if step with a name exist.
+     *
+     * @param string $stepName The step name.
+     *
+     * @return bool
+     */
+    public function hasStep(string $stepName): bool
+    {
+        foreach ($this->steps as $step) {
+            if ($step->getName() == $stepName) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Set transition as start transition.
      *
      * @param string $transitionName Name of start transition.
