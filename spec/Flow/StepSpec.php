@@ -28,7 +28,7 @@ class StepSpec extends ObjectBehavior
 
     function it_behaves_like_base_object()
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Base');
+        $this->shouldHaveType('Netzmacht\Workflow\Flow\Base');
     }
 
     function it_is_not_final_by_default()

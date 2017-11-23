@@ -22,7 +22,7 @@ class BaseSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Base');
+        $this->shouldHaveType('Netzmacht\Workflow\Flow\Base');
     }
 
     function it_accepts_initial_config()
@@ -88,7 +88,7 @@ class BaseSpec extends ObjectBehavior
     }
 }
 
-class Base extends \Netzmacht\Workflow\Base
+class Base extends \Netzmacht\Workflow\Flow\Base
 {
 
 }

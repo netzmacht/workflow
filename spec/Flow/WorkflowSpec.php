@@ -43,7 +43,7 @@ class WorkflowSpec extends ObjectBehavior
 
     function it_behaves_like_base()
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Base');
+        $this->shouldHaveType('Netzmacht\Workflow\Flow\Base');
     }
 
     function it_adds_a_step(Step $anotherStep)

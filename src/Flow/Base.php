@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-namespace Netzmacht\Workflow;
+namespace Netzmacht\Workflow\Flow;
 
 /**
  * Class Configurable is the base class for each flow elements.

@@ -44,7 +44,7 @@ class TransitionSpec extends ObjectBehavior
 
     function it_behaves_like_base()
     {
-        $this->shouldImplement('Netzmacht\Workflow\Base');
+        $this->shouldImplement('Netzmacht\Workflow\Flow\Base');
     }
 
     function it_knows_workflow(Workflow $workflow)
