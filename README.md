@@ -10,9 +10,10 @@ Framework independent workflow library
 This is a framework independent workflow library. It provides an step-transition based workflow implementation for 
 processing entities through its life cycle.
 
-Due to its framework independency it does not run as a standalone workflow library. The entity/data implementation and
- input processing via forms have to be implemented.
- 
+Due to its data format and framework independence it **does not run** as a standalone workflow library. 
+The entity/data implementation and input processing via forms have to be implemented. This workflow library is more a 
+**skeleton** for your workflow requirements. You may have a look at 
+[netzmacht/contao-workflow](https:github.com/netzmacht/contao-workflow) which provides an integration for CMS Contao 
 
 Features
 --------
@@ -26,12 +27,12 @@ Features
  * User input are handled by a form.
  
 **Workflow items**
- * The Item wraps the entity to provide workflow related informations. 
+ * The Item wraps the entity to provide workflow related information. 
  * It knows the current state and the whole state history.
- * Due to the flexibility of the data structure the EntityId is used to indentify an entity.
+ * Due to the flexibility of the data structure the EntityId is used to identify an entity.
  
 **Worfklow**
- * An workflow is defined for a specific entities form a specific data provider.
+ * An workflow is defined for a specific entities from a specific data provider.
  * The workflow is the definition of multiple steps and their transitions.
  * A workflow always has one start transition.
  * It can have multiple end transitions.
@@ -40,6 +41,10 @@ Features
  * There can be multiple workflow definitions for the same data provider.
  * The manager selects the matching workflow and creates the transition handler.
  * At the moment an item can only be in one workflow.
+ 
+**Permissions**
+ * Transitions and steps can can be limited to an permission. 
+ * Checking the permission and organizing them is part of the current implementation.
  
 **More features**
  * Collection based repositories.
