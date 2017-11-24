@@ -39,21 +39,11 @@ class Properties
     /**
      * Get properties.
      *
-     * @param null|string $namespace Property namespace.
-     *
      * @return array
      */
-    public function toArray(?string $namespace = null): array
+    public function toArray(): array
     {
-        if (!$namespace) {
-            return $this->properties;
-        }
-
-        if (isset($this->properties[$namespace])) {
-            return $this->properties[$namespace];
-        }
-
-        return array();
+        return $this->properties;
     }
 
     /**
