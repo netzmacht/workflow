@@ -1,18 +1,27 @@
 <?php
 
+/**
+ * Workflow library.
+ *
+ * @package    workflow
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @copyright  2014-2017 netzmacht David Molineus
+ * @license    LGPL 3.0 https://github.com/netzmacht/workflow
+ * @filesource
+ */
+
 namespace spec\Netzmacht\Workflow\Flow;
 
 use Netzmacht\Workflow\Data\EntityId;
-use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context;
+use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context\Properties;
-use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Transition;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 /**
  * Class StateSpec
+ *
  * @package spec\Netzmacht\Workflow\Flow
  */
 class StateSpec extends ObjectBehavior
@@ -22,17 +31,17 @@ class StateSpec extends ObjectBehavior
     const STEP_TO = 'step_to';
     const STATE_ID = 121;
 
-    private static $data = array(
+    private static $data = [
         'foo' => true,
-        'bar' => false
-    );
+        'bar' => false,
+    ];
 
     /**
      * @var EntityId
      */
     private $entityId;
 
-    private static $errors = array(array('error.message', array()));
+    private static $errors = [['error.message', []]];
 
     function let(\DateTimeImmutable $dateTime)
     {

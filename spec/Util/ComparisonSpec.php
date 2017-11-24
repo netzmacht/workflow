@@ -4,10 +4,10 @@ namespace spec\Netzmacht\Workflow\Util;
 
 use Netzmacht\Workflow\Util\Comparison;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 /**
  * Class ComparisonSpec
+ *
  * @package spec\Netzmacht\Workflow\Util
  */
 class ComparisonSpec extends ObjectBehavior

@@ -1,21 +1,30 @@
 <?php
 
+/**
+ * Workflow library.
+ *
+ * @package    workflow
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @copyright  2014-2017 netzmacht David Molineus
+ * @license    LGPL 3.0 https://github.com/netzmacht/workflow
+ * @filesource
+ */
+
 namespace spec\Netzmacht\Workflow\Flow\Condition\Workflow;
 
 use Netzmacht\Workflow\Data\EntityId;
-use Netzmacht\Workflow\Flow\Condition\Workflow\AndCondition;
-use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
+use Netzmacht\Workflow\Flow\Workflow;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 /**
  * Class AndConditionSpec
+ *
  * @package spec\Netzmacht\Workflow\Flow\Condition\Workflow
  */
 class AndConditionSpec extends ObjectBehavior
 {
-    protected static $entity = array('id' => 5);
+    protected static $entity = ['id' => 5];
 
     function it_is_initializable()
     {

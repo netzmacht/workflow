@@ -1,12 +1,21 @@
 <?php
 
+/**
+ * Workflow library.
+ *
+ * @package    workflow
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @copyright  2014-2017 netzmacht David Molineus
+ * @license    LGPL 3.0 https://github.com/netzmacht/workflow
+ * @filesource
+ */
+
 namespace spec\Netzmacht\Workflow\Handler;
 
 use Netzmacht\Workflow\Data\EntityId;
-use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Data\EntityRepository;
+use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Flow\Context;
-use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
@@ -18,16 +27,17 @@ use Prophecy\Argument;
 
 /**
  * Class RepositoryBasedTransitionHandlerSpec
+ *
  * @package spec\Netzmacht\Workflow\Handler
  */
 class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 {
     const TRANSITION_NAME = 'transition_name';
-    
+
     const STEP_NAME = 'step_name';
     const WORKFLOW_NAME = 'workflow_name';
 
-    protected static $entity = array('id' => 5);
+    protected static $entity = ['id' => 5];
 
     /**
      * @var EntityId
@@ -115,7 +125,6 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $workflow->getTransition(static::TRANSITION_NAME)->willReturn($transition);
 
         $this->getTransition()->shouldReturn($transition);
-
     }
 
     function it_gets_item(Item $item)
@@ -187,6 +196,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
         $this->getRequiredPayloadProperties()->shouldReturn(['foo']);
     }
+
     function it_checks_if_input_data_is_not_required(Workflow $workflow, Transition $transition, Item $item)
     {
         $workflow->getStartTransition()->willReturn($transition);

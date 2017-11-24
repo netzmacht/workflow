@@ -1,18 +1,28 @@
 <?php
 
+/**
+ * Workflow library.
+ *
+ * @package    workflow
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @copyright  2014-2017 netzmacht David Molineus
+ * @license    LGPL 3.0 https://github.com/netzmacht/workflow
+ * @filesource
+ */
+
 namespace spec\Netzmacht\Workflow\Flow;
 
 use Netzmacht\Workflow\Data\EntityId;
-use Netzmacht\Workflow\Flow\Context\ErrorCollection;
+use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
-use Netzmacht\Workflow\Flow\Transition;
-use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
 use Netzmacht\Workflow\Flow\Step;
+use Netzmacht\Workflow\Flow\Transition;
 use PhpSpec\ObjectBehavior;
 
 /**
  * Class WorkflowSpec
+ *
  * @package spec\Netzmacht\Workflow\Flow
  */
 class WorkflowSpec extends ObjectBehavior
@@ -21,7 +31,7 @@ class WorkflowSpec extends ObjectBehavior
     const PROVIDER = 'provider_name';
     const START_STEP = 'start_step';
 
-    protected static $entity = array('id' => 5);
+    protected static $entity = ['id' => 5];
 
     function let(Step $transitionStep, Transition $transition)
     {
@@ -94,7 +104,7 @@ class WorkflowSpec extends ObjectBehavior
 
     function it_gets_all_transitions(Transition $transition)
     {
-        $this->getTransitions()->shouldReturn(array($transition));
+        $this->getTransitions()->shouldReturn([$transition]);
     }
 
     function it_knows_if_start_transition_is_available_for_an_item(
@@ -155,7 +165,7 @@ class WorkflowSpec extends ObjectBehavior
         $this->addCondition($condition)->shouldReturn($this);
 
         $this->getCondition()->shouldHaveType('Netzmacht\Workflow\Flow\Condition\Workflow\AndCondition');
-        $this->getCondition()->getConditions()->shouldReturn(array($condition));
+        $this->getCondition()->getConditions()->shouldReturn([$condition]);
     }
 
     function it_is_limited_to_an_provider_name()

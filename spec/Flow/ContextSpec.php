@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Workflow library.
+ *
+ * @package    workflow
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @copyright  2014-2017 netzmacht David Molineus
+ * @license    LGPL 3.0 https://github.com/netzmacht/workflow
+ * @filesource
+ */
+
 namespace spec\Netzmacht\Workflow\Flow;
 
 use Netzmacht\Workflow\Flow\Context;
@@ -9,6 +19,7 @@ use PhpSpec\ObjectBehavior;
 
 /**
  * Class ContextSpec
+ *
  * @package spec\Netzmacht\Contao\Workflow\Flow
  */
 class ContextSpec extends ObjectBehavior

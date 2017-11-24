@@ -1,14 +1,23 @@
 <?php
 
+/**
+ * Workflow library.
+ *
+ * @package    workflow
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @copyright  2014-2017 netzmacht David Molineus
+ * @license    LGPL 3.0 https://github.com/netzmacht/workflow
+ * @filesource
+ */
+
 namespace spec\Netzmacht\Workflow\Flow;
 
 use Netzmacht\Workflow\Flow\Security\Permission;
-use Netzmacht\Workflow\Flow\Step;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 /**
  * Class StepSpec
+ *
  * @package spec\Netzmacht\Workflow\Flow
  */
 class StepSpec extends ObjectBehavior
@@ -44,7 +53,7 @@ class StepSpec extends ObjectBehavior
 
     function it_has_no_allowed_transitions_by_default()
     {
-        $this->getAllowedTransitions()->shouldBeEqualTo(array());
+        $this->getAllowedTransitions()->shouldBeEqualTo([]);
     }
 
     function it_allows_transition()
@@ -67,7 +76,7 @@ class StepSpec extends ObjectBehavior
         $this->allowTransition('test')->shouldReturn($this);
         $this->allowTransition('bar')->shouldReturn($this);
 
-        $this->getAllowedTransitions()->shouldReturn(array('test', 'bar'));
+        $this->getAllowedTransitions()->shouldReturn(['test', 'bar']);
     }
 
     function it_does_not_allow_transition_when_being_final()

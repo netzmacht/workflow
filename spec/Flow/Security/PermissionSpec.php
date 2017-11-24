@@ -1,14 +1,24 @@
 <?php
 
+/**
+ * Workflow library.
+ *
+ * @package    workflow
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @copyright  2014-2017 netzmacht David Molineus
+ * @license    LGPL 3.0 https://github.com/netzmacht/workflow
+ * @filesource
+ */
+
 namespace spec\Netzmacht\Workflow\Flow\Security;
 
-use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Flow\Security\Permission;
+use Netzmacht\Workflow\Flow\Workflow;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 /**
  * Class PermissionSpec
+ *
  * @package spec\Netzmacht\Workflow\Security
  */
 class PermissionSpec extends ObjectBehavior
@@ -16,12 +26,12 @@ class PermissionSpec extends ObjectBehavior
     function let(Workflow $workflow)
     {
         $workflow->getName()->willReturn('workflow');
-        $this->beConstructedThrough('forWorkflow', array($workflow, 'perm'));
+        $this->beConstructedThrough('forWorkflow', [$workflow, 'perm']);
     }
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Flow\Security\Permission');
+        $this->shouldHaveType(Permission::class);
     }
 
     function it_has_a_workflow_name()
@@ -55,15 +65,15 @@ class PermissionSpec extends ObjectBehavior
 
     function it_reconstitutes_from_string()
     {
-        $this->beConstructedThrough('fromString', array('workflow:perm'));
+        $this->beConstructedThrough('fromString', ['workflow:perm']);
 
         $this->getWorkflowName()->shouldReturn('workflow');
         $this->getPermissionId()->shouldReturn('perm');
     }
-    
+
     function it_reconstitutes_for_workflow_name()
     {
-        $this->beConstructedThrough('forWorkflowName', array('workflow', 'perm'));
+        $this->beConstructedThrough('forWorkflowName', ['workflow', 'perm']);
 
         $this->getWorkflowName()->shouldReturn('workflow');
         $this->getPermissionId()->shouldReturn('perm');

@@ -1,14 +1,24 @@
 <?php
 
+/**
+ * Workflow library.
+ *
+ * @package    workflow
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @copyright  2014-2017 netzmacht David Molineus
+ * @license    LGPL 3.0 https://github.com/netzmacht/workflow
+ * @filesource
+ */
+
 namespace spec\Netzmacht\Workflow\Flow\Context;
 
-use Netzmacht\Workflow\Flow\Security\Permission;
-use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
-use Netzmacht\Workflow\Flow\Item;
-use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use Netzmacht\Workflow\Flow\Action;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Context;
+use Netzmacht\Workflow\Flow\Context\ErrorCollection;
+use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
+use Netzmacht\Workflow\Flow\Item;
+use Netzmacht\Workflow\Flow\Security\Permission;
 use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
@@ -17,6 +27,7 @@ use Prophecy\Argument;
 
 /**
  * Class TransitionSpec
+ *
  * @package spec\Netzmacht\Workflow\Flow
  */
 class TransitionSpec extends ObjectBehavior
@@ -25,7 +36,7 @@ class TransitionSpec extends ObjectBehavior
 
     const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Flow\Context\ErrorCollection';
 
-    protected static $entity = array('id' => 5);
+    protected static $entity = ['id' => 5];
 
     function let(Workflow $workflow, Step $step)
     {
@@ -52,13 +63,13 @@ class TransitionSpec extends ObjectBehavior
     function it_has_actions(Action $action)
     {
         $this->addAction($action)->shouldReturn($this);
-        $this->getActions()->shouldReturn(array($action));
+        $this->getActions()->shouldReturn([$action]);
     }
 
     function it_has_post_actions(Action $action)
     {
         $this->addPostAction($action)->shouldReturn($this);
-        $this->getPostActions()->shouldReturn(array($action));
+        $this->getPostActions()->shouldReturn([$action]);
     }
 
     function it_has_a_target_step(Step $step)
@@ -86,8 +97,12 @@ class TransitionSpec extends ObjectBehavior
         $this->getRequiredPayloadProperties($item)->shouldReturn(['foo']);
     }
 
-    function it_checks_a_precondition(Condition $condition, Item $item, Context $context, ErrorCollection $errorCollection)
-    {
+    function it_checks_a_precondition(
+        Condition $condition,
+        Item $item,
+        Context $context,
+        ErrorCollection $errorCollection
+    ) {
         $condition->match($this, $item, $context, Argument::type(self::ERROR_COLLECTION_CLASS))->willReturn(true);
 
         $this->addPreCondition($condition)->shouldReturn($this);
@@ -291,8 +306,7 @@ class TransitionSpec extends ObjectBehavior
         Context $context,
         ErrorCollection $errorCollection,
         Action $action
-    )
-    {
+    ) {
         $action->transit($this, $item, $context)->shouldBeCalled();
         $this->addAction($action);
 
@@ -307,7 +321,7 @@ class TransitionSpec extends ObjectBehavior
         $this->addAction(new ThrowingAction());
 
         $errorCollection->addError(Argument::type('string'), Argument::type('array'))->shouldBeCalled();
-        $context->getProperties()->willReturn(array());
+        $context->getProperties()->willReturn([]);
 
         $this->executeActions($item, $context, $errorCollection);
     }
@@ -317,8 +331,7 @@ class TransitionSpec extends ObjectBehavior
         Context $context,
         ErrorCollection $errorCollection,
         Action $action
-    )
-    {
+    ) {
         $action->transit($this, $item, $context)->shouldBeCalled();
         $this->addPostAction($action);
 
@@ -333,7 +346,7 @@ class TransitionSpec extends ObjectBehavior
         $this->addPostAction(new ThrowingAction());
 
         $errorCollection->addError(Argument::type('string'), Argument::type('array'))->shouldBeCalled();
-        $context->getProperties()->willReturn(array());
+        $context->getProperties()->willReturn([]);
 
         $this->executePostActions($item, $context, $errorCollection);
     }
@@ -358,7 +371,8 @@ class ThrowingAction implements Action
 {
     public function getRequiredPayloadProperties(Item $item): array
     {
-        return [];    }
+        return [];
+    }
 
     public function validate(Item $item, Context $context): bool
     {

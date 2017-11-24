@@ -1,16 +1,25 @@
 <?php
 
+/**
+ * Workflow library.
+ *
+ * @package    workflow
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @copyright  2014-2017 netzmacht David Molineus
+ * @license    LGPL 3.0 https://github.com/netzmacht/workflow
+ * @filesource
+ */
+
 namespace spec\Netzmacht\Workflow\Flow\Context;
 
 use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class ErrorCollectionSpec extends ObjectBehavior
 {
     const MESSAGE = 'test %s %s';
 
-    protected static $params = array('foo', 'baar');
+    protected static $params = ['foo', 'baar'];
 
     function it_is_initializable()
     {
@@ -20,7 +29,7 @@ class ErrorCollectionSpec extends ObjectBehavior
     function it_adds_error()
     {
         $this->addError(static::MESSAGE, static::$params)->shouldReturn($this);
-        $this->getErrors()->shouldContain(array(static::MESSAGE, static::$params, null));
+        $this->getErrors()->shouldContain([static::MESSAGE, static::$params, null]);
     }
 
     function it_counts_errors()
@@ -35,12 +44,12 @@ class ErrorCollectionSpec extends ObjectBehavior
     function it_gets_error_by_index()
     {
         $this->addError(static::MESSAGE, static::$params);
-        $this->getError(0)->shouldReturn(array(static::MESSAGE, static::$params, null));
+        $this->getError(0)->shouldReturn([static::MESSAGE, static::$params, null]);
     }
 
     function it_throws_when_unknown_error_index_given()
     {
-        $this->shouldThrow('InvalidArgumentException')->during('getError', array(0));
+        $this->shouldThrow('InvalidArgumentException')->during('getError', [0]);
     }
 
     function it_can_be_reset()
@@ -53,16 +62,16 @@ class ErrorCollectionSpec extends ObjectBehavior
 
     function it_adds_multiple_errors(ErrorCollection $errorCollection)
     {
-        $errors = array(
-            array(static::MESSAGE, static::$params, null),
-            array(static::MESSAGE, static::$params, $errorCollection),
-        );
+        $errors = [
+            [static::MESSAGE, static::$params, null],
+            [static::MESSAGE, static::$params, $errorCollection],
+        ];
 
-        $allErrors = array(
-            array(static::MESSAGE, static::$params, null),
-            array(static::MESSAGE, static::$params, null),
-            array(static::MESSAGE, static::$params, $errorCollection),
-        );
+        $allErrors = [
+            [static::MESSAGE, static::$params, null],
+            [static::MESSAGE, static::$params, null],
+            [static::MESSAGE, static::$params, $errorCollection],
+        ];
 
         // make sure it does not override
         $this->addError(static::MESSAGE, static::$params);
@@ -80,24 +89,28 @@ class ErrorCollectionSpec extends ObjectBehavior
 
     function it_converts_to_array(ErrorCollection $errorCollection)
     {
-        $errors = array(
-            array(static::MESSAGE, static::$params, null),
-            array(static::MESSAGE, static::$params, $errorCollection),
-        );
+        $errors = [
+            [static::MESSAGE, static::$params, null],
+            [static::MESSAGE, static::$params, $errorCollection],
+        ];
 
         $errorCollection->toArray()
             ->shouldBeCalled()
-            ->willReturn(array(array(static::MESSAGE, static::$params, null)));
+            ->willReturn([[static::MESSAGE, static::$params, null]]);
 
         $this->addErrors($errors)->shouldReturn($this);
 
         $this->toArray()->shouldReturn(
-            array(
-                array(static::MESSAGE, static::$params, null),
-                array(static::MESSAGE, static::$params, array(
-                    array(static::MESSAGE, static::$params, null)
-                )),
-            )
+            [
+                [static::MESSAGE, static::$params, null],
+                [
+                    static::MESSAGE,
+                    static::$params,
+                    [
+                        [static::MESSAGE, static::$params, null],
+                    ],
+                ],
+            ]
         );
     }
 }

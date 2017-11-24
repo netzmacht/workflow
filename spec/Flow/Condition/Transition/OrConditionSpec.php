@@ -1,18 +1,28 @@
 <?php
 
+/**
+ * Workflow library.
+ *
+ * @package    workflow
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @copyright  2014-2017 netzmacht David Molineus
+ * @license    LGPL 3.0 https://github.com/netzmacht/workflow
+ * @filesource
+ */
+
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
-use Netzmacht\Workflow\Flow\Context\ErrorCollection;
-use Netzmacht\Workflow\Flow\Transition;
-use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
-use Netzmacht\Workflow\Flow\Condition\Transition\OrCondition;
 use Netzmacht\Workflow\Flow\Context;
+use Netzmacht\Workflow\Flow\Context\ErrorCollection;
+use Netzmacht\Workflow\Flow\Item;
+use Netzmacht\Workflow\Flow\Transition;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 /**
  * Class OrConditionSpec
+ *
  * @package spec\Netzmacht\Workflow\Flow\Condition\Transition
  */
 class OrConditionSpec extends ObjectBehavior

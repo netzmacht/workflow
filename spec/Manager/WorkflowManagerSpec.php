@@ -1,22 +1,33 @@
 <?php
 
+/**
+ * Workflow library.
+ *
+ * @package    workflow
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @copyright  2014-2017 netzmacht David Molineus
+ * @license    LGPL 3.0 https://github.com/netzmacht/workflow
+ * @filesource
+ */
+
 namespace spec\Netzmacht\Workflow\Manager;
 
 use Netzmacht\Workflow\Data\EntityId;
+use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Exception\WorkflowNotFound;
-use Netzmacht\Workflow\Handler\TransitionHandlerFactory;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
-use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Handler\TransitionHandler;
+use Netzmacht\Workflow\Handler\TransitionHandlerFactory;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 /**
  * Class ManagerSpec
+ *
  * @package spec\Netzmacht\Contao\Workflow
  */
 class WorkflowManagerSpec extends ObjectBehavior
@@ -25,7 +36,7 @@ class WorkflowManagerSpec extends ObjectBehavior
 
     const ENTITY_ID = 5;
 
-    protected static $entity = array('id' => 5);
+    protected static $entity = ['id' => 5];
 
     function it_is_initializable()
     {
@@ -39,7 +50,7 @@ class WorkflowManagerSpec extends ObjectBehavior
     ) {
         $workflow->getName()->willReturn('workflow_a');
 
-        $this->beConstructedWith($transitionHandlerFactory, $stateRepository, array($workflow));
+        $this->beConstructedWith($transitionHandlerFactory, $stateRepository, [$workflow]);
     }
 
     function it_gets_workflow(Workflow $workflow)
@@ -128,8 +139,7 @@ class WorkflowManagerSpec extends ObjectBehavior
         TransitionHandlerFactory $transitionHandlerFactory,
         StateRepository $stateRepository,
         TransitionHandler $transitionHandler
-    )
-    {
+    ) {
         $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
 
         $item->getEntityId()->willReturn($entityId);
@@ -157,8 +167,7 @@ class WorkflowManagerSpec extends ObjectBehavior
         TransitionHandler $transitionHandler,
         Transition $transition,
         Step $step
-    )
-    {
+    ) {
         $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
 
         $step->getName()->willReturn('start');
@@ -193,8 +202,7 @@ class WorkflowManagerSpec extends ObjectBehavior
         Item $item,
         Transition $transition,
         Step $step
-    )
-    {
+    ) {
         $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
 
         $step->getName()->willReturn('start');
@@ -226,7 +234,7 @@ class WorkflowManagerSpec extends ObjectBehavior
         $state->getWorkflowName()->willReturn('workflow');
         $state->isSuccessful()->willReturn(true);
 
-        $stateRepository->find($entityId)->willReturn(array($state));
+        $stateRepository->find($entityId)->willReturn([$state]);
 
         $this->createItem($entityId, static::$entity)->shouldHaveType('Netzmacht\Workflow\Flow\Item');
     }
