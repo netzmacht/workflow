@@ -8,7 +8,7 @@ dev-develop
 2.0.0-beta1 (2017-11-24)
 ------------------------
 
-[Full Changelog](https://github.com/netzmacht/workfow/compare/2.0.0-beta1...release/1.0.0-beta1)
+[Full Changelog](https://github.com/netzmacht/workfow/compare/1.0.0-beta2...2.0.0-beta1)
 
  - Allow to detach an item from a workflow.
  - Move error collection to the context.
