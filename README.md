@@ -56,6 +56,11 @@ Requirements
 
 This library requires at least PHP 7.1.
 
+Example
+-------
+
+You may have a look at the [examples](https://github.com/netzmacht/workflow/tree/develop/example).
+
 Credits
 -------
 
