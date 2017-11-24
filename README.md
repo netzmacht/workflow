@@ -12,8 +12,7 @@ processing entities through its life cycle.
 
 Due to its data format and framework independence it **does not run** as a standalone workflow library. 
 The entity/data implementation and input processing via forms have to be implemented. This workflow library is more a 
-**skeleton** for your workflow requirements. You may have a look at 
-[netzmacht/contao-workflow](https:github.com/netzmacht/contao-workflow) which provides an integration for CMS Contao 
+**skeleton** for your workflow requirements. 
 
 Features
 --------
@@ -56,10 +55,18 @@ Requirements
 
 This library requires at least PHP 7.1.
 
+Changelog
+---------
+
+See the [CHANGELOG.md](https://github.com/netzmacht/workflow/blob/develop/CHANGELOG.md)
+
 Example
 -------
 
 You may have a look at the [examples](https://github.com/netzmacht/workflow/tree/develop/example).
+
+A concrete implementation is available as integration for CMS Contao 
+[netzmacht/contao-workflow](https:github.com/netzmacht/contao-workflow).
 
 Credits
 -------
