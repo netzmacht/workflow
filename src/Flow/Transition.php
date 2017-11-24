@@ -226,7 +226,7 @@ class Transition extends Base
      */
     public function getRequiredPayloadProperties(Item $item): array
     {
-        if (!$this->actions) {
+        if (empty($this->actions)) {
             return [];
         }
 

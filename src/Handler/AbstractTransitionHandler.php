@@ -249,7 +249,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     private function guardAllowedTransition(?string $transitionName): void
     {
         if (!$this->isWorkflowStarted()) {
-            if (!$transitionName || $transitionName === $this->getWorkflow()->getStartTransition()->getName()) {
+            if ($transitionName !== null || $transitionName === $this->getWorkflow()->getStartTransition()->getName()) {
                 return;
             }
 

@@ -85,7 +85,7 @@ abstract class ConditionCollection implements Condition
     /**
      * Add multiple conditions.
      *
-     * @param iterable $conditions Array of conditions being added.
+     * @param Condition[]|iterable $conditions Array of conditions being added.
      *
      * @return $this
      *

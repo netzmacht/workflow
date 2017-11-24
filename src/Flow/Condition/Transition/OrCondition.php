@@ -30,7 +30,7 @@ class OrCondition extends ConditionCollection
      */
     public function match(Transition $transition, Item $item, Context $context): bool
     {
-        if (!$this->conditions) {
+        if (empty($this->conditions)) {
             return true;
         }
 
