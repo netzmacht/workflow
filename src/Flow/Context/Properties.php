@@ -19,10 +19,6 @@ namespace Netzmacht\Workflow\Flow\Context;
  */
 class Properties
 {
-    const NAMESPACE_DEFAULT = 'default';
-
-    const NAMESPACE_ENTITY = 'entity';
-
     /**
      * Properties.
      *
@@ -64,17 +60,12 @@ class Properties
      * Check if a property exists.
      *
      * @param string $propertyName Name of the property.
-     * @param string $namespace    Property namespace.
      *
      * @return bool
      */
-    public function has(string $propertyName, string $namespace = self::NAMESPACE_DEFAULT): bool
+    public function has(string $propertyName): bool
     {
-        if (!array_key_exists($namespace, $this->properties)) {
-            return false;
-        }
-
-        return array_key_exists($propertyName, $this->properties[self::NAMESPACE_DEFAULT]);
+        return array_key_exists($propertyName, $this->properties);
     }
 
     /**
@@ -82,13 +73,12 @@ class Properties
      *
      * @param string $propertyName Name of the property.
      * @param string $value        Value of the property.
-     * @param string $namespace    Property namespace.
      *
      * @return Properties
      */
-    public function set(string $propertyName, $value, string $namespace = self::NAMESPACE_DEFAULT): self
+    public function set(string $propertyName, $value): self
     {
-        $this->properties[$namespace][$propertyName] = $value;
+        $this->properties[$propertyName] = $value;
 
         return $this;
     }
@@ -97,14 +87,13 @@ class Properties
      * Get the property value. If property does not exist, null is returned.
      *
      * @param string $propertyName Name of the property.
-     * @param string $namespace    Property namespace.
      *
      * @return mixed
      */
-    public function get(string $propertyName, string $namespace = self::NAMESPACE_DEFAULT)
+    public function get(string $propertyName)
     {
-        if (isset($this->properties[$namespace][$propertyName])) {
-            return $this->properties[$namespace][$propertyName];
+        if (isset($this->properties[$propertyName])) {
+            return $this->properties[$propertyName];
         }
 
         return null;
