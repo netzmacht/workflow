@@ -72,7 +72,7 @@ class Properties
      * Set a property value.
      *
      * @param string $propertyName Name of the property.
-     * @param string $value        Value of the property.
+     * @param mixed  $value        Value of the property.
      *
      * @return Properties
      */
