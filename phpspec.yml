@@ -1,1 +1,5 @@
 formatter.name: pretty
+suites:
+  worfklow_suite:
+    namespace: Netzmacht\Workflow
+    psr4_prefix: Netzmacht\Workflow

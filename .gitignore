@@ -1,5 +1,28 @@
-bin/
-vendor/
+# OS
+.DS_Store
+Thumbs.db
+.directory
 
+# IDEs 
+.buildpath
+.project
+.settings/
+.build/
+.external*/
+.idea/
+nbproject/
+
+# composer related
+vendor/
 composer.lock
-coverage.xml
+
+# build
+build/
+build.properties
+
+# Translations
+.tx
+
+# NPM
+node_modules
+package-lock.json
