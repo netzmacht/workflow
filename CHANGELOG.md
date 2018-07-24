@@ -2,8 +2,11 @@
 Changelog
 =========
 
-dev-develop
------------
+2.0.0 (2018-07-24)
+------------------
+
+[Full Changelog](https://github.com/netzmacht/workfow/compare/2.0.0-beta1...2.0.0)
+
 
 2.0.0-beta1 (2017-11-24)
 ------------------------
