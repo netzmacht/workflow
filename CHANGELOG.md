@@ -2,6 +2,15 @@
 Changelog
 =========
 
+unreleased
+----------
+
+[Full Changelog](https://github.com/netzmacht/workfow/compare/2.0.0...hotfix/2.0.1)
+
+### Fixed
+
+ - Fix available transitions if workflow has changed.
+
 2.0.0 (2018-07-24)
 ------------------
 
