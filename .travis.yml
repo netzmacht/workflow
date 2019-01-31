@@ -1,19 +1,19 @@
+dist: xenial
+
+addons:
+  apt:
+    packages:
+      - ant-optional
+
 language: php
 
 php:
+  - "7.3"
+  - "7.2"
   - "7.1"
-
-env:
-  - CONTAO_VERSION=contao/core-bundle ~4.4.0
-
-matrix:
-  exclude:
-
-sudo: false
 
 install:
   - travis_retry composer self-update && composer --version
-  - travis_retry composer require $CONTAO_VERSION --no-update
   - travis_retry composer update --prefer-dist --no-interaction
 
 script: ant -keep-going
