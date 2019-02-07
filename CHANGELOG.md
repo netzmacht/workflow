@@ -2,25 +2,28 @@
 Changelog
 =========
 
-unreleased
-----------
-
-[Full Changelog](https://github.com/netzmacht/workfow/compare/2.0.0...hotfix/2.0.1)
+[Unreleased]
+-------------
 
 ### Fixed
 
  - Fix available transitions if workflow has changed.
+ 
+### Added
 
-2.0.0 (2018-07-24)
+ - ActionFailedException might contain action name and error collection now.
+ 
+### Changed
+
+ - Actions will also fail if any error is added during transition.
+
+
+[2.0.0] (2018-07-24)
 ------------------
 
-[Full Changelog](https://github.com/netzmacht/workfow/compare/2.0.0-beta1...2.0.0)
 
-
-2.0.0-beta1 (2017-11-24)
+[2.0.0-beta1] (2017-11-24)
 ------------------------
-
-[Full Changelog](https://github.com/netzmacht/workfow/compare/1.0.0-beta2...2.0.0-beta1)
 
  - Allow to detach an item from a workflow.
  - Move error collection to the context.
@@ -31,3 +34,7 @@ unreleased
  - Switch to psr-4.
  - Utilize phpcq/all-tasks.
 
+
+[Unreleased]:  https://github.com/netzmacht/workfow/compare/2.0.0...hotfix/2.0.1
+[2.0.0]:       https://github.com/netzmacht/workfow/compare/2.0.0-beta1...2.0.0
+[2.0.0-beta1]: https://github.com/netzmacht/workfow/compare/1.0.0-beta2...2.0.0-beta1
