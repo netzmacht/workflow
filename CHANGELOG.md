@@ -11,7 +11,8 @@ Changelog
  
 ### Added
 
- - ActionFailedException might contain action name and error collection now.
+ - `ActionFailedException` might contain action name and error collection now.
+ - `ErrorCollection` implements `Countable` now
  
 ### Changed
 
