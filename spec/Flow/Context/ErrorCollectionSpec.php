@@ -12,6 +12,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow\Context;
 
+use Countable;
 use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use PhpSpec\ObjectBehavior;
 
@@ -26,6 +27,11 @@ class ErrorCollectionSpec extends ObjectBehavior
         $this->shouldHaveType(ErrorCollection::class);
     }
 
+    public function it_is_countable(): void
+    {
+        $this->shouldImplement(Countable::class);
+    }
+
     function it_adds_error()
     {
         $this->addError(static::MESSAGE, static::$params)->shouldReturn($this);
@@ -35,10 +41,13 @@ class ErrorCollectionSpec extends ObjectBehavior
     function it_counts_errors()
     {
         $this->countErrors()->shouldReturn(0);
+        $this->count()->shouldReturn(0);
         $this->addError(static::MESSAGE, static::$params);
         $this->countErrors()->shouldReturn(1);
+        $this->count()->shouldReturn(1);
         $this->addError(static::MESSAGE, static::$params);
         $this->countErrors()->shouldReturn(2);
+        $this->count()->shouldReturn(2);
     }
 
     function it_gets_error_by_index()

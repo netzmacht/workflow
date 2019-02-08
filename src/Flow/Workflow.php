@@ -139,7 +139,7 @@ class Workflow extends Base
             $context = new Context();
         }
 
-        if (!$item->isWorkflowStarted()) {
+        if (!$item->isWorkflowStarted() || $item->getWorkflowName() !== $this->getName()) {
             $transitions = array($this->getStartTransition());
         } else {
             $step        = $this->getStep($item->getCurrentStepName());

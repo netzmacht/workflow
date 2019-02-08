@@ -14,12 +14,15 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow\Context;
 
+use Countable;
+use IteratorAggregate;
+
 /**
  * Class ErrorCollection collects error messages being raised during transition.
  *
  * @package Netzmacht\Workflow
  */
-class ErrorCollection implements \IteratorAggregate
+class ErrorCollection implements IteratorAggregate, Countable
 {
     /**
      * Stored errors.
@@ -138,6 +141,14 @@ class ErrorCollection implements \IteratorAggregate
     public function getIterator(): iterable
     {
         return new \ArrayIterator($this->errors);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count(): int
+    {
+        return $this->countErrors();
     }
 
     /**

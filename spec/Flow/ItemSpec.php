@@ -123,7 +123,7 @@ class ItemSpec extends ObjectBehavior
         $this->start($transition, $context, true)->shouldHaveType('Netzmacht\Workflow\Flow\State');
     }
 
-    function it_get_last_successful_state(State $state, State $failedState)
+    public function it_gets_last_successful_state(State $state, State $failedState): void
     {
         $failedState->isSuccessful()->willReturn(false);
         $failedState->getStepName()->willReturn('failed');
@@ -136,9 +136,11 @@ class ItemSpec extends ObjectBehavior
 
         $this->getCurrentStepName()->shouldReturn('start');
         $this->getLatestState()->shouldReturn($state);
+        $this->getLatestSuccessfulState()->shouldReturn($state);
+        $this->getLatestStateOccurred()->shouldReturn($failedState);
     }
 
-    function it_latest_state_from_history(State $state, State $failedState)
+    public function it_gets_latest_state_from_history(State $state, State $failedState): void
     {
         $failedState->isSuccessful()->willReturn(false);
         $failedState->getStepName()->willReturn('failed');
@@ -150,5 +152,7 @@ class ItemSpec extends ObjectBehavior
         $this->beConstructedThrough('reconstitute', [$this->entityId, static::$entity, [$state, $failedState]]);
 
         $this->getLatestState(false)->shouldReturn($failedState);
+        $this->getLatestSuccessfulState()->shouldReturn($state);
+        $this->getLatestStateOccurred()->shouldReturn($failedState);
     }
 }

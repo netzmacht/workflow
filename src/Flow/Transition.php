@@ -424,13 +424,16 @@ class Transition extends Base
                     $action->transit($this, $item, $context);
                 }
             } catch (ActionFailedException $e) {
-                $params = ['exception' => $e->getMessage()];
-                $context->addError('transition.action.failed', $params);
+                $params = [
+                    'exception' => $e->getMessage(),
+                    'action'    => $e->actionName()
+                ];
+                $context->addError('transition.action.failed', $params, $e->errorCollection());
 
                 return false;
             }
         }
 
-        return $success;
+        return $success && !$context->getErrorCollection()->hasErrors();
     }
 }
