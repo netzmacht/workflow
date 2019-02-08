@@ -15,9 +15,11 @@ declare(strict_types=1);
 namespace Netzmacht\Workflow\Flow;
 
 use Assert\Assertion;
+use const E_USER_DEPRECATED;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Exception\FlowException;
+use function trigger_error;
 
 /**
  * Class Item stores workflow related data of an entity. It knows the state history and the current state.
@@ -207,20 +209,55 @@ class Item
      * @param bool $successfulOnly Return only success ful steps.
      *
      * @return State|false
+     *
+     * @deprecated Use getLatestStateOccurred() or getLatestState() instead.
      */
     public function getLatestState(bool $successfulOnly = true)
     {
+        // @codingStandardsIgnoreStart
+        @trigger_error(
+            __METHOD__ . ' is deprecated. Use getLatestStateOccurred() or getLatestState() instead.',
+            E_USER_DEPRECATED
+        );
+        // @codingStandardsIgnoreEnd
+
         if (!$successfulOnly) {
-            return end($this->stateHistory);
+            return $this->getLatestStateOccurred();
         }
 
+        return $this->getLatestSuccessfulState() ?: false;
+    }
+
+    /**
+     * Get latest state which occurred no matter if successful or not.
+     *
+     * @return State|null
+     */
+    public function getLatestStateOccurred(): ?State
+    {
+        if (count($this->stateHistory) === 0) {
+            return null;
+        }
+
+        $index = (count($this->stateHistory) - 1);
+
+        return $this->stateHistory[$index];
+    }
+
+    /**
+     * Get latest successful state which occurred.
+     *
+     * @return State|null
+     */
+    public function getLatestSuccessfulState(): ?State
+    {
         for ($index = (count($this->stateHistory) - 1); $index >= 0; $index--) {
             if ($this->stateHistory[$index]->isSuccessful()) {
                 return $this->stateHistory[$index];
             }
         }
 
-        return false;
+        return null;
     }
 
     /**

@@ -13,10 +13,15 @@ Changelog
 
  - `ActionFailedException` might contain action name and error collection now.
  - `ErrorCollection` implements `Countable` now
+ - Added `Item#getLatestStateOccurred` and `Item#getLatestSuccessfulState`
  
 ### Changed
 
  - Actions will also fail if any error is added during transition.
+ 
+### Deprecated
+
+ - Deprecate `Item#getLatestState`. Use `Item#getLatestStateOccurred` or `Item#getLatestSuccessfulState` state instead.
 
 
 [2.0.0] (2018-07-24)
