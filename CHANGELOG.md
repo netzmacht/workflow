@@ -8,6 +8,8 @@ Changelog
 ### Fixed
 
  - Fix available transitions if workflow has changed.
+ - Fix item state history is not initialized properly which might cause an 
+   `Parameter must be an array or an object that implements Countable` error.
  
 ### Added
 

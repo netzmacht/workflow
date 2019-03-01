@@ -47,7 +47,7 @@ class Item
      *
      * @var State[]
      */
-    private $stateHistory;
+    private $stateHistory = [];
 
     /**
      * Workflow entity.
