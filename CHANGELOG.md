@@ -3,7 +3,14 @@ Changelog
 =========
 
 [Unreleased]
--------------
+------------
+
+### Fixed
+
+ - Fix initial value of item state
+
+[2.0.1] (2019-02-08)
+--------------------
 
 ### Fixed
 
@@ -43,6 +50,7 @@ Changelog
  - Utilize phpcq/all-tasks.
 
 
-[Unreleased]:  https://github.com/netzmacht/workfow/compare/2.0.0...hotfix/2.0.1
+[Unreleased]:  https://github.com/netzmacht/workfow/compare/2.0.1...hotfix/2.0.2
+[2.0.1]:       https://github.com/netzmacht/workfow/compare/2.0.0...2.0.1
 [2.0.0]:       https://github.com/netzmacht/workfow/compare/2.0.0-beta1...2.0.0
 [2.0.0-beta1]: https://github.com/netzmacht/workfow/compare/1.0.0-beta2...2.0.0-beta1
