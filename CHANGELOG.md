@@ -3,11 +3,20 @@ Changelog
 =========
 
 [Unreleased]
--------------
+------------
+
+### Fixed
+
+ - Fix initial value of item state
+
+[2.0.1] (2019-02-08)
+--------------------
 
 ### Fixed
 
  - Fix available transitions if workflow has changed.
+ - Fix item state history is not initialized properly which might cause an 
+   `Parameter must be an array or an object that implements Countable` error.
  
 ### Added
 
@@ -41,6 +50,7 @@ Changelog
  - Utilize phpcq/all-tasks.
 
 
-[Unreleased]:  https://github.com/netzmacht/workfow/compare/2.0.0...hotfix/2.0.1
+[Unreleased]:  https://github.com/netzmacht/workfow/compare/2.0.1...hotfix/2.0.2
+[2.0.1]:       https://github.com/netzmacht/workfow/compare/2.0.0...2.0.1
 [2.0.0]:       https://github.com/netzmacht/workfow/compare/2.0.0-beta1...2.0.0
 [2.0.0-beta1]: https://github.com/netzmacht/workfow/compare/1.0.0-beta2...2.0.0-beta1
