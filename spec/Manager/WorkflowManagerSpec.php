@@ -239,4 +239,28 @@ class WorkflowManagerSpec extends ObjectBehavior
         $this->createItem($entityId, static::$entity)->shouldHaveType('Netzmacht\Workflow\Flow\Item');
     }
 
+    function it_prefers_current_workflow_by_item(
+        TransitionHandlerFactory $transitionHandlerFactory,
+        StateRepository $stateRepository,
+        Workflow $workflowA,
+        Workflow $workflowB,
+        Item $item
+    ) {
+        $workflowA->getName()->willReturn('workflow_a');
+        $workflowB->getName()->willReturn('workflow_b');
+
+        $this->beConstructedWith($transitionHandlerFactory, $stateRepository, [$workflowA, $workflowB]);
+
+        $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
+
+        $item->getEntityId()->willReturn($entityId);
+        $item->getEntity()->willReturn(static::$entity);
+
+        $item->getWorkflowName()->willReturn('workflow_b');
+
+        $workflowA->supports($entityId, static::$entity)->willReturn(true);
+        $workflowB->supports($entityId, static::$entity)->willReturn(true);
+
+        $this->getWorkflowByItem($item)->shouldReturn($workflowB);
+    }
 }
