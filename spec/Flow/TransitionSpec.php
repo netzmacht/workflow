@@ -318,7 +318,7 @@ class TransitionSpec extends ObjectBehavior
         Context $context,
         ErrorCollection $errorCollection
     ) {
-        $this->addAction(new ThrowingAction());
+        $this->addAction($this->throwingAction());
 
         $errorCollection->addError(Argument::type('string'), Argument::type('array'))->shouldBeCalled();
         $context->getProperties()->willReturn([]);
@@ -343,7 +343,7 @@ class TransitionSpec extends ObjectBehavior
         Context $context,
         ErrorCollection $errorCollection
     ) {
-        $this->addPostAction(new ThrowingAction());
+        $this->addPostAction($this->throwingAction());
 
         $errorCollection->addError(Argument::type('string'), Argument::type('array'))->shouldBeCalled();
         $context->getProperties()->willReturn([]);
@@ -365,22 +365,27 @@ class TransitionSpec extends ObjectBehavior
         $this->getPermission()->shouldReturn(null);
         $this->hasPermission($permission)->shouldReturn(false);
     }
+
+    private function throwingAction(): Action
+    {
+        return new class implements Action
+        {
+            public function getRequiredPayloadProperties(Item $item): array
+            {
+                return [];
+            }
+
+            public function validate(Item $item, Context $context): bool
+            {
+                return true;
+            }
+
+            public function transit(Transition $transition, Item $item, Context $context): void
+            {
+                throw new ActionFailedException();
+            }
+        };
+    }
 }
 
-class ThrowingAction implements Action
-{
-    public function getRequiredPayloadProperties(Item $item): array
-    {
-        return [];
-    }
 
-    public function validate(Item $item, Context $context): bool
-    {
-        return true;
-    }
-
-    public function transit(Transition $transition, Item $item, Context $context): void
-    {
-        throw new ActionFailedException();
-    }
-}
