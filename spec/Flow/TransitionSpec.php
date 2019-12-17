@@ -336,6 +336,32 @@ class TransitionSpec extends ObjectBehavior
         $this->isAvailable($item, $context, $errorCollection)->shouldReturn(true);
     }
 
+    function it_executes_transition_(
+        Item $item,
+        Context $context,
+        ErrorCollection $errorCollection,
+        Action $action,
+        Action $postAction
+    ) {
+        $context->getErrorCollection()->willReturn($errorCollection);
+        $errorCollection->hasErrors()->willReturn(false);
+
+        $this->addAction($action);
+        $this->addPostAction($postAction);
+
+        $action->transit($this->getWrappedObject(), $item, $context)->shouldBeCalledOnce();
+        $postAction->transit($this->getWrappedObject(), $item, $context)->shouldBeCalledOnce();
+
+        $item->isWorkflowStarted()
+            ->shouldBeCalled()
+            ->willReturn(true);
+
+        $item->transit($this->getWrappedObject(), $context, true)
+            ->shouldBeCalled();
+
+        $this->execute($item, $context);
+    }
+
     function it_executes_actions(
         Item $item,
         Context $context,
