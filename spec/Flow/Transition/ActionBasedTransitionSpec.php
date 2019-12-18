@@ -30,7 +30,7 @@ use Prophecy\Argument;
  *
  * @package spec\Netzmacht\Workflow\Flow
  */
-class TransitionSpec extends ObjectBehavior
+class ActionBasedTransitionSpec extends ObjectBehavior
 {
     private const NAME = 'transition_name';
 

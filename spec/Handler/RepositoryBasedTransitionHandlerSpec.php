@@ -241,20 +241,12 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
     function it_transits_to_next_state(Transition $transition, Item $item, State $state)
     {
-        $item->transit($transition, Argument::type(Context::class), true)
-            ->shouldBeCalled()
-            ->willReturn($state);
-
         $transition->validate($item, Argument::type(Context::class))
             ->willReturn(true)
             ->shouldBeCalled();
 
-        $transition->executeActions($item, Argument::type(Context::class))
-            ->willReturn(true)
-            ->shouldBeCalled();
-
-        $transition->executePostActions($item, Argument::type(Context::class))
-            ->willReturn(true)
+        $transition->execute($item, Argument::type(Context::class))
+            ->willReturn($state)
             ->shouldBeCalled();
 
         $transition->checkCondition($item, Argument::type(Context::class))
@@ -266,7 +258,7 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             ->shouldBeCalled();
 
         $this->validate([]);
-        $this->transit()->shouldHaveType('Netzmacht\Workflow\Flow\State');
+        $this->transit()->shouldHaveType(State::class);
     }
 
     function it_checks_if_transition_is_available(Transition $transition, Item $item)

@@ -5,6 +5,20 @@ Changelog
 [Unreleased]
 ------------
 
+### Added
+
+ - Add `Netzmacht\Workflow\Flow\Transition\AbstractTransition`
+ - Add `Transition#execute` method
+ 
+### Changed
+
+ - Use `Transition#execute` in the transition handler
+
+### Breaking
+
+ - Rename `Transition` to `ActionBasedTransition`
+ - `Transition` is now an interface
+
 ### Fixed
 
  - Fix initial value of item state

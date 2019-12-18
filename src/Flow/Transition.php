@@ -14,9 +14,7 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Flow\Condition\Transition\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
-use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
 use Netzmacht\Workflow\Flow\Security\Permission;
 
 /**
@@ -24,153 +22,105 @@ use Netzmacht\Workflow\Flow\Security\Permission;
  *
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
-class Transition extends Base
+interface Transition
 {
     /**
-     * Actions which will be executed during the transition.
+     * Get element label.
      *
-     * @var Action[]
+     * @return string
      */
-    private $actions = [];
+    public function getLabel(): string;
 
     /**
-     * Post actions which will be executed when new step is reached.
+     * Set the label.
      *
-     * @var Action[]
+     * @param string $label The label.
+     *
+     * @return $this
      */
-    private $postActions = [];
+    public function setLabel(string $label): self;
 
     /**
-     * The step the transition is moving to.
+     * Get element name.
      *
-     * @var Step
+     * @return string
      */
-    private $stepTo;
+    public function getName(): string;
 
     /**
-     * A pre condition which has to be passed to execute transition.
+     * Set a config value.
      *
-     * @var AndCondition
+     * @param string $name  Config property name.
+     * @param mixed  $value Config property value.
+     *
+     * @return $this
      */
-    private $preCondition;
+    public function setConfigValue(string $name, $value): self;
 
     /**
-     * A condition which has to be passed to execute the transition.
+     * Get a config value.
      *
-     * @var AndCondition
+     * @param string $name    Config property name.
+     * @param mixed  $default Default value which is returned if config is not set.
+     *
+     * @return mixed
      */
-    private $condition;
+    public function getConfigValue(string $name, $default = null);
 
     /**
-     * A set of permission being assigned to the transition.
+     * Consider if config value isset.
      *
-     * @var Permission|null
+     * @param string $name Name of the config value.
+     *
+     * @return bool
      */
-    private $permission;
+    public function hasConfigValue(string $name): bool;
 
     /**
-     * The corresponding workflow.
+     * Add multiple config properties.
      *
-     * @var Workflow
+     * @param array $values Config values.
+     *
+     * @return $this
      */
-    private $workflow;
+    public function addConfig(array $values): self;
 
     /**
-     * Transition constructor.
+     * Remove a config property.
      *
-     * @param string   $name     Name of the element.
-     * @param Workflow $workflow The workflow to which the transition belongs.
-     * @param Step     $stepTo   The target step.
-     * @param string   $label    Label of the element.
-     * @param array    $config   Configuration values.
+     * @param string $name Config property name.
+     *
+     * @return $this
      */
-    public function __construct(string $name, Workflow $workflow, Step $stepTo, string $label = '', array $config = [])
-    {
-        parent::__construct($name, $label, $config);
+    public function removeConfigValue(string $name): self;
 
-        $workflow->addTransition($this);
-
-        $this->workflow = $workflow;
-        $this->stepTo   = $stepTo;
-    }
+    /**
+     * Get configuration.
+     *
+     * @return array
+     */
+    public function getConfig(): array;
 
     /**
      * Get the workflow.
      *
      * @return Workflow
      */
-    public function getWorkflow(): Workflow
-    {
-        return $this->workflow;
-    }
-
-    /**
-     * Add an action to the transition.
-     *
-     * @param Action $action The added action.
-     *
-     * @return $this
-     */
-    public function addAction(Action $action): self
-    {
-        $this->actions[] = $action;
-
-        return $this;
-    }
-
-    /**
-     * Get all actions.
-     *
-     * @return Action[]|iterable
-     */
-    public function getActions(): iterable
-    {
-        return $this->actions;
-    }
-
-    /**
-     * Add an post action to the transition.
-     *
-     * @param Action $action The added action.
-     *
-     * @return $this
-     */
-    public function addPostAction(Action $action): self
-    {
-        $this->postActions[] = $action;
-
-        return $this;
-    }
-
-    /**
-     * Get all post actions.
-     *
-     * @return Action[]|iterable
-     */
-    public function getPostActions(): iterable
-    {
-        return $this->postActions;
-    }
+    public function getWorkflow(): Workflow;
 
     /**
      * Get the target step.
      *
      * @return Step
      */
-    public function getStepTo():? Step
-    {
-        return $this->stepTo;
-    }
+    public function getStepTo():? Step;
 
     /**
      * Get the condition.
      *
      * @return Condition|null
      */
-    public function getCondition():? Condition
-    {
-        return $this->condition;
-    }
+    public function getCondition():? Condition;
 
     /**
      * Add a condition.
@@ -179,25 +129,14 @@ class Transition extends Base
      *
      * @return $this
      */
-    public function addCondition(Condition $condition): self
-    {
-        if (!$this->condition) {
-            $this->condition = new AndCondition();
-        }
-        $this->condition->addCondition($condition);
-
-        return $this;
-    }
+    public function addCondition(Condition $condition): self;
 
     /**
      * Get the precondition.
      *
      * @return Condition
      */
-    public function getPreCondition():? Condition
-    {
-        return $this->preCondition;
-    }
+    public function getPreCondition():? Condition;
 
     /**
      * Add a precondition precondition.
@@ -206,16 +145,7 @@ class Transition extends Base
      *
      * @return $this
      */
-    public function addPreCondition(Condition $preCondition): self
-    {
-        if (!$this->preCondition) {
-            $this->preCondition = new AndCondition();
-        }
-
-        $this->preCondition->addCondition($preCondition);
-
-        return $this;
-    }
+    public function addPreCondition(Condition $preCondition): self;
 
     /**
      * Consider if user input is required.
@@ -224,21 +154,7 @@ class Transition extends Base
      *
      * @return array
      */
-    public function getRequiredPayloadProperties(Item $item): array
-    {
-        if (empty($this->actions)) {
-            return [];
-        }
-
-        return array_merge(
-            ... array_map(
-                function (Action $action) use ($item) {
-                    return $action->getRequiredPayloadProperties($item);
-                },
-                $this->actions
-            )
-        );
-    }
+    public function getRequiredPayloadProperties(Item $item): array;
 
     /**
      * Validate the given item and context (payload properties).
@@ -248,16 +164,17 @@ class Transition extends Base
      *
      * @return bool
      */
-    public function validate(Item $item, Context $context): bool
-    {
-        $validated = true;
+    public function validate(Item $item, Context $context): bool;
 
-        foreach ($this->actions as $action) {
-            $validated = $validated && $action->validate($item, $context);
-        }
-
-        return $validated;
-    }
+    /**
+     * Execute the transition for the given item and context (payload properties).
+     *
+     * @param Item    $item    Workflow item.
+     * @param Context $context Transition context.
+     *
+     * @return State
+     */
+    public function execute(Item $item, Context $context): State;
 
     /**
      * Consider if transition is allowed.
@@ -267,14 +184,7 @@ class Transition extends Base
      *
      * @return bool
      */
-    public function isAllowed(Item $item, Context $context): bool
-    {
-        if ($this->checkPreCondition($item, $context)) {
-            return $this->checkCondition($item, $context);
-        }
-
-        return false;
-    }
+    public function isAllowed(Item $item, Context $context): bool;
 
     /**
      * Consider if transition is available.
@@ -286,14 +196,7 @@ class Transition extends Base
      *
      * @return bool
      */
-    public function isAvailable(Item $item, Context $context): bool
-    {
-        if ($this->getRequiredPayloadProperties($item)) {
-            return $this->checkPreCondition($item, $context);
-        }
-
-        return $this->isAllowed($item, $context);
-    }
+    public function isAvailable(Item $item, Context $context): bool;
 
     /**
      * Check the precondition.
@@ -303,10 +206,7 @@ class Transition extends Base
      *
      * @return bool
      */
-    public function checkPreCondition(Item $item, Context $context): bool
-    {
-        return $this->performConditionCheck($this->preCondition, $item, $context);
-    }
+    public function checkPreCondition(Item $item, Context $context): bool;
 
     /**
      * Check the condition.
@@ -316,10 +216,7 @@ class Transition extends Base
      *
      * @return bool
      */
-    public function checkCondition(Item $item, Context $context): bool
-    {
-        return $this->performConditionCheck($this->condition, $item, $context);
-    }
+    public function checkCondition(Item $item, Context $context): bool;
 
     /**
      * Set a permission to the transition.
@@ -328,12 +225,7 @@ class Transition extends Base
      *
      * @return $this
      */
-    public function setPermission(Permission $permission): self
-    {
-        $this->permission = $permission;
-
-        return $this;
-    }
+    public function setPermission(Permission $permission): self;
 
     /**
      * Consider if permission is assigned to transition.
@@ -342,98 +234,12 @@ class Transition extends Base
      *
      * @return bool
      */
-    public function hasPermission(Permission $permission): bool
-    {
-        if ($this->permission) {
-            return $this->permission->equals($permission);
-        }
-
-        return false;
-    }
+    public function hasPermission(Permission $permission): bool;
 
     /**
      * Get assigned permission. Returns null if no transition is set.
      *
      * @return Permission|null
      */
-    public function getPermission():? Permission
-    {
-        return $this->permission;
-    }
-
-    /**
-     * Execute all actions.
-     *
-     * @param Item    $item    The workflow item.
-     * @param Context $context The transition context.
-     *
-     * @return bool
-     */
-    public function executeActions(Item $item, Context $context): bool
-    {
-        return $this->doExecuteActions($item, $context, $this->actions);
-    }
-
-    /**
-     * Execute all actions.
-     *
-     * @param Item    $item    The workflow item.
-     * @param Context $context The transition context.
-     *
-     * @return bool
-     */
-    public function executePostActions(Item $item, Context $context): bool
-    {
-        return $this->doExecuteActions($item, $context, $this->postActions);
-    }
-
-    /**
-     * Perform condition check.
-     *
-     * @param Condition|null $condition Condition to be checked.
-     * @param Item           $item      Workflow item.
-     * @param Context        $context   Condition context.
-     *
-     * @return bool
-     */
-    private function performConditionCheck($condition, $item, $context): bool
-    {
-        if (!$condition) {
-            return true;
-        }
-
-        return $condition->match($this, $item, $context);
-    }
-
-    /**
-     * Execute the actions.
-     *
-     * @param Item     $item    Workflow item.
-     * @param Context  $context Condition context.
-     * @param Action[] $actions Action to execute.
-     *
-     * @return bool
-     */
-    private function doExecuteActions(Item $item, Context $context, $actions): bool
-    {
-        $success = $this->isAllowed($item, $context);
-
-        if ($success) {
-            try {
-                foreach ($actions as $action) {
-                    $action->transit($this, $item, $context);
-                }
-            } catch (ActionFailedException $e) {
-                $params = [
-                    'exception' => $e->getMessage(),
-                    'action'    => $e->actionName()
-                ];
-                $context->addError('transition.action.failed', $params, $e->errorCollection());
-
-                return false;
-            }
-        }
-
-        return $success && !$context->getErrorCollection()->hasErrors();
-    }
+    public function getPermission():? Permission;
 }
