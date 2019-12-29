@@ -17,6 +17,10 @@ Changelog
  - Call Transition#execute in AbstractTransitionHandler
  - Use Item#releaseRecordedStateChanges in RepositoryBasedTransitionHandler to store all state changes
 
+### Fixed
+
+ - Handle case that Transition#getStepTo is null
+
 [2.0.2] (2019-12-05) 
 
 ### Fixed

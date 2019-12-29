@@ -16,6 +16,7 @@ namespace Netzmacht\Workflow\Flow;
 
 use DateTimeImmutable;
 use Netzmacht\Workflow\Data\EntityId;
+use Netzmacht\Workflow\Flow\Exception\FlowException;
 
 /**
  * Class State stores information of a current state of an entity.
@@ -133,6 +134,8 @@ class State
      * @param bool       $success    Success state.
      *
      * @return State
+     *
+     * @throws FlowException When transition has no target step.
      */
     public static function start(
         EntityId $entityId,
@@ -140,11 +143,19 @@ class State
         Context $context,
         $success
     ) {
+        $stepTo = $transition->getStepTo();
+
+        if ($stepTo === null) {
+            throw new FlowException(
+                sprintf('Failed to start workflow. Transition "%s" has no target step', $transition->getName())
+            );
+        }
+
         $state = new State(
             $entityId,
             $transition->getWorkflow()->getName(),
             $transition->getName(),
-            $transition->getStepTo()->getName(),
+            $stepTo->getName(),
             $success,
             $context->getProperties()->toArray(),
             new \DateTimeImmutable(),
@@ -258,12 +269,25 @@ class State
         Context $context,
         bool $success = true
     ): State {
-        $dateTime = new DateTimeImmutable();
-        $stepName = $success ? $transition->getStepTo()->getName() : $this->stepName;
+        $dateTime     = new DateTimeImmutable();
+        $stepName     = $this->stepName;
+        $workflowName = $this->workflowName;
+
+        if ($success) {
+            $stepTo = $transition->getStepTo();
+            if ($stepTo === null) {
+                throw new FlowException(
+                    sprintf('Failed to transit state. Transition "%s" has no target step', $transition->getName())
+                );
+            }
+
+            $workflowName = $transition->getWorkflow()->getName();
+            $stepName     = $stepTo->getName();
+        }
 
         return new static(
             $this->entityId,
-            $this->workflowName,
+            $workflowName,
             $transition->getName(),
             $stepName,
             $success,
