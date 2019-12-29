@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow;
 
+use Netzmacht\Workflow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Condition\Transition\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
@@ -78,13 +79,13 @@ class Transition extends Base
     /**
      * Transition constructor.
      *
-     * @param string   $name     Name of the element.
-     * @param Workflow $workflow The workflow to which the transition belongs.
-     * @param Step     $stepTo   The target step.
-     * @param string   $label    Label of the element.
-     * @param array    $config   Configuration values.
+     * @param string    $name     Name of the element.
+     * @param Workflow  $workflow The workflow to which the transition belongs.
+     * @param Step|null $stepTo   The target step.
+     * @param string    $label    Label of the element.
+     * @param array     $config   Configuration values.
      */
-    public function __construct(string $name, Workflow $workflow, Step $stepTo, string $label = '', array $config = [])
+    public function __construct(string $name, Workflow $workflow, ?Step $stepTo, string $label = '', array $config = [])
     {
         parent::__construct($name, $label, $config);
 
@@ -260,6 +261,35 @@ class Transition extends Base
     }
 
     /**
+     * Execute the transition to the next state.
+     *
+     * @param Item    $item    Workflow item.
+     * @param Context $context Transition context.
+     *
+     * @return State
+     *
+     * @throws WorkflowException when transition fails.
+     */
+    public function execute(Item $item, Context $context): State
+    {
+        $success = $this->doExecuteActions($item, $context, $this->actions);
+
+        if ($this->getStepTo()) {
+            if ($item->isWorkflowStarted()) {
+                $item->transit($this, $context, $success);
+            } else {
+                $item->start($this, $context, $success);
+            }
+        }
+
+        $this->doExecuteActions($item, $context, $this->postActions);
+
+        // State might has changed by actions so use item
+
+        return $item->getLatestStateOccurred();
+    }
+
+    /**
      * Consider if transition is allowed.
      *
      * @param Item    $item    The Item.
@@ -368,9 +398,18 @@ class Transition extends Base
      * @param Context $context The transition context.
      *
      * @return bool
+     *
+     * @deprecated Deprecated since 2.1.0 and will be removed in version 3.0 Use Transition#execute instead.
      */
     public function executeActions(Item $item, Context $context): bool
     {
+        // @codingStandardsIgnoreStart
+        @trigger_error(
+            __METHOD__ . ' is deprecated. Use execute().',
+            E_USER_DEPRECATED
+        );
+        // @codingStandardsIgnoreEnd
+
         return $this->doExecuteActions($item, $context, $this->actions);
     }
 
@@ -381,9 +420,18 @@ class Transition extends Base
      * @param Context $context The transition context.
      *
      * @return bool
+     *
+     * @deprecated Deprecated since 2.1.0 and will be removed in version 3.0 Use Transition#execute instead.
      */
     public function executePostActions(Item $item, Context $context): bool
     {
+        // @codingStandardsIgnoreStart
+        @trigger_error(
+            __METHOD__ . ' is deprecated. Use execute().',
+            E_USER_DEPRECATED
+        );
+        // @codingStandardsIgnoreEnd
+
         return $this->doExecuteActions($item, $context, $this->postActions);
     }
 

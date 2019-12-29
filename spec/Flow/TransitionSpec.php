@@ -19,6 +19,7 @@ use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Security\Permission;
+use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
@@ -334,6 +335,45 @@ class TransitionSpec extends ObjectBehavior
         $this->addPreCondition($preCondition);
 
         $this->isAvailable($item, $context, $errorCollection)->shouldReturn(true);
+    }
+
+    function it_executes(
+        Item $item,
+        Context $context,
+        ErrorCollection $errorCollection,
+        Action $action,
+        Action $postAction,
+        State $state
+    ) : void {
+        $this->addAction($action);
+        $this->addPostAction($postAction);
+
+        $context->getErrorCollection()
+            ->shouldBeCalled()
+            ->willReturn($errorCollection);
+
+        $errorCollection->hasErrors()
+            ->shouldBeCalled()
+            ->willReturn(false);
+
+        $item->isWorkflowStarted()
+            ->shouldBeCalled()
+            ->willReturn(true);
+
+        $item->getLatestStateOccurred()
+            ->shouldBeCalledOnce()
+            ->willReturn($state);
+
+        $action->transit($this->getWrappedObject(), $item, $context)
+            ->shouldBeCalledOnce();
+
+        $postAction->transit($this->getWrappedObject(), $item, $context)
+            ->shouldBeCalledOnce();
+
+        $item->transit(Argument::type(Transition::class), $context, true)
+            ->shouldBeCalledOnce();
+
+        $this->execute($item, $context)->shouldReturn($state);
     }
 
     function it_executes_actions(
