@@ -18,6 +18,7 @@ use Netzmacht\Workflow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Condition\Transition\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
+use Netzmacht\Workflow\Flow\Exception\FlowException;
 use Netzmacht\Workflow\Flow\Security\Permission;
 
 /**
@@ -272,7 +273,8 @@ class Transition extends Base
      */
     public function execute(Item $item, Context $context): State
     {
-        $success = $this->doExecuteActions($item, $context, $this->actions);
+        $currentState = $item->getLatestStateOccurred();
+        $success      = $this->doExecuteActions($item, $context, $this->actions);
 
         if ($this->getStepTo()) {
             if ($item->isWorkflowStarted()) {
@@ -284,7 +286,11 @@ class Transition extends Base
 
         $this->doExecuteActions($item, $context, $this->postActions);
 
-        // State might has changed by actions so use item
+        if ($this->getStepTo() === null && $currentState === $item->getLatestStateOccurred()) {
+            throw new FlowException(
+                sprintf('No state changes within the transition "%s"', $this->getName())
+            );
+        }
 
         return $item->getLatestStateOccurred();
     }

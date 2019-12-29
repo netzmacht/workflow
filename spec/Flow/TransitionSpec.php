@@ -361,7 +361,7 @@ class TransitionSpec extends ObjectBehavior
             ->willReturn(true);
 
         $item->getLatestStateOccurred()
-            ->shouldBeCalledOnce()
+            ->shouldBeCalled()
             ->willReturn($state);
 
         $action->transit($this->getWrappedObject(), $item, $context)
