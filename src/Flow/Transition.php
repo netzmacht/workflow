@@ -269,8 +269,7 @@ class Transition extends Base
      *
      * @return State
      *
-     * @throws WorkflowException When item transition fails.
-     * @throws FlowException     When transition fails.
+     * @throws FlowException When transition fails.
      */
     public function execute(Item $item, Context $context): State
     {

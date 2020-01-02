@@ -263,6 +263,8 @@ class State
      * @param bool       $success    The success state.
      *
      * @return State
+     *
+     * @throws FlowException When transition fails.
      */
     public function transit(
         Transition $transition,
