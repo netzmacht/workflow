@@ -66,7 +66,7 @@ Example
 You may have a look at the [examples](https://github.com/netzmacht/workflow/tree/develop/example).
 
 A concrete implementation is available as integration for CMS Contao 
-[netzmacht/contao-workflow](https:github.com/netzmacht/contao-workflow).
+[netzmacht/contao-workflow](https://github.com/netzmacht/contao-workflow).
 
 Credits
 -------
