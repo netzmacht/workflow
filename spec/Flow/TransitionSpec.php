@@ -5,6 +5,7 @@
  *
  * @package    workflow
  * @author     David Molineus <david.molineus@netzmacht.de>
+ * @author     Erik Wegner <E_Wegner@web.de>
  * @copyright  2014-2017 netzmacht David Molineus
  * @license    LGPL 3.0 https://github.com/netzmacht/workflow
  * @filesource
@@ -23,6 +24,7 @@ use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
+use Netzmacht\Workflow\Testing\TransitionBuilder;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -337,6 +339,62 @@ class TransitionSpec extends ObjectBehavior
         $this->isAvailable($item, $context, $errorCollection)->shouldReturn(true);
     }
 
+    function it_can_have_conditional_transitions(
+        Transition $transition1,
+        Transition $transition2
+    ) {
+        $this->addConditionalTransition($transition1);
+        $this->addConditionalTransition($transition2);
+
+        $this->getConditionalTransition()->shouldBe([$transition1, $transition2]);
+    }
+
+    function it_checks_every_conditional_transition_for_match(
+        Item $item,
+        Context $context,
+        ErrorCollection $errorCollection,
+        State $state,
+        Workflow $workflow,
+        Step $step
+    ) {
+        $context->getErrorCollection()
+            ->shouldBeCalled()
+            ->willReturn($errorCollection);
+        $errorCollection->hasErrors()
+            ->shouldBeCalled()
+            ->willReturn(false);
+        $item->isWorkflowStarted()
+            ->shouldBeCalled()
+            ->willReturn(true);
+        $item->getLatestStateOccurred()
+            ->shouldBeCalled()
+            ->willReturn($state);
+        $item->transit(Argument::type(Transition::class), $context, true)
+            ->shouldBeCalledOnce();
+
+        $this->beConstructedWith(static::NAME, $workflow, null);
+
+        $transition1 = TransitionBuilder::begin($this->getWrappedObject())
+            ->isNotAllowed()->build();
+        $transition2 = TransitionBuilder::begin($this->getWrappedObject())
+            ->isNotAllowed()->build();
+        $transition3 = TransitionBuilder::begin($this->getWrappedObject())
+            ->isAllowed()->withStepTo($step->getWrappedObject())->build();
+        $transition4 = TransitionBuilder::begin($this->getWrappedObject())
+            ->isAllowed()->build();
+
+        $this->addConditionalTransition($transition1);
+        $this->addConditionalTransition($transition2);
+        $this->addConditionalTransition($transition3);
+
+        $this->execute($item, $context);
+
+        $transition1->isAllowedShouldHaveBeenCalledTimes(1);
+        $transition2->isAllowedShouldHaveBeenCalledTimes(1);
+        $transition3->isAllowedShouldHaveBeenCalledTimes(1);
+        $transition4->isAllowedShouldHaveBeenCalledTimes(0);
+    }
+
     function it_executes(
         Item $item,
         Context $context,
@@ -476,5 +534,3 @@ class TransitionSpec extends ObjectBehavior
         };
     }
 }
-
-
