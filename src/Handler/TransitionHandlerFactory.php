@@ -17,6 +17,7 @@ namespace Netzmacht\Workflow\Handler;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
+use Netzmacht\Workflow\Manager\WorkflowManager;
 
 /**
  * Interface TransitionHandlerFactory describes factory for the workflow transition handler.
@@ -33,6 +34,7 @@ interface TransitionHandlerFactory
      * @param string|null     $transitionName  Transition name.
      * @param string          $providerName    Provider name.
      * @param StateRepository $stateRepository The state repository.
+     * @param WorkflowManager $workflowManager The workflow manager.
      *
      * @return TransitionHandler
      */
@@ -41,6 +43,7 @@ interface TransitionHandlerFactory
         Workflow $workflow,
         ?string $transitionName,
         string $providerName,
-        StateRepository $stateRepository
+        StateRepository $stateRepository,
+        WorkflowManager $workflowManager
     ): TransitionHandler;
 }

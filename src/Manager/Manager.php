@@ -32,9 +32,9 @@ use Netzmacht\Workflow\Handler\TransitionHandler;
 interface Manager
 {
     /**
-     * Handle a workflow transition of an entity will createRepository a transition handler.
+     * Create a TransitionHandler for the given item.
      *
-     * If no matching workflow definition is found null will be returned.
+     * If no matching workflow definition is found, null will be returned.
      *
      * @param Item   $item           The current workflow item.
      * @param string $transitionName Transition name, required if workflow has already started.

@@ -22,6 +22,7 @@ use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Handler\TransitionHandler;
 use Netzmacht\Workflow\Handler\TransitionHandlerFactory;
+use Netzmacht\Workflow\Manager\WorkflowManager;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -153,7 +154,8 @@ class WorkflowManagerSpec extends ObjectBehavior
             $workflow,
             Argument::any(),
             static::ENTITY_PROVIDER_NAME,
-            $stateRepository
+            $stateRepository,
+            Argument::any()
         )->willReturn($transitionHandler);
 
         $this->handle($item)->shouldReturn($transitionHandler);
@@ -189,7 +191,8 @@ class WorkflowManagerSpec extends ObjectBehavior
             $workflow,
             Argument::any(),
             static::ENTITY_PROVIDER_NAME,
-            $stateRepository
+            $stateRepository,
+            Argument::any()
         )
             ->willReturn($transitionHandler);
 

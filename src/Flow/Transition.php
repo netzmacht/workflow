@@ -319,6 +319,7 @@ class Transition extends Base
      * @return State
      *
      * @throws FlowException When transition fails.
+     * @throws WorkflowException If workflow is not started.
      */
     public function execute(Item $item, Context $context): State
     {
@@ -335,13 +336,19 @@ class Transition extends Base
 
         $this->doExecuteActions($item, $context, $this->postActions);
 
-        if ($this->getStepTo() === null && $currentState === $item->getLatestStateOccurred()) {
+        $stepTo = $this->getStepTo();
+        if ($stepTo === null && $currentState === $item->getLatestStateOccurred()) {
             throw new FlowException(
                 sprintf('No state changes within the transition "%s"', $this->getName())
             );
         }
 
-        return $item->getLatestStateOccurred();
+        $state = $item->getLatestStateOccurred();
+        if ($stepTo != null && $stepTo->getTriggerWorkflow() != null) {
+            $state->setTriggeredWorkflowName($stepTo->getTriggerWorkflow());
+        }
+
+        return $state;
     }
 
     /**

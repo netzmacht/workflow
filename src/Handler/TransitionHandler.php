@@ -106,4 +106,6 @@ interface TransitionHandler
      * @return State
      */
     public function transit(): State;
+
+    public function setTransactionHandlerFactory(TransitionHandlerFactory $factory): void;
 }

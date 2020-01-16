@@ -27,7 +27,7 @@ use Netzmacht\Workflow\Handler\TransitionHandlerFactory;
 /**
  * Class Manager handles a set of workflows.
  *
- * Usually there will a different workflow manager for different workflow types. The manager is the API entry point
+ * Usually there are different workflow managers for different workflow types. The manager is the API entry point
  * when using the workflow API.
  *
  * @package Netzmacht\Workflow
@@ -96,7 +96,8 @@ class WorkflowManager implements Manager
             $workflow,
             $transitionName,
             $item->getEntityId()->getProviderName(),
-            $this->stateRepository
+            $this->stateRepository,
+            $this
         );
 
         return $handler;

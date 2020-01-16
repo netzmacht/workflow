@@ -19,7 +19,7 @@ use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Exception\FlowException;
 
 /**
- * Class State stores information of a current state of an entity.
+ * Class State stores information of the current state of an entity.
  *
  * @package Netzmacht\Workflow\Flow
  */
@@ -87,6 +87,13 @@ class State
      * @var string
      */
     private $workflowName;
+
+    /**
+     * Name of another workflow that has been triggered.
+     *
+     * @var string|null
+     */
+    private $triggeredWorkflowName;
 
     /**
      * Construct.
@@ -256,6 +263,26 @@ class State
     }
 
     /**
+     * Gets the name of the workflow that starts at this stage.
+     *
+     * @return string|null
+     */
+    public function getTriggeredWorkflowName(): ?string
+    {
+        return $this->triggeredWorkflowName;
+    }
+
+    /**
+     * Sets the name of the workflow that starts at this stage.
+     *
+     * @param string|null $triggeredWorkflowName
+     */
+    public function setTriggeredWorkflowName(?string $triggeredWorkflowName): void
+    {
+        $this->triggeredWorkflowName = $triggeredWorkflowName;
+    }
+
+    /**
      * Transit to a new state.
      *
      * @param Transition $transition The transition being performed.
@@ -265,6 +292,7 @@ class State
      * @return State
      *
      * @throws FlowException When transition fails.
+     * @throws \Exception
      */
     public function transit(
         Transition $transition,

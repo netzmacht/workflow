@@ -38,6 +38,14 @@ class Step extends Base
     private $final = false;
 
     /**
+     * Can be set to the id of another workflow that starts when
+     * this step has been reached.
+     *
+     * @var string|null
+     */
+    private $triggerWorkflow;
+
+    /**
      * Assigned permission.
      *
      * @var Permission|null
@@ -51,7 +59,7 @@ class Step extends Base
      */
     public function isFinal(): bool
     {
-        return $this->final;
+        return $this->final || $this->triggerWorkflow > 0;
     }
 
     /**
@@ -64,6 +72,30 @@ class Step extends Base
     public function setFinal(bool $final): self
     {
         $this->final = $final;
+
+        return $this;
+    }
+
+    /**
+     * Gets the id of another workflow that should start when this step has been reached.
+     *
+     * @return string|null
+     */
+    public function getTriggerWorkflow(): ?string
+    {
+        return $this->triggerWorkflow;
+    }
+
+    /**
+     * Sets the id of another workflow that should start when this step has been reached.
+     *
+     * @param string $triggerWorkflow
+     *
+     * @return $this
+     */
+    public function setTriggerWorkflow(string $triggerWorkflow): self
+    {
+        $this->triggerWorkflow = $triggerWorkflow;
 
         return $this;
     }

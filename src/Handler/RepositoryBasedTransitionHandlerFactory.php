@@ -18,6 +18,7 @@ use Netzmacht\Workflow\Data\EntityManager;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
+use Netzmacht\Workflow\Manager\WorkflowManager;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 
 /**
@@ -63,24 +64,30 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
      * @param string|null     $transitionName  Transition name.
      * @param string          $providerName    Provider name.
      * @param StateRepository $stateRepository The state repository.
+     * @param WorkflowManager $workflowManager The workflow manager.
      *
      * @return TransitionHandler
+     * @throws \Netzmacht\Workflow\Exception\WorkflowException
      */
     public function createTransitionHandler(
         Item $item,
         Workflow $workflow,
         ?string $transitionName,
         string $providerName,
-        StateRepository $stateRepository
+        StateRepository $stateRepository,
+        WorkflowManager $workflowManager
     ): TransitionHandler {
-        return new RepositoryBasedTransitionHandler(
+        $h = new RepositoryBasedTransitionHandler(
             $item,
             $workflow,
             $transitionName,
             $this->entityManager->getRepository($providerName),
             $stateRepository,
-            $this->transactionHandler
+            $this->transactionHandler,
+            $workflowManager
         );
+        $h->setTransactionHandlerFactory($this);
+        return $h;
     }
 
     /**
@@ -92,6 +99,7 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
     {
         return $this->entityManager;
     }
+
     /**
      * Get the transaction handler.
      *

@@ -21,6 +21,7 @@ use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
+use Netzmacht\Workflow\Manager\WorkflowManager;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -52,7 +53,8 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         TransactionHandler $transactionHandler,
         Step $step,
         Transition $transition,
-        State $state
+        State $state,
+        WorkflowManager $workflowManager
     ) {
         $this->entityId = EntityId::fromProviderNameAndId('entity', '2');
 
@@ -79,7 +81,8 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             static::TRANSITION_NAME,
             $entityRepository,
             $stateRepository,
-            $transactionHandler
+            $transactionHandler,
+            $workflowManager
         );
     }
 
@@ -99,7 +102,8 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
         TransactionHandler $transactionHandler,
-        Transition $transition
+        Transition $transition,
+        WorkflowManager $workflowManager
     ) {
         $this->beConstructedWith(
             $item,
@@ -107,7 +111,8 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             null,
             $entityRepository,
             $stateRepository,
-            $transactionHandler
+            $transactionHandler,
+            $workflowManager
         );
 
         $item->isWorkflowStarted()->willReturn(false);
@@ -147,7 +152,8 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         Workflow $workflow,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
-        TransactionHandler $transactionHandler
+        TransactionHandler $transactionHandler,
+        WorkflowManager $workflowManager
     ) {
         $this->beConstructedWith(
             $item,
@@ -155,7 +161,8 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             null,
             $entityRepository,
             $stateRepository,
-            $transactionHandler
+            $transactionHandler,
+            $workflowManager
         );
 
         $item->isWorkflowStarted()->willReturn(false);
@@ -174,7 +181,8 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         Workflow $workflow,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
-        TransactionHandler $transactionHandler
+        TransactionHandler $transactionHandler,
+        WorkflowManager $workflowManager
     ) {
         $this->beConstructedWith(
             $item,
@@ -182,7 +190,8 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             null,
             $entityRepository,
             $stateRepository,
-            $transactionHandler
+            $transactionHandler,
+            $workflowManager
         );
 
         $item->isWorkflowStarted()->willReturn(false);

@@ -101,4 +101,12 @@ class StepSpec extends ObjectBehavior
         $this->hasPermission($permission)->shouldReturn(true);
         $this->getPermission()->shouldReturn($permission);
     }
+
+    function it_is_a_final_step_when_another_workflow_should_start()
+    {
+        $this->setTriggerWorkflow("17");
+        $this->setFinal(false);
+
+        $this->isFinal()->shouldBe(true);
+    }
 }
