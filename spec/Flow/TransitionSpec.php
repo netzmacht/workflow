@@ -13,6 +13,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow;
 
+use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Action;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Context;
@@ -24,6 +25,7 @@ use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
+use Netzmacht\Workflow\Testing\ActionBuilder;
 use Netzmacht\Workflow\Testing\TransitionBuilder;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -511,6 +513,40 @@ class TransitionSpec extends ObjectBehavior
     {
         $this->getPermission()->shouldReturn(null);
         $this->hasPermission($permission)->shouldReturn(false);
+    }
+
+    function it_can_transit_to_step_through_postaction(
+        Item $item,
+        Context $context,
+        State $state1,
+        State $state2
+    )
+    {
+        // Arrange
+        $entityId = EntityId::fromProviderNameAndId('phpspec', 'postactionitem1');
+        $stepname = 'postActionTargetStep';
+        $transitionName = 'postActionTransition';
+        $postaction = ActionBuilder::begin()
+            ->transitToNewStepWithName($stepname)
+            ->withTransitionName($transitionName)
+            ->build();
+
+        $this->addPostAction($postaction);
+        $context->getErrorCollection()->willReturn(new ErrorCollection());
+        $item->isWorkflowStarted()->willReturn(true);
+        $item->getLatestStateOccurred()->willReturn($state1);
+        $item->getLatestState()->willReturn($state1);
+        $item->transit($this->getWrappedObject(), $context, true)->willReturn($state2);
+        $item->getEntityId()->willReturn($entityId);
+        $item->getWorkflowName()->willReturn('phpspec-workflow1');
+
+        // Act
+        $resultState = $this->execute($item, $context);
+
+        // Assert
+        $resultState->isSuccessful()->shouldBe(true);
+        $resultState->getStepName()->shouldBe($stepname);
+        $resultState->getTransitionName()->shouldBe($transitionName);
     }
 
     private function throwingAction(): Action
