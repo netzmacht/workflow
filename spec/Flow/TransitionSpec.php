@@ -515,38 +515,35 @@ class TransitionSpec extends ObjectBehavior
         $this->hasPermission($permission)->shouldReturn(false);
     }
 
-    function it_can_transit_to_step_through_postaction(
-        Item $item,
-        Context $context,
-        State $state1,
-        State $state2
-    )
+    function it_can_transit_to_step_through_postaction()
     {
         // Arrange
         $entityId = EntityId::fromProviderNameAndId('phpspec', 'postactionitem1');
+        $workflow = new Workflow('it_can_transit_to_step_through_postaction', 'phpspec');
         $stepname = 'postActionTargetStep';
+        $step = new Step($stepname);
         $transitionName = 'postActionTransition';
+        $conditionalTransition = new Transition($transitionName, $workflow, $step);
         $postaction = ActionBuilder::begin()
-            ->transitToNewStepWithName($stepname)
-            ->withTransitionName($transitionName)
+            ->onTransit(function (Transition $transition, Item $item, Context $context) use ($conditionalTransition) {
+                $conditionalTransition->execute($item, $context);
+            })
             ->build();
 
-        $this->addPostAction($postaction);
-        $context->getErrorCollection()->willReturn(new ErrorCollection());
-        $item->isWorkflowStarted()->willReturn(true);
-        $item->getLatestStateOccurred()->willReturn($state1);
-        $item->getLatestState()->willReturn($state1);
-        $item->transit($this->getWrappedObject(), $context, true)->willReturn($state2);
-        $item->getEntityId()->willReturn($entityId);
-        $item->getWorkflowName()->willReturn('phpspec-workflow1');
+        $originState = new State($entityId, 'workflow', 'previous transition', 'previous step', true, [],new \DateTimeImmutable());
+        $item = Item::reconstitute($entityId, $entityId, [$originState]);
+        $sut = new Transition('basic', $workflow, new Step('previous step'));
+
+        $sut->addPostAction($postaction);
+        $context = new Context();
 
         // Act
-        $resultState = $this->execute($item, $context);
+        $postTransitionState = $sut->execute($item, $context);
 
         // Assert
-        $resultState->isSuccessful()->shouldBe(true);
-        $resultState->getStepName()->shouldBe($stepname);
-        $resultState->getTransitionName()->shouldBe($transitionName);
+        expect($postTransitionState->isSuccessful())->toBe(true);
+        expect($postTransitionState->getTransitionName())->toBe($transitionName);
+        expect($postTransitionState->getStepName())->toBe($stepname);
     }
 
     private function throwingAction(): Action
