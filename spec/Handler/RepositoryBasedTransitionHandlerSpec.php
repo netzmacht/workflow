@@ -285,41 +285,4 @@ class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
         $this->isAvailable()->shouldReturn(true);
     }
-
-    // function it_can_transit_to_step_through_postaction(
-    //     Item $item,
-    //     State $state,
-    //     Transition $transition
-    // )
-    // {
-    //     // Arrange
-    //     $stepname = 'postActionTargetStep';
-    //     $transitionName = 'postActionTransition';
-    //     $postaction = ActionBuilder::begin()
-    //         ->transitToNewStepWithName($stepname)
-    //         ->withTransitionName($transitionName)
-    //         ->build();
-
-    //     $transition->getStepTo()->willReturn(null);
-    //     $transition->checkPreCondition($item, Argument::type(Context::class))
-    //         ->willReturn(true);
-    //     $transition->validate($item, Argument::type(Context::class))
-    //         ->willReturn(true);
-    //     $transition->checkCondition($item, Argument::type(Context::class))
-    //         ->willReturn(true);
-    //     $transition->execute($item, Argument::type(Context::class))
-    //         ->willReturn($state);
-    //     $item->releaseRecordedStateChanges()
-    //         ->willReturn([$state]);
-    //     $transition->getPostActions()->willReturn([$postaction]);
-
-    //     // Act
-    //     $this->validate();
-    //     $resultState = $this->transit();
-
-    //     // Assert
-    //     $resultState->isSuccessful()->shouldBe(true);
-    //     $resultState->getStepName()->shouldBe($stepname);
-    //     $resultState->getTransitionName()->shouldBe($transitionName);
-    // }
 }

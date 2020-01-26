@@ -79,27 +79,6 @@ class Transition extends Base
     private $workflow;
 
     /**
-     * An array of conditional transition.
-     *
-     * @var Transition[]
-     */
-    private $conditional_transitions = [];
-
-    /**
-     * Contains the selected conditional transition.
-     *
-     * @var Transition|null
-     */
-    private $selected_conditional_transition = null;
-
-    /**
-     * Value is set to true, when a conditional transition has been selected.
-     *
-     * @var bool
-     */
-    private $conditional_transition_has_been_chosen = false;
-
-    /**
      * Transition constructor.
      *
      * @param string    $name     Name of the element.
@@ -177,39 +156,12 @@ class Transition extends Base
     }
 
     /**
-     * Add an conditional transition to the transition.
-     *
-     * @param Transition $transition The conditional transition.
-     *
-     * @return $this
-     */
-    public function addConditionalTransition(Transition $transition): self
-    {
-        $this->conditional_transitions[] = $transition;
-
-        return $this;
-    }
-
-    /**
-     * Get all conditional transitions.
-     *
-     * @return Transition[]|iterable
-     */
-    public function getConditionalTransition(): iterable
-    {
-        return $this->conditional_transitions;
-    }
-
-    /**
      * Get the target step.
      *
      * @return Step
      */
     public function getStepTo():? Step
     {
-        if ($this->conditional_transition_has_been_chosen) {
-            return $this->selected_conditional_transition->getStepTo();
-        }
         return $this->stepTo;
     }
 
@@ -542,32 +494,8 @@ class Transition extends Base
 
                 return false;
             }
-
-            $this->tryGetSelectedConditionalTransition($item, $context);
         }
 
         return $success && !$context->getErrorCollection()->hasErrors();
-    }
-
-    private function tryGetSelectedConditionalTransition(Item $item, Context $context) : ?Transition
-    {
-        if ($this->conditional_transition_has_been_chosen === false) {
-            if (count($this->conditional_transitions) > 0) {
-                $cont = true;
-                $index = 0; $maxindex = count($this->conditional_transitions);
-                while ($cont) {
-                    $conditional_transition = $this->conditional_transitions[$index];
-                    if ($conditional_transition->isAllowed($item, $context)) {
-                        $this->conditional_transition_has_been_chosen = true;
-                        $cont = false;
-                        $this->selected_conditional_transition = $conditional_transition;
-                    }
-                    $index++;
-                    $cont = $cont && $index < $maxindex;
-                }
-            }
-        }
-
-        return $this->selected_conditional_transition;
     }
 }
