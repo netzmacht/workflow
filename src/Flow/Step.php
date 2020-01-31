@@ -93,7 +93,7 @@ class Step extends Base
      *
      * @return $this
      */
-    public function setTriggerWorkflow(string $triggerWorkflow): self
+    public function setTriggerWorkflow(?string $triggerWorkflow): self
     {
         $this->triggerWorkflow = $triggerWorkflow;
 

@@ -87,12 +87,10 @@ class WorkflowManager implements Manager
 
         $workflow = $this->getWorkflow($item->getEntityId(), $entity);
 
-        $handler = $this->createTransitionHandler($workflow, $item, $transitionName, $changeWorkflow)
+        $handler = $this->createTransitionHandler($workflow, $item, $transitionName, $changeWorkflow);
 
         return $handler;
     }
-
-
 
     /**
      * {@inheritdoc}

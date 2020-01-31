@@ -140,9 +140,6 @@ $transitionHandler = new class($stateRepository) extends AbstractTransitionHandl
 
         return $state;
     }
-
-    public function setTransactionHandlerFactory(TransitionHandlerFactory $factory): void
-    { }
 };
 
 $transitionHandlerFactory = new class($transitionHandler) implements TransitionHandlerFactory {
@@ -161,8 +158,7 @@ $transitionHandlerFactory = new class($transitionHandler) implements TransitionH
         Workflow $workflow,
         ?string $transitionName,
         string $providerName,
-        StateRepository $stateRepository,
-        WorkflowManager $workflowManager
+        StateRepository $stateRepository
     ): TransitionHandler {
         return $this->transitionHandler;
     }

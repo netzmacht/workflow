@@ -39,8 +39,8 @@ class ChangeWorkflowTransitionHandler implements TransitionHandler
     /** @var TransitionHandler */
     private $transitionHandler;
 
-    /** @var TransitionHandler|null */
-    private $nextWorkflowTransitionHandler;
+    /** @var bool */
+    private $executeWorkflowTransition;
 
     /** @var Manager */
     private $workflowManager;
@@ -54,16 +54,7 @@ class ChangeWorkflowTransitionHandler implements TransitionHandler
         $this->workflowManager = $workflowManager;
         $this->expectedStepTo = $transitionHandler->getTransition()->getStepTo();
 
-        if ($this->expectedStepTo && $this->expectedStepTo->getTriggerWorkflow() != $this->getWorkflow()->getName()) {
-            $workflow = $workflowManager->getWorkflowByName($this->expectedStepTo->getTriggerWorkflow());
-
-            $this->nextWorkflowTransitionHandler = $this->workflowManager->createTransitionHandler(
-                $workflow,
-                $this->getItem(),
-                $workflow->getStartTransition(),
-                true
-            );
-        }
+        $this->executeWorkflowTransition = ($this->expectedStepTo && $this->expectedStepTo->getTriggerWorkflow());
     }
 
     public function getWorkflow(): Workflow
@@ -138,7 +129,7 @@ class ChangeWorkflowTransitionHandler implements TransitionHandler
     {
         $state = $this->transitionHandler->transit();
 
-        if (!$state->isSuccessful() || !$this->nextWorkflowTransitionHandler) {
+        if (!$state->isSuccessful() || !$this->executeWorkflowTransition) {
             return $state;
         }
 
@@ -146,6 +137,15 @@ class ChangeWorkflowTransitionHandler implements TransitionHandler
             throw new FlowException('Unexpected step reached');
         }
 
-        return $this->nextWorkflowTransitionHandler->transit();
+        $workflow = $this->workflowManager->getWorkflowByName('workflow_' . $this->expectedStepTo->getTriggerWorkflow());
+
+        $nextWorkflowTransitionHandler = $this->workflowManager->createTransitionHandler(
+            $workflow,
+            $this->getItem(),
+            $workflow->getStartTransition()->getName(),
+            true
+        );
+
+        return $nextWorkflowTransitionHandler->transit();
     }
 }

@@ -47,20 +47,6 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
     private $stateRepository;
 
     /**
-     * The transition handler factory
-     *
-     * @var TransitionHandlerFactory
-     */
-    private $transitionHandlerFactory;
-
-    /**
-     * The workflow manager to access other workflows.
-     *
-     * @var WorkflowManager
-     */
-    private $workflowManager;
-
-    /**
      * Construct.
      *
      * @param Item               $item               The item.
@@ -69,7 +55,6 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
      * @param EntityRepository   $entityRepository   EntityRepository which stores changes.
      * @param StateRepository    $stateRepository    StateRepository which stores new states.
      * @param TransactionHandler $transactionHandler TransactionHandler take care of transactions.
-     * @param WorkflowManager    $workflowManager    The workflow manager to access other workflows.
      */
     public function __construct(
         Item $item,
@@ -77,14 +62,12 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
         ?string $transitionName,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
-        TransactionHandler $transactionHandler,
-        WorkflowManager $workflowManager
+        TransactionHandler $transactionHandler
     ) {
         parent::__construct($item, $workflow, $transitionName, $transactionHandler);
         
         $this->entityRepository = $entityRepository;
         $this->stateRepository  = $stateRepository;
-        $this->workflowManager = $workflowManager;
     }
 
     /**
@@ -106,26 +89,6 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
             }
 
             $this->entityRepository->add($this->getItem()->getEntity());
-
-            if ($state->getTriggeredWorkflowName() != null) {
-                $this->getItem()->detach();
-                $newWorkflow = $this->workflowManager->getWorkflowByName($state->getTriggeredWorkflowName());
-                $manager = new WorkflowManager($this->transitionHandlerFactory, $this->stateRepository, [$newWorkflow]);
-                $handler = $manager->handle($this->getItem());
-                if ($handler) {
-                    $payload = [];
-                    $handler->getRequiredPayloadProperties();
-
-                    // We have to validate the handler first. All conditions are checked.
-                    if ($handler->validate($payload)) {
-                        // Finally let's transit to the next state.
-                        $state = $handler->transit();
-                    } else {
-                        $errors = $handler->getContext()->getErrorCollection();
-                        // Display the errors.
-                    }
-                }
-            }
         } catch (\Exception $e) {
             $this->transactionHandler->rollback();
 
@@ -135,10 +98,5 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
         $this->transactionHandler->commit();
 
         return $state;
-    }
-
-    public function setTransactionHandlerFactory(TransitionHandlerFactory $factory): void
-    {
-        $this->transitionHandlerFactory = $factory;
     }
 }
