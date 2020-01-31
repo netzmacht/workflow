@@ -87,21 +87,12 @@ class WorkflowManager implements Manager
 
         $workflow = $this->getWorkflow($item->getEntityId(), $entity);
 
-        if ($this->hasWorkflowChanged($item, $workflow, !$changeWorkflow) && $changeWorkflow) {
-            $item->detach();
-        }
-
-        $handler = $this->handlerFactory->createTransitionHandler(
-            $item,
-            $workflow,
-            $transitionName,
-            $item->getEntityId()->getProviderName(),
-            $this->stateRepository,
-            $this
-        );
+        $handler = $this->createTransitionHandler($workflow, $item, $transitionName, $changeWorkflow)
 
         return $handler;
     }
+
+
 
     /**
      * {@inheritdoc}
@@ -214,5 +205,29 @@ class WorkflowManager implements Manager
         }
 
         return false;
+    }
+
+    /**
+     * @param Workflow $workflow
+     * @param Item $item
+     * @param string $transitionName
+     * @param bool $changeWorkflow
+     * @return TransitionHandler
+     */
+    public function createTransitionHandler(Workflow $workflow, Item $item, string $transitionName, bool $changeWorkflow): TransitionHandler
+    {
+        if ($this->hasWorkflowChanged($item, $workflow, !$changeWorkflow) && $changeWorkflow) {
+            $item->detach();
+        }
+
+        $handler = $this->handlerFactory->createTransitionHandler(
+            $item,
+            $workflow,
+            $transitionName,
+            $item->getEntityId()->getProviderName(),
+            $this->stateRepository,
+            $this
+        );
+        return $handler;
     }
 }

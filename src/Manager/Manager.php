@@ -47,6 +47,19 @@ interface Manager
     public function handle(Item $item, string $transitionName = null, bool $changeWorkflow = false): ?TransitionHandler;
 
     /**
+     * Create a TransitionHandler for the given item and workflow.
+     *
+     * If no matching workflow definition is found, null will be returned.
+     *
+     * @param Workflow $workflow     The desired workflow.
+     * @param Item $item             The current workflow item.
+     * @param string $transitionName Transition name, required if workflow has already started.
+     * @param bool $changeWorkflow   If true the item is detached from current workflow if another workflow is used.
+     * @return TransitionHandler
+     */
+    public function createTransitionHandler(Workflow $workflow, Item $item, string $transitionName, bool $changeWorkflow): TransitionHandler;
+
+    /**
      * Add a workflow to the manager.
      *
      * @param Workflow $workflow The workflow being added.

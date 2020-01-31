@@ -77,7 +77,7 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
         StateRepository $stateRepository,
         WorkflowManager $workflowManager
     ): TransitionHandler {
-        $h = new RepositoryBasedTransitionHandler(
+        $repositoryBasedTransitionHandler = new RepositoryBasedTransitionHandler(
             $item,
             $workflow,
             $transitionName,
@@ -86,8 +86,8 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
             $this->transactionHandler,
             $workflowManager
         );
-        $h->setTransactionHandlerFactory($this);
-        return $h;
+        $changeWorkflowTransitionHandler = new ChangeWorkflowTransitionHandler($workflowManager, $repositoryBasedTransitionHandler);
+        return $changeWorkflowTransitionHandler;
     }
 
     /**
