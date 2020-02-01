@@ -85,7 +85,7 @@ class WorkflowManager implements Manager
             return null;
         }
 
-        $workflow = $this->getWorkflow($item->getEntityId(), $entity);
+        $workflow = $this->getWorkflowByItem($item);
 
         $handler = $this->createTransitionHandler($workflow, $item, $transitionName, $changeWorkflow);
 
@@ -139,6 +139,10 @@ class WorkflowManager implements Manager
      */
     public function getWorkflowByItem(Item $item): Workflow
     {
+        if ($item->isWorkflowStarted()) {
+            return $this->getWorkflowByName($item->getWorkflowName());
+        }
+
         return $this->getWorkflow($item->getEntityId(), $item->getEntity());
     }
 

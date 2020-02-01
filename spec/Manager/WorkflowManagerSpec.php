@@ -69,10 +69,35 @@ class WorkflowManagerSpec extends ObjectBehavior
 
         $item->getEntityId()->willReturn($entityId);
         $item->getEntity()->willReturn(static::$entity);
+        $item->isWorkflowStarted()->willReturn(false);
 
         $workflow->supports($entityId, static::$entity)->willReturn(true);
 
         $this->getWorkflowByItem($item)->shouldReturn($workflow);
+    }
+
+    function it_gets_running_workflow_by_item(
+        Workflow $workflow,
+        Workflow $workflow2,
+        Item $item
+    )
+    {
+        $workflow2Name = 'second available workflow';
+        $workflow2->getName()->willReturn($workflow2Name);
+
+        $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
+
+        $item->getEntityId()->willReturn($entityId);
+        $item->getEntity()->willReturn(static::$entity);
+        $item->isWorkflowStarted()->willReturn(true);
+        $item->getWorkflowName()->wilLReturn($workflow2Name);
+
+        $workflow->supports($entityId, static::$entity)->willReturn(true);
+        $workflow2->supports($entityId, static::$entity)->willReturn(true);
+
+        $this->addWorkflow($workflow2);
+
+        $this->getWorkflowByItem($item)->shouldReturn($workflow2);
     }
 
     function it_adds_workflow(Workflow $anotherWorkflow)

@@ -84,27 +84,20 @@ class ChangeWorkflowTransitionHandler implements TransitionHandler
 
     public function getRequiredPayloadProperties(): array
     {
-        if (!$this->nextWorkflowTransitionHandler) {
-            return $this->transitionHandler->getRequiredPayloadProperties();
+        // TODO: handle $nextWorkflowTransitionHandler->getRequiredPayloadProperties
+        if ($this->executeWorkflowTransition) {
         }
 
-        return array_merge(
-            $this->transitionHandler->getRequiredPayloadProperties(),
-            $this->nextWorkflowTransitionHandler->getRequiredPayloadProperties()
-        );
+        return $this->transitionHandler->getRequiredPayloadProperties();
     }
 
     public function isAvailable(): bool
     {
-        if (! $this->transitionHandler->isAvailable()) {
-            return false;
+        // TODO: handle $nextWorkflowTransitionHandler->getRequiredPayloadProperties
+        if ($this->executeWorkflowTransition) {
         }
 
-        if ($this->nextWorkflowTransitionHandler) {
-            return $this->nextWorkflowTransitionHandler->isAvailable();
-        }
-
-        return true;
+        return $this->transitionHandler->isAvailable();
     }
 
     public function getContext(): Context
@@ -114,15 +107,12 @@ class ChangeWorkflowTransitionHandler implements TransitionHandler
 
     public function validate(array $payload = []): bool
     {
-        if (!$this->transitionHandler->validate($payload)) {
-            return false;
+        // TODO: handle $nextWorkflowTransitionHandler->getRequiredPayloadProperties
+        if ($this->executeWorkflowTransition) {
+
         }
 
-        if ($this->nextWorkflowTransitionHandler) {
-            return $this->nextWorkflowTransitionHandler->validate($payload);
-        }
-
-        return true;
+        return $this->transitionHandler->validate($payload);
     }
 
     public function transit(): State
@@ -145,6 +135,8 @@ class ChangeWorkflowTransitionHandler implements TransitionHandler
             $workflow->getStartTransition()->getName(),
             true
         );
+
+        $nextWorkflowTransitionHandler->validate();
 
         return $nextWorkflowTransitionHandler->transit();
     }
