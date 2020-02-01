@@ -17,6 +17,7 @@ use Netzmacht\Workflow\Data\EntityRepository;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
+use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Manager\WorkflowManager;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 use PhpSpec\ObjectBehavior;
@@ -56,12 +57,15 @@ class RepositoryBasedTransitionHandlerFactorySpec extends ObjectBehavior
         StateRepository $stateRepository,
         EntityManager $entityManager,
         EntityRepository $entityRepository,
-        WorkflowManager $workflowManager
+        WorkflowManager $workflowManager,
+        Transition $startTransition
     ) {
         $entityManager->getRepository('test')->willReturn($entityRepository);
 
         $item->isWorkflowStarted()->willReturn(false);
         $item->getEntity()->willReturn(static::$entity);
+
+        $workflow->getStartTransition()->willReturn($startTransition);
 
         $this->createTransitionHandler(
             $item,
@@ -71,6 +75,6 @@ class RepositoryBasedTransitionHandlerFactorySpec extends ObjectBehavior
             $stateRepository,
             $workflowManager
         )
-            ->shouldHaveType('Netzmacht\Workflow\Handler\RepositoryBasedTransitionHandler');
+            ->shouldHaveType('Netzmacht\Workflow\Handler\ChangeWorkflowTransitionHandler');
     }
 }

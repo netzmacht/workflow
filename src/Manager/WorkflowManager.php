@@ -212,7 +212,7 @@ class WorkflowManager implements Manager
      * @param bool $changeWorkflow
      * @return TransitionHandler
      */
-    public function createTransitionHandler(Workflow $workflow, Item $item, string $transitionName, bool $changeWorkflow): TransitionHandler
+    public function createTransitionHandler(Workflow $workflow, Item $item, string $transitionName = null, bool $changeWorkflow = false): TransitionHandler
     {
         if ($this->hasWorkflowChanged($item, $workflow, !$changeWorkflow) && $changeWorkflow) {
             $item->detach();
