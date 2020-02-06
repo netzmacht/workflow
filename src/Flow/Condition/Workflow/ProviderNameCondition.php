@@ -57,9 +57,9 @@ class ProviderNameCondition implements Condition
     public function match(Workflow $workflow, EntityId $entityId, $entity): bool
     {
         if ($this->providerName) {
-            return $entityId->getProviderName() == $this->providerName;
+            return $entityId->getProviderName() === $this->providerName;
         }
 
-        return $entityId->getProviderName() == $workflow->getProviderName();
+        return $entityId->getProviderName() === $workflow->getProviderName();
     }
 }
