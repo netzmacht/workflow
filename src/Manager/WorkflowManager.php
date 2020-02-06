@@ -149,6 +149,10 @@ class WorkflowManager implements Manager
      */
     public function getWorkflowByItem(Item $item): Workflow
     {
+        if ($item->getWorkflowName()) {
+            return $this->getWorkflowByName($item->getWorkflowName());
+        }
+
         return $this->getWorkflow($item->getEntityId(), $item->getEntity());
     }
 
