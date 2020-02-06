@@ -17,6 +17,8 @@ Changelog
  - Deprecate executeActions and executePostActions of Transition
  - Call Transition#execute in AbstractTransitionHandler
  - Use Item#releaseRecordedStateChanges in RepositoryBasedTransitionHandler to store all state changes
+ - Transition#validate also validates post actions
+ - Transition#getRequiredPayloadProperties also recognize options of post actions
 
 ### Fixed
 

@@ -14,12 +14,13 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow;
 
-use Netzmacht\Workflow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Condition\Transition\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
 use Netzmacht\Workflow\Flow\Exception\FlowException;
 use Netzmacht\Workflow\Flow\Security\Permission;
+use function array_map;
+use function array_merge;
 
 /**
  * Class Transition handles the transition from a step to another.
@@ -234,10 +235,16 @@ class Transition extends Base
 
         return array_merge(
             ... array_map(
-                function (Action $action) use ($item) {
+                static function (Action $action) use ($item) {
                     return $action->getRequiredPayloadProperties($item);
                 },
                 $this->actions
+            ),
+            ... array_map(
+                static function (Action $action) use ($item) {
+                    return $action->getRequiredPayloadProperties($item);
+                },
+                $this->postActions
             )
         );
     }
@@ -255,6 +262,10 @@ class Transition extends Base
         $validated = true;
 
         foreach ($this->actions as $action) {
+            $validated = $validated && $action->validate($item, $context);
+        }
+
+        foreach ($this->postActions as $action) {
             $validated = $validated && $action->validate($item, $context);
         }
 
