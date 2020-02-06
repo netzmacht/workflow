@@ -9,6 +9,7 @@ Changelog
 
  - Add method execute to Transition
  - Item tracks state changes which can be released by Item#releaseRecordedStateChanges
+ - Step contains the workflow name
 
 ### Changed
 
