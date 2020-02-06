@@ -85,7 +85,7 @@ class WorkflowManager implements Manager
             return null;
         }
 
-        $workflow = $this->getWorkflow($item->getEntityId(), $entity);
+        $workflow = $this->getWorkflowByItem($item);
 
         if ($this->hasWorkflowChanged($item, $workflow, !$changeWorkflow) && $changeWorkflow) {
             $item->detach();
