@@ -108,6 +108,7 @@ class ItemSpec extends ObjectBehavior
     ) {
         $workflow->getName()->willReturn('workflow');
         $step->getName()->willReturn('step');
+        $step->getWorkflowName()->willReturn('workflow');
 
         $transition->getWorkflow()->willReturn($workflow);
         $transition->getName()->willReturn('transition_name');
@@ -179,6 +180,9 @@ class ItemSpec extends ObjectBehavior
 
         $stepTo->getName()
             ->willReturn('step_to');
+
+        $stepTo->getWorkflowName()
+            ->willReturn('workflow');
 
         $context->getErrorCollection()
             ->willReturn($errorCollection);

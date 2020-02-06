@@ -151,9 +151,10 @@ class State
             );
         }
 
-        $state = new State(
+        $workflowName = $stepTo->getWorkflowName() ?: $transition->getWorkflow()->getName();
+        $state        = new State(
             $entityId,
-            $transition->getWorkflow()->getName(),
+            $workflowName,
             $transition->getName(),
             $stepTo->getName(),
             $success,
@@ -283,7 +284,7 @@ class State
                 );
             }
 
-            $workflowName = $transition->getWorkflow()->getName();
+            $workflowName = $stepTo->getWorkflowName() ?: $transition->getWorkflow()->getName();
             $stepName     = $stepTo->getName();
         }
 

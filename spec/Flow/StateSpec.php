@@ -189,8 +189,50 @@ class StateSpec extends ObjectBehavior
         ErrorCollection $errorCollection,
         Properties $properties
     ) {
-        $workflow->getName()->willReturn(self::WORKFLOW_NAME);
+        $workflow
+            ->getName()
+            ->shouldNotBeCalled();
+
         $stepTo->getName()->willReturn(self::STEP_TO);
+        $stepTo->getWorkflowName()->willReturn(self::WORKFLOW_NAME);
+
+        $transition->getWorkflow()->willReturn($workflow);
+        $transition->getStepTo()->willReturn($stepTo);
+
+        $transition->getName()
+            ->willReturn('transition');
+
+        $context->getProperties()
+            ->willReturn($properties);
+
+        $properties->toArray()
+            ->willReturn([]);
+
+        $context->getErrorCollection()
+            ->willReturn($errorCollection);
+
+        $errorCollection->getErrors()
+            ->willReturn([]);
+
+        $this->transit($transition, $context, true)
+            ->shouldBeAnInstanceOf(State::class);
+    }
+
+    function it_fallbacks_to_transition_workflow_name_if_step_doesnt_contain_the_name(
+        Workflow $workflow,
+        Transition $transition,
+        Step $stepTo,
+        Context $context,
+        ErrorCollection $errorCollection,
+        Properties $properties
+    ) {
+        $workflow
+            ->getName()
+            ->shouldBeCalled()
+            ->willReturn(self::WORKFLOW_NAME);
+
+        $stepTo->getName()->willReturn(self::STEP_TO);
+        $stepTo->getWorkflowName()->willReturn(null);
 
         $transition->getWorkflow()->willReturn($workflow);
         $transition->getStepTo()->willReturn($stepTo);
