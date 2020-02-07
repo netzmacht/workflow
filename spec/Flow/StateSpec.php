@@ -12,6 +12,7 @@
 
 namespace spec\Netzmacht\Workflow\Flow;
 
+use DateTimeImmutable;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Context\ErrorCollection;
@@ -30,10 +31,11 @@ use PhpSpec\ObjectBehavior;
  */
 class StateSpec extends ObjectBehavior
 {
-    const WORKFLOW_NAME = 'workflow_name';
-    const TRANSITION_NAME = 'transition_name';
-    const STEP_TO = 'step_to';
-    const STATE_ID = 121;
+    private const WORKFLOW_NAME = 'workflow_name';
+    private const TARGET_WORKFLOW_NAME = 'workflow_name_target';
+    private const TRANSITION_NAME = 'transition_name';
+    private const STEP_TO = 'step_to';
+    private const STATE_ID = 121;
 
     private static $data = [
         'foo' => true,
@@ -60,7 +62,8 @@ class StateSpec extends ObjectBehavior
             static::$data,
             $dateTime,
             static::$errors,
-            static::STATE_ID
+            static::STATE_ID,
+            self::TARGET_WORKFLOW_NAME
         );
     }
 
@@ -102,6 +105,74 @@ class StateSpec extends ObjectBehavior
     function it_has_an_id()
     {
         $this->getStateId()->shouldReturn(static::STATE_ID);
+    }
+
+    function it_knows_start_workflow_name()
+    {
+        $this->getStartWorkflowName()->shouldReturn(static::WORKFLOW_NAME);
+    }
+
+    function it_knows_target_workflow_name()
+    {
+        $this->getTargetWorkflowName()->shouldReturn(static::TARGET_WORKFLOW_NAME);
+    }
+
+    function it_knows_workflow_name()
+    {
+        $this->getWorkflowName()->shouldReturn(static::TARGET_WORKFLOW_NAME);
+    }
+
+    function it_uses_start_workflow_as_target_workflow_if_target_workflow_is_not_set()
+    {
+        $this->beConstructedWith(
+            $this->entityId,
+            static::WORKFLOW_NAME,
+            static::TRANSITION_NAME,
+            static::STEP_TO,
+            true,
+            static::$data,
+            new DateTimeImmutable(),
+            static::$errors,
+            static::STATE_ID
+        );
+
+        $this->getTargetWorkflowName()->shouldReturn(static::WORKFLOW_NAME);
+    }
+
+    function it_uses_start_workflow_as_current_workflow_for_not_successful_states()
+    {
+        $this->beConstructedWith(
+            $this->entityId,
+            static::WORKFLOW_NAME,
+            static::TRANSITION_NAME,
+            static::STEP_TO,
+            false,
+            static::$data,
+            new DateTimeImmutable(),
+            static::$errors,
+            static::STATE_ID,
+            static::TARGET_WORKFLOW_NAME
+        );
+
+        $this->getWorkflowName()->shouldReturn(static::WORKFLOW_NAME);
+    }
+
+    function it_uses_target_workflow_as_current_workflow_for_successful_states()
+    {
+        $this->beConstructedWith(
+            $this->entityId,
+            static::WORKFLOW_NAME,
+            static::TRANSITION_NAME,
+            static::STEP_TO,
+            true,
+            static::$data,
+            new DateTimeImmutable(),
+            static::$errors,
+            static::STATE_ID,
+            static::TARGET_WORKFLOW_NAME
+        );
+
+        $this->getWorkflowName()->shouldReturn(static::TARGET_WORKFLOW_NAME);
     }
 
     function it_constructs_with_start(

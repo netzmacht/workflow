@@ -10,7 +10,8 @@ Changelog
  - Add method execute to Transition
  - Item tracks state changes which can be released by Item#releaseRecordedStateChanges
  - Step contains the workflow name
-
+ - State supports different workflow name for start and target states
+__
 ### Changed
 
  - Transition can be initialized without a target step

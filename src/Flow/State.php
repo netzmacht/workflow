@@ -82,47 +82,57 @@ class State
     private $errors;
 
     /**
-     * Name of the workflow.
+     * Name of start workflow.
      *
      * @var string
      */
-    private $workflowName;
+    private $startWorkflowName;
+
+    /**
+     * Name of the target workflow.
+     *
+     * @var string
+     */
+    private $targetWorkflowName;
 
     /**
      * Construct.
      *
-     * @param EntityId          $entityId       The entity id.
-     * @param string            $workflowName   Workflow name.
-     * @param string            $transitionName The transition executed to reach the step.
-     * @param string            $stepToName     The step reached after transition.
-     * @param bool              $successful     Consider if transition was successful.
-     * @param array             $data           Stored data.
-     * @param DateTimeImmutable $reachedAt      Time when state was reached.
-     * @param array             $errors         List of errors.
-     * @param int               $stateId        The state id of a persisted state.
+     * @param EntityId          $entityId           The entity id.
+     * @param string            $startWorkflowName  Workflow name of the start point.
+     * @param string            $transitionName     The transition executed to reach the step.
+     * @param string            $stepToName         The step reached after transition.
+     * @param bool              $successful         Consider if transition was successful.
+     * @param array             $data               Stored data.
+     * @param DateTimeImmutable $reachedAt          Time when state was reached.
+     * @param array             $errors             List of errors.
+     * @param int               $stateId            The state id of a persisted state.
+     * @param string|null       $targetWorkflowName Workflow name of the target point. Allow null for BC reasons.
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         EntityId $entityId,
-        string $workflowName,
+        string $startWorkflowName,
         string $transitionName,
         string $stepToName,
         bool $successful,
         array $data,
         DateTimeImmutable $reachedAt,
         array $errors = array(),
-        int $stateId = null
+        int $stateId = null,
+        ?string $targetWorkflowName = null
     ) {
-        $this->entityId       = $entityId;
-        $this->workflowName   = $workflowName;
-        $this->transitionName = $transitionName;
-        $this->stepName       = $stepToName;
-        $this->successful     = $successful;
-        $this->data           = $data;
-        $this->reachedAt      = $reachedAt;
-        $this->errors         = $errors;
-        $this->stateId        = $stateId;
+        $this->entityId           = $entityId;
+        $this->startWorkflowName  = $startWorkflowName;
+        $this->transitionName     = $transitionName;
+        $this->stepName           = $stepToName;
+        $this->successful         = $successful;
+        $this->data               = $data;
+        $this->reachedAt          = $reachedAt;
+        $this->errors             = $errors;
+        $this->stateId            = $stateId;
+        $this->targetWorkflowName = $targetWorkflowName ?: $startWorkflowName;
     }
 
     /**
@@ -160,7 +170,9 @@ class State
             $success,
             $context->getProperties()->toArray(),
             new \DateTimeImmutable(),
-            $context->getErrorCollection()->toArray()
+            $context->getErrorCollection()->toArray(),
+            null,
+            $workflowName
         );
 
         return $state;
@@ -187,13 +199,39 @@ class State
     }
 
     /**
-     * Get the workflow name.
+     * Get the current workflow name.
+     *
+     * If the state transition was successful the target workflow name is returned, otherwise the start workflow name.
      *
      * @return string
      */
     public function getWorkflowName(): string
     {
-        return $this->workflowName;
+        if ($this->isSuccessful()) {
+            return $this->getTargetWorkflowName();
+        }
+
+        return $this->getStartWorkflowName();
+    }
+
+    /**
+     * Get start workflow name.
+     *
+     * @return string
+     */
+    public function getStartWorkflowName(): string
+    {
+        return $this->startWorkflowName;
+    }
+
+    /**
+     * Get target workflow name.
+     *
+     * @return string
+     */
+    public function getTargetWorkflowName(): string
+    {
+        return $this->targetWorkflowName;
     }
 
     /**
@@ -272,9 +310,10 @@ class State
         Context $context,
         bool $success = true
     ): State {
-        $dateTime     = new DateTimeImmutable();
-        $stepName     = $this->stepName;
-        $workflowName = $this->workflowName;
+        $dateTime           = new DateTimeImmutable();
+        $stepName           = $this->stepName;
+        $workflowName       = $this->getWorkflowName();
+        $targetWorkflowName = $workflowName;
 
         if ($success) {
             $stepTo = $transition->getStepTo();
@@ -284,8 +323,8 @@ class State
                 );
             }
 
-            $workflowName = $stepTo->getWorkflowName() ?: $transition->getWorkflow()->getName();
-            $stepName     = $stepTo->getName();
+            $targetWorkflowName = $stepTo->getWorkflowName() ?: $transition->getWorkflow()->getName();
+            $stepName           = $stepTo->getName();
         }
 
         return new static(
@@ -296,7 +335,9 @@ class State
             $success,
             $context->getProperties()->toArray(),
             $dateTime,
-            $context->getErrorCollection()->getErrors()
+            $context->getErrorCollection()->getErrors(),
+            null,
+            $targetWorkflowName
         );
     }
 }
