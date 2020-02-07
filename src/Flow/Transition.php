@@ -235,15 +235,19 @@ class Transition extends Base
 
         return array_merge(
             ... array_map(
+                // @codingStandardsIgnoreStart - Static functions not supported yet :-(
                 static function (Action $action) use ($item) {
                     return $action->getRequiredPayloadProperties($item);
                 },
+                // @codingStandardsIgnoreStop
                 $this->actions
             ),
             ... array_map(
+                // @codingStandardsIgnoreStart - Static functions not supported yet :-(
                 static function (Action $action) use ($item) {
                     return $action->getRequiredPayloadProperties($item);
                 },
+                // @codingStandardsIgnoreStop
                 $this->postActions
             )
         );
