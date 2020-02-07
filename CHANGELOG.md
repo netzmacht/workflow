@@ -5,6 +5,30 @@ Changelog
 [Unreleased]
 ------------
 
+[2.1.0] (2020-02-07)
+
+### Added
+
+ - Add method execute to Transition
+ - Item tracks state changes which can be released by Item#releaseRecordedStateChanges
+ - Step contains the workflow name
+ - State supports different workflow name for start and target states
+
+### Changed
+
+ - Transition can be initialized without a target step
+ - Deprecate executeActions and executePostActions of Transition
+ - Call Transition#execute in AbstractTransitionHandler
+ - Use Item#releaseRecordedStateChanges in RepositoryBasedTransitionHandler to store all state changes
+ - Transition#validate also validates post actions
+ - Transition#getRequiredPayloadProperties also recognize options of post actions
+
+### Fixed
+
+ - Handle case that Transition#getStepTo is null
+
+[2.0.2] (2019-12-05) 
+
 ### Fixed
 
  - Fix initial value of item state
@@ -50,7 +74,9 @@ Changelog
  - Utilize phpcq/all-tasks.
 
 
-[Unreleased]:  https://github.com/netzmacht/workfow/compare/2.0.1...hotfix/2.0.2
+[Unreleased]:  https://github.com/netzmacht/workfow/compare/master...develop
+[2.1.0]:       https://github.com/netzmacht/workfow/compare/2.0.2...2.1.0
+[2.0.2]:       https://github.com/netzmacht/workfow/compare/2.0.1...2.0.2
 [2.0.1]:       https://github.com/netzmacht/workfow/compare/2.0.0...2.0.1
 [2.0.0]:       https://github.com/netzmacht/workfow/compare/2.0.0-beta1...2.0.0
 [2.0.0-beta1]: https://github.com/netzmacht/workfow/compare/1.0.0-beta2...2.0.0-beta1

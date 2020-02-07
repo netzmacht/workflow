@@ -17,7 +17,10 @@ namespace Netzmacht\Workflow\Flow;
 use Netzmacht\Workflow\Flow\Condition\Transition\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
+use Netzmacht\Workflow\Flow\Exception\FlowException;
 use Netzmacht\Workflow\Flow\Security\Permission;
+use function array_map;
+use function array_merge;
 
 /**
  * Class Transition handles the transition from a step to another.
@@ -78,13 +81,13 @@ class Transition extends Base
     /**
      * Transition constructor.
      *
-     * @param string   $name     Name of the element.
-     * @param Workflow $workflow The workflow to which the transition belongs.
-     * @param Step     $stepTo   The target step.
-     * @param string   $label    Label of the element.
-     * @param array    $config   Configuration values.
+     * @param string    $name     Name of the element.
+     * @param Workflow  $workflow The workflow to which the transition belongs.
+     * @param Step|null $stepTo   The target step.
+     * @param string    $label    Label of the element.
+     * @param array     $config   Configuration values.
      */
-    public function __construct(string $name, Workflow $workflow, Step $stepTo, string $label = '', array $config = [])
+    public function __construct(string $name, Workflow $workflow, ?Step $stepTo, string $label = '', array $config = [])
     {
         parent::__construct($name, $label, $config);
 
@@ -232,10 +235,20 @@ class Transition extends Base
 
         return array_merge(
             ... array_map(
-                function (Action $action) use ($item) {
+                // @codingStandardsIgnoreStart - Static functions not supported yet :-(
+                static function (Action $action) use ($item) {
                     return $action->getRequiredPayloadProperties($item);
                 },
+                // @codingStandardsIgnoreStop
                 $this->actions
+            ),
+            ... array_map(
+                // @codingStandardsIgnoreStart - Static functions not supported yet :-(
+                static function (Action $action) use ($item) {
+                    return $action->getRequiredPayloadProperties($item);
+                },
+                // @codingStandardsIgnoreStop
+                $this->postActions
             )
         );
     }
@@ -256,7 +269,45 @@ class Transition extends Base
             $validated = $validated && $action->validate($item, $context);
         }
 
+        foreach ($this->postActions as $action) {
+            $validated = $validated && $action->validate($item, $context);
+        }
+
         return $validated;
+    }
+
+    /**
+     * Execute the transition to the next state.
+     *
+     * @param Item    $item    Workflow item.
+     * @param Context $context Transition context.
+     *
+     * @return State
+     *
+     * @throws FlowException When transition fails.
+     */
+    public function execute(Item $item, Context $context): State
+    {
+        $currentState = $item->getLatestStateOccurred();
+        $success      = $this->doExecuteActions($item, $context, $this->actions);
+
+        if ($this->getStepTo()) {
+            if ($item->isWorkflowStarted()) {
+                $item->transit($this, $context, $success);
+            } else {
+                $item->start($this, $context, $success);
+            }
+        }
+
+        $this->doExecuteActions($item, $context, $this->postActions);
+
+        if ($this->getStepTo() === null && $currentState === $item->getLatestStateOccurred()) {
+            throw new FlowException(
+                sprintf('No state changes within the transition "%s"', $this->getName())
+            );
+        }
+
+        return $item->getLatestStateOccurred();
     }
 
     /**
@@ -368,9 +419,18 @@ class Transition extends Base
      * @param Context $context The transition context.
      *
      * @return bool
+     *
+     * @deprecated Deprecated since 2.1.0 and will be removed in version 3.0 Use Transition#execute instead.
      */
     public function executeActions(Item $item, Context $context): bool
     {
+        // @codingStandardsIgnoreStart
+        @trigger_error(
+            __METHOD__ . ' is deprecated. Use execute().',
+            E_USER_DEPRECATED
+        );
+        // @codingStandardsIgnoreEnd
+
         return $this->doExecuteActions($item, $context, $this->actions);
     }
 
@@ -381,9 +441,18 @@ class Transition extends Base
      * @param Context $context The transition context.
      *
      * @return bool
+     *
+     * @deprecated Deprecated since 2.1.0 and will be removed in version 3.0 Use Transition#execute instead.
      */
     public function executePostActions(Item $item, Context $context): bool
     {
+        // @codingStandardsIgnoreStart
+        @trigger_error(
+            __METHOD__ . ' is deprecated. Use execute().',
+            E_USER_DEPRECATED
+        );
+        // @codingStandardsIgnoreEnd
+
         return $this->doExecuteActions($item, $context, $this->postActions);
     }
 

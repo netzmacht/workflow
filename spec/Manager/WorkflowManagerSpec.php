@@ -66,6 +66,7 @@ class WorkflowManagerSpec extends ObjectBehavior
     {
         $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
 
+        $item->getWorkflowName()->willReturn('workflow_a');
         $item->getEntityId()->willReturn($entityId);
         $item->getEntity()->willReturn(static::$entity);
 
@@ -142,6 +143,7 @@ class WorkflowManagerSpec extends ObjectBehavior
     ) {
         $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
 
+        $item->getWorkflowName()->willReturn('workflow_a');
         $item->getEntityId()->willReturn($entityId);
         $item->getEntity()->willReturn(static::$entity);
         $item->isWorkflowStarted()->willReturn(false);

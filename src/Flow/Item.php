@@ -43,11 +43,18 @@ class Item
     private $currentStepName;
 
     /**
-     * State the items already had.
+     * State history which is already persisted.
      *
      * @var State[]
      */
     private $stateHistory = [];
+
+    /**
+     * Recorded state changes not persisted yet.
+     *
+     * @var State[]
+     */
+    private $recordedStateChanges = [];
 
     /**
      * Workflow entity.
@@ -132,7 +139,7 @@ class Item
         $this->guardNotStarted();
 
         $state = State::start($this->entityId, $transition, $context, $success);
-        $this->apply($state);
+        $this->record($state);
 
         return $state;
     }
@@ -158,9 +165,24 @@ class Item
         $state = $this->getLatestState();
         $state = $state->transit($transition, $context, $success);
 
-        $this->apply($state);
+        $this->record($state);
 
         return $state;
+    }
+
+    /**
+     * Release the recorded state changes.
+     *
+     * Reset the internal recorded state changes and return them.
+     *
+     * @return State[]|iterable
+     */
+    public function releaseRecordedStateChanges() : iterable
+    {
+        $recordedStates             = $this->recordedStateChanges;
+        $this->recordedStateChanges = [];
+
+        return $recordedStates;
     }
 
     /**
@@ -319,6 +341,19 @@ class Item
         if (!$this->isWorkflowStarted()) {
             throw new FlowException('Item has not started yet.');
         }
+    }
+
+    /**
+     * Record a new state change.
+     *
+     * @param State $state The state being assigned.
+     *
+     * @return void
+     */
+    private function record(State $state) : void
+    {
+        $this->recordedStateChanges[] = $state;
+        $this->apply($state);
     }
 
     /**

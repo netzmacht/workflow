@@ -24,10 +24,11 @@ class StepSpec extends ObjectBehavior
 {
     const NAME = 'test';
     const LABEL = 'label';
+    const WORKFLOW_NAME = 'workflow';
 
     function let()
     {
-        $this->beConstructedWith(self::NAME, self::LABEL);
+        $this->beConstructedWith(self::NAME, self::LABEL, [], self::WORKFLOW_NAME);
     }
 
     function it_is_initializable()
@@ -100,5 +101,17 @@ class StepSpec extends ObjectBehavior
         $this->setPermission($permission)->shouldReturn($this);
         $this->hasPermission($permission)->shouldReturn(true);
         $this->getPermission()->shouldReturn($permission);
+    }
+
+    function it_might_know_the_workflow_name(): void
+    {
+        $this->getWorkflowName()->shouldBe(self::WORKFLOW_NAME);
+    }
+
+    function it_migt_have_not_the_workflow_name(): void
+    {
+        $this->beConstructedWith(self::NAME, self::LABEL);
+
+        $this->getWorkflowName()->shouldBeNull();
     }
 }

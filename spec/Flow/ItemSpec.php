@@ -108,6 +108,7 @@ class ItemSpec extends ObjectBehavior
     ) {
         $workflow->getName()->willReturn('workflow');
         $step->getName()->willReturn('step');
+        $step->getWorkflowName()->willReturn('workflow');
 
         $transition->getWorkflow()->willReturn($workflow);
         $transition->getName()->willReturn('transition_name');
@@ -154,5 +155,60 @@ class ItemSpec extends ObjectBehavior
         $this->getLatestState(false)->shouldReturn($failedState);
         $this->getLatestSuccessfulState()->shouldReturn($state);
         $this->getLatestStateOccurred()->shouldReturn($failedState);
+    }
+
+    public function it_records_state_changes_and_release_them(
+        Transition $transition,
+        Workflow $workflow,
+        Step $stepTo,
+        Context $context,
+        ErrorCollection $errorCollection,
+        Properties $payload,
+        Properties $properties
+    ) : void {
+        $transition->getWorkflow()
+            ->willReturn($workflow);
+
+        $transition->getName()
+            ->willReturn('transition');
+
+        $transition->getStepTo()
+            ->willReturn($stepTo);
+
+        $workflow->getName()
+            ->willReturn('workflow');
+
+        $stepTo->getName()
+            ->willReturn('step_to');
+
+        $stepTo->getWorkflowName()
+            ->willReturn('workflow');
+
+        $context->getErrorCollection()
+            ->willReturn($errorCollection);
+
+        $properties->toArray()
+            ->willReturn([]);
+
+        $payload->toArray()
+            ->willReturn([]);
+
+        $context->getProperties()
+            ->willReturn($properties);
+
+        $context->getPayload()
+            ->willReturn($payload);
+
+        $errorCollection->toArray()
+            ->willReturn([]);
+
+        $errorCollection->getErrors()
+            ->willReturn([]);
+
+        $this->start($transition, $context, true);
+        $this->transit($transition, $context, true);
+
+        $this->releaseRecordedStateChanges()->shouldHaveCount(2);
+        $this->releaseRecordedStateChanges()->shouldHaveCount(0);
     }
 }

@@ -85,7 +85,7 @@ class WorkflowManager implements Manager
             return null;
         }
 
-        $workflow = $this->getWorkflow($item->getEntityId(), $entity);
+        $workflow = $this->getWorkflowByItem($item);
 
         if ($this->hasWorkflowChanged($item, $workflow, !$changeWorkflow) && $changeWorkflow) {
             $item->detach();
@@ -136,7 +136,7 @@ class WorkflowManager implements Manager
     public function getWorkflowByName(string $name): Workflow
     {
         foreach ($this->workflows as $workflow) {
-            if ($workflow->getName() == $name) {
+            if ($workflow->getName() === $name) {
                 return $workflow;
             }
         }
@@ -149,6 +149,14 @@ class WorkflowManager implements Manager
      */
     public function getWorkflowByItem(Item $item): Workflow
     {
+        if ($item->getWorkflowName()) {
+            $workflow = $this->getWorkflowByName($item->getWorkflowName());
+
+            if ($workflow->supports($item->getEntityId(), $item->getEntity())) {
+                return $workflow;
+            }
+        }
+
         return $this->getWorkflow($item->getEntityId(), $item->getEntity());
     }
 

@@ -151,11 +151,13 @@ class Workflow extends Base
             );
         }
 
-        return array_filter(
-            $transitions,
-            function (Transition $transition) use ($item, $context) {
-                return $transition->isAvailable($item, $context);
-            }
+        return array_values(
+            array_filter(
+                $transitions,
+                function (Transition $transition) use ($item, $context) {
+                    return $transition->isAvailable($item, $context);
+                }
+            )
         );
     }
 

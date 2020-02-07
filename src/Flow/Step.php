@@ -45,6 +45,30 @@ class Step extends Base
     private $permission;
 
     /**
+     * The workflow name.
+     *
+     * For BC reasons it might be null.
+     *
+     * @var string|null
+     */
+    private $workflowName;
+
+    /**
+     * Construct.
+     *
+     * @param string      $name         Name of the element.
+     * @param string      $label        Label of the element.
+     * @param array       $config       Configuration values.
+     * @param string|null $workflowName Name of the corresponding workflow. For BC reasons it might be null.
+     */
+    public function __construct(string $name, string $label = '', array $config = [], ?string $workflowName = null)
+    {
+        parent::__construct($name, $label, $config);
+
+        $this->workflowName = $workflowName;
+    }
+
+    /**
      * Consider if step is final.
      *
      * @return bool
@@ -82,6 +106,16 @@ class Step extends Base
         }
 
         return $this;
+    }
+
+    /**
+     * Get workflow name.
+     *
+     * @return string|null
+     */
+    public function getWorkflowName(): ?string
+    {
+        return $this->workflowName;
     }
 
     /**

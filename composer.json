@@ -22,12 +22,12 @@
     },
     "require-dev": {
         "phpcq/all-tasks": "^1.2",
-        "phpspec/phpspec": "~5.0"
+        "phpspec/phpspec": "~5.0 || ~6.0"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0.x-dev",
-            "dev-develop": "2.1.x-dev"
+            "dev-master": "2.1.x-dev",
+            "dev-develop": "2.2.x-dev"
         }
     },
     "autoload": {

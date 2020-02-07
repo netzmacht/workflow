@@ -85,7 +85,10 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
         try {
             $state = $this->executeTransition();
 
-            $this->stateRepository->add($state);
+            foreach ($this->getItem()->releaseRecordedStateChanges() as $state) {
+                $this->stateRepository->add($state);
+            }
+
             $this->entityRepository->add($this->getItem()->getEntity());
         } catch (\Exception $e) {
             $this->transactionHandler->rollback();

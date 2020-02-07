@@ -207,18 +207,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
      */
     protected function executeTransition(): State
     {
-        $transition = $this->getTransition();
-        $success    = $transition->executeActions($this->item, $this->context);
-
-        if ($this->isWorkflowStarted()) {
-            $state = $this->getItem()->transit($transition, $this->context, $success);
-        } else {
-            $state = $this->getItem()->start($transition, $this->context, $success);
-        }
-
-        $transition->executePostActions($this->item, $this->context);
-
-        return $state;
+        return $this->getTransition()->execute($this->item, $this->context);
     }
 
     /**
