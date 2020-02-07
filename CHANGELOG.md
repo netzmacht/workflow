@@ -11,7 +11,7 @@ Changelog
  - Item tracks state changes which can be released by Item#releaseRecordedStateChanges
  - Step contains the workflow name
  - State supports different workflow name for start and target states
-__
+
 ### Changed
 
  - Transition can be initialized without a target step
@@ -20,7 +20,6 @@ __
  - Use Item#releaseRecordedStateChanges in RepositoryBasedTransitionHandler to store all state changes
  - Transition#validate also validates post actions
  - Transition#getRequiredPayloadProperties also recognize options of post actions
- - WorkflowManager#getWorkflowByItem will always return current workflow if given
 
 ### Fixed
 
