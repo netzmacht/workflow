@@ -23,7 +23,6 @@ use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Handler\TransitionHandler;
 use Netzmacht\Workflow\Handler\TransitionHandlerFactory;
-use function array_map;
 
 /**
  * Class Manager handles a set of workflows.
@@ -150,11 +149,13 @@ class WorkflowManager implements Manager
      */
     public function getWorkflowByItem(Item $item): Workflow
     {
-// @codingStandardsIgnoreStart - Static functions not supported yet :-(
-//        if ($item->getWorkflowName()) {
-//            return $this->getWorkflowByName($item->getWorkflowName());
-//        }
-// @codingStandardsIgnoreStop
+        if ($item->getWorkflowName()) {
+            $workflow = $this->getWorkflowByName($item->getWorkflowName());
+
+            if ($workflow->supports($item->getEntityId(), $item->getEntity())) {
+                return $workflow;
+            }
+        }
 
         return $this->getWorkflow($item->getEntityId(), $item->getEntity());
     }
