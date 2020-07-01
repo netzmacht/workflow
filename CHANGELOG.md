@@ -5,7 +5,15 @@ Changelog
 [Unreleased]
 ------------
 
+[2.1.1] (2020-07-01)
+--------------------
+
+### Fixed
+
+ - Pass raw error array to the state
+
 [2.1.0] (2020-02-07)
+--------------------
 
 ### Added
 
@@ -28,6 +36,7 @@ Changelog
  - Handle case that Transition#getStepTo is null
 
 [2.0.2] (2019-12-05) 
+--------------------
 
 ### Fixed
 

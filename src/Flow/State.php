@@ -327,15 +327,17 @@ class State
             $stepName           = $stepTo->getName();
         }
 
+        $properties = $context->getProperties();
+
         return new static(
             $this->entityId,
             $workflowName,
             $transition->getName(),
             $stepName,
             $success,
-            $context->getProperties()->toArray(),
+            $properties ? $properties->toArray() : [],
             $dateTime,
-            $context->getErrorCollection()->getErrors(),
+            $context->getErrorCollection()->toArray(),
             null,
             $targetWorkflowName
         );

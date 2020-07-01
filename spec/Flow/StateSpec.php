@@ -282,7 +282,7 @@ class StateSpec extends ObjectBehavior
         $context->getErrorCollection()
             ->willReturn($errorCollection);
 
-        $errorCollection->getErrors()
+        $errorCollection->toArray()
             ->willReturn([]);
 
         $this->transit($transition, $context, true)
@@ -320,7 +320,7 @@ class StateSpec extends ObjectBehavior
         $context->getErrorCollection()
             ->willReturn($errorCollection);
 
-        $errorCollection->getErrors()
+        $errorCollection->toArray()
             ->willReturn([]);
 
         $this->transit($transition, $context, true)
