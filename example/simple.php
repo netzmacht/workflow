@@ -59,18 +59,22 @@ $createTransition = new Transition('create', $workflow, $createdStep);
 $editTransition   = new Transition('edit', $workflow, $editedStep);
 $deleteTransition = new Transition('deleted', $workflow, $deletedStep);
 
+$workflow->addTransition($createTransition);
+$workflow->addTransition($editTransition);
+$workflow->addTransition($deleteTransition);
+
 // Now let's define which transition is available after a step
 $createdStep
-    ->allowTransition($editTransition)
-    ->allowTransition($deleteTransition);
+    ->allowTransition($editTransition->getName())
+    ->allowTransition($deleteTransition->getName());
 
 // Circular transitions are allowed (edit -> edited -> edit)
 $editedStep
-    ->allowTransition($editTransition)
-    ->allowTransition($deleteTransition);
+    ->allowTransition($editTransition->getName())
+    ->allowTransition($deleteTransition->getName());
 
 // The workflow has get a start transition. This transition has be called at first.
-$workflow->setStartTransition($createTransition);
+$workflow->setStartTransition($createTransition->getName());
 
 /*
  * Our workflow is defined. One thing, it's missing. We want to require that the delete transition is confirmed.
