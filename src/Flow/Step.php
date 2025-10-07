@@ -1,67 +1,53 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow;
 
 use Netzmacht\Workflow\Flow\Security\Permission;
 
+use function array_search;
+use function array_values;
+use function in_array;
+
 /**
  * Class Step defines fixed step in the workflow process.
- *
- * @package Netzmacht\Workflow\Flow
  */
 class Step extends Base
 {
     /**
      * The allowed transition names.
      *
-     * @var array
+     * @var list<string>
      */
-    private $allowedTransitions = array();
+    private array $allowedTransitions = [];
 
     /**
      * Step is a final step.
-     *
-     * @var bool
      */
-    private $final = false;
+    private bool $final = false;
 
     /**
      * Assigned permission.
-     *
-     * @var Permission|null
      */
-    private $permission;
+    private Permission|null $permission = null;
 
     /**
      * The workflow name.
      *
      * For BC reasons it might be null.
-     *
-     * @var string|null
      */
-    private $workflowName;
+    private string|null $workflowName;
 
     /**
      * Construct.
      *
-     * @param string      $name         Name of the element.
-     * @param string      $label        Label of the element.
-     * @param array       $config       Configuration values.
-     * @param string|null $workflowName Name of the corresponding workflow. For BC reasons it might be null.
+     * @param string               $name         Name of the element.
+     * @param string               $label        Label of the element.
+     * @param array<string, mixed> $config       Configuration values.
+     * @param string|null          $workflowName Name of the corresponding workflow. For BC reasons it might be null.
      */
-    public function __construct(string $name, string $label = '', array $config = [], ?string $workflowName = null)
+    public function __construct(string $name, string $label = '', array $config = [], string|null $workflowName = null)
     {
         parent::__construct($name, $label, $config);
 
@@ -70,8 +56,6 @@ class Step extends Base
 
     /**
      * Consider if step is final.
-     *
-     * @return bool
      */
     public function isFinal(): bool
     {
@@ -101,7 +85,7 @@ class Step extends Base
      */
     public function allowTransition(string $transitionName): self
     {
-        if (!in_array($transitionName, $this->allowedTransitions)) {
+        if (! in_array($transitionName, $this->allowedTransitions)) {
             $this->allowedTransitions[] = $transitionName;
         }
 
@@ -110,10 +94,8 @@ class Step extends Base
 
     /**
      * Get workflow name.
-     *
-     * @return string|null
      */
-    public function getWorkflowName(): ?string
+    public function getWorkflowName(): string|null
     {
         return $this->workflowName;
     }
@@ -140,12 +122,12 @@ class Step extends Base
     /**
      * Get all allowed transition names.
      *
-     * @return array
+     * @return list<string>
      */
     public function getAllowedTransitions(): array
     {
         if ($this->isFinal()) {
-            return array();
+            return [];
         }
 
         return $this->allowedTransitions;
@@ -155,8 +137,6 @@ class Step extends Base
      * Consider if transition is allowed.
      *
      * @param string $transitionName The name of the checked transition.
-     *
-     * @return bool
      */
     public function isTransitionAllowed(string $transitionName): bool
     {
@@ -171,8 +151,6 @@ class Step extends Base
      * Consider if step has a specific permission.
      *
      * @param Permission $permission Permission to be checked.
-     *
-     * @return bool
      */
     public function hasPermission(Permission $permission): bool
     {
@@ -185,10 +163,8 @@ class Step extends Base
 
     /**
      * Get permission of the step. If none is assigned it returns null.
-     *
-     * @return Permission|null
      */
-    public function getPermission():? Permission
+    public function getPermission(): Permission|null
     {
         return $this->permission;
     }

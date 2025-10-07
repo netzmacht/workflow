@@ -1,14 +1,6 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
+declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Workflow;
 
@@ -16,32 +8,28 @@ use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Workflow;
 use PhpSpec\ObjectBehavior;
 
-/**
- * Class ProviderTypeConditionSpec
- *
- * @package spec\Netzmacht\Workflow\Flow\Condition\Workflow
- */
 class ProviderNameConditionSpec extends ObjectBehavior
 {
-    protected static $entity = ['id' => 5];
+    /** @var array<string, mixed> */
+    protected static array $entity = ['id' => 5];
 
-    function let()
+    public function let(): void
     {
         $this->beConstructedWith('test');
     }
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType('Netzmacht\Workflow\Flow\Condition\Workflow\ProviderNameCondition');
         $this->shouldImplement('Netzmacht\Workflow\Flow\Condition\Workflow\Condition');
     }
 
-    function it_has_a_configurable_provider_name()
+    public function it_has_a_configurable_provider_name(): void
     {
         $this->getProviderName()->shouldReturn('test');
     }
 
-    function it_matches_against_configurabled_provider_name(Workflow $workflow)
+    public function it_matches_against_configurabled_provider_name(Workflow $workflow): void
     {
         $entityId = EntityId::fromProviderNameAndId('test', 5);
         $this->match($workflow, $entityId, static::$entity)->shouldReturn(true);
@@ -50,7 +38,7 @@ class ProviderNameConditionSpec extends ObjectBehavior
         $this->match($workflow, $entityId, static::$entity)->shouldReturn(false);
     }
 
-    function it_matches_against_workflow_provider_name(Workflow $workflow)
+    public function it_matches_against_workflow_provider_name(Workflow $workflow): void
     {
         $entityId = EntityId::fromProviderNameAndId('test', 5);
         $workflow->getProviderName()->willReturn('test');

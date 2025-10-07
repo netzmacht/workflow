@@ -1,14 +1,6 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
+declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Flow;
 
@@ -24,165 +16,160 @@ use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
 use PhpSpec\ObjectBehavior;
 
-/**
- * Class StateSpec
- *
- * @package spec\Netzmacht\Workflow\Flow
- */
+/** @psalm-import-type TErrorArray from ErrorCollection */
 class StateSpec extends ObjectBehavior
 {
-    private const WORKFLOW_NAME = 'workflow_name';
-    private const TARGET_WORKFLOW_NAME = 'workflow_name_target';
-    private const TRANSITION_NAME = 'transition_name';
-    private const STEP_TO = 'step_to';
-    private const STATE_ID = 121;
+    private const string WORKFLOW_NAME        = 'workflow_name';
+    private const string TARGET_WORKFLOW_NAME = 'workflow_name_target';
+    private const string TRANSITION_NAME      = 'transition_name';
+    private const string STEP_TO              = 'step_to';
+    private const int STATE_ID                = 121;
 
-    private static $data = [
+    /** @var array<string, mixed> */
+    private static array $data = [
         'foo' => true,
         'bar' => false,
     ];
 
-    /**
-     * @var EntityId
-     */
-    private $entityId;
+    private EntityId $entityId;
 
-    private static $errors = [['error.message', []]];
+    /** @var TErrorArray */
+    private static array $errors = [['error.message', [], null]];
 
-    function let(\DateTimeImmutable $dateTime)
+    public function let(DateTimeImmutable $dateTime): void
     {
         $this->entityId = EntityId::fromProviderNameAndId('entity', 4);
 
         $this->beConstructedWith(
             $this->entityId,
-            static::WORKFLOW_NAME,
-            static::TRANSITION_NAME,
-            static::STEP_TO,
+            self::WORKFLOW_NAME,
+            self::TRANSITION_NAME,
+            self::STEP_TO,
             true,
             static::$data,
             $dateTime,
             static::$errors,
-            static::STATE_ID,
-            self::TARGET_WORKFLOW_NAME
+            self::STATE_ID,
+            self::TARGET_WORKFLOW_NAME,
         );
     }
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType(State::class);
     }
 
-    function it_knows_current_step()
+    public function it_knows_current_step(): void
     {
-        $this->getStepName()->shouldReturn(static::STEP_TO);
+        $this->getStepName()->shouldReturn(self::STEP_TO);
     }
 
-    function it_knows_last_transition()
+    public function it_knows_last_transition(): void
     {
-        $this->getTransitionName()->shouldReturn(static::TRANSITION_NAME);
+        $this->getTransitionName()->shouldReturn(self::TRANSITION_NAME);
     }
 
-    function it_knows_reached_time()
+    public function it_knows_reached_time(): void
     {
-        $this->getReachedAt()->shouldBeAnInstanceOf(\DateTimeImmutable::class);
+        $this->getReachedAt()->shouldBeAnInstanceOf(DateTimeImmutable::class);
     }
 
-    function it_stores_data()
+    public function it_stores_data(): void
     {
         $this->getData()->shouldReturn(static::$data);
     }
 
-    function it_knows_entity_id()
+    public function it_knows_entity_id(): void
     {
         $this->getEntityId()->shouldReturn($this->entityId);
     }
 
-    function it_stores_error()
+    public function it_stores_error(): void
     {
         $this->getErrors()->shouldReturn(static::$errors);
     }
 
-    function it_has_an_id()
+    public function it_has_an_id(): void
     {
-        $this->getStateId()->shouldReturn(static::STATE_ID);
+        $this->getStateId()->shouldReturn(self::STATE_ID);
     }
 
-    function it_knows_start_workflow_name()
+    public function it_knows_start_workflow_name(): void
     {
-        $this->getStartWorkflowName()->shouldReturn(static::WORKFLOW_NAME);
+        $this->getStartWorkflowName()->shouldReturn(self::WORKFLOW_NAME);
     }
 
-    function it_knows_target_workflow_name()
+    public function it_knows_target_workflow_name(): void
     {
-        $this->getTargetWorkflowName()->shouldReturn(static::TARGET_WORKFLOW_NAME);
+        $this->getTargetWorkflowName()->shouldReturn(self::TARGET_WORKFLOW_NAME);
     }
 
-    function it_knows_workflow_name()
+    public function it_knows_workflow_name(): void
     {
-        $this->getWorkflowName()->shouldReturn(static::TARGET_WORKFLOW_NAME);
+        $this->getWorkflowName()->shouldReturn(self::TARGET_WORKFLOW_NAME);
     }
 
-    function it_uses_start_workflow_as_target_workflow_if_target_workflow_is_not_set()
+    public function it_uses_start_workflow_as_target_workflow_if_target_workflow_is_not_set(): void
     {
         $this->beConstructedWith(
             $this->entityId,
-            static::WORKFLOW_NAME,
-            static::TRANSITION_NAME,
-            static::STEP_TO,
+            self::WORKFLOW_NAME,
+            self::TRANSITION_NAME,
+            self::STEP_TO,
             true,
             static::$data,
             new DateTimeImmutable(),
             static::$errors,
-            static::STATE_ID
+            self::STATE_ID,
         );
 
-        $this->getTargetWorkflowName()->shouldReturn(static::WORKFLOW_NAME);
+        $this->getTargetWorkflowName()->shouldReturn(self::WORKFLOW_NAME);
     }
 
-    function it_uses_start_workflow_as_current_workflow_for_not_successful_states()
+    public function it_uses_start_workflow_as_current_workflow_for_not_successful_states(): void
     {
         $this->beConstructedWith(
             $this->entityId,
-            static::WORKFLOW_NAME,
-            static::TRANSITION_NAME,
-            static::STEP_TO,
+            self::WORKFLOW_NAME,
+            self::TRANSITION_NAME,
+            self::STEP_TO,
             false,
             static::$data,
             new DateTimeImmutable(),
             static::$errors,
-            static::STATE_ID,
-            static::TARGET_WORKFLOW_NAME
+            self::STATE_ID,
+            self::TARGET_WORKFLOW_NAME,
         );
 
-        $this->getWorkflowName()->shouldReturn(static::WORKFLOW_NAME);
+        $this->getWorkflowName()->shouldReturn(self::WORKFLOW_NAME);
     }
 
-    function it_uses_target_workflow_as_current_workflow_for_successful_states()
+    public function it_uses_target_workflow_as_current_workflow_for_successful_states(): void
     {
         $this->beConstructedWith(
             $this->entityId,
-            static::WORKFLOW_NAME,
-            static::TRANSITION_NAME,
-            static::STEP_TO,
+            self::WORKFLOW_NAME,
+            self::TRANSITION_NAME,
+            self::STEP_TO,
             true,
             static::$data,
             new DateTimeImmutable(),
             static::$errors,
-            static::STATE_ID,
-            static::TARGET_WORKFLOW_NAME
+            self::STATE_ID,
+            self::TARGET_WORKFLOW_NAME,
         );
 
-        $this->getWorkflowName()->shouldReturn(static::TARGET_WORKFLOW_NAME);
+        $this->getWorkflowName()->shouldReturn(self::TARGET_WORKFLOW_NAME);
     }
 
-    function it_constructs_with_start(
+    public function it_constructs_with_start(
         Workflow $workflow,
         Transition $transition,
         Step $stepTo,
         Context $context,
         ErrorCollection $errorCollection,
-        Properties $properties
-    ) : void {
+        Properties $properties,
+    ): void {
         $stepTo->getName()->willReturn(self::STEP_TO);
 
         $transition->getWorkflow()->willReturn($workflow);
@@ -209,18 +196,18 @@ class StateSpec extends ObjectBehavior
                 EntityId::fromProviderNameAndId('example', 1),
                 $transition,
                 $context,
-                true
-            ]
+                true,
+            ],
         );
     }
 
-    function it_fails_constructing_with_start_if_target_step_is_not_defined(
+    public function it_fails_constructing_with_start_if_target_step_is_not_defined(
         Workflow $workflow,
         Transition $transition,
         Context $context,
         ErrorCollection $errorCollection,
-        Properties $properties
-    ) : void {
+        Properties $properties,
+    ): void {
         $transition->getWorkflow()->willReturn($workflow);
         $transition->getStepTo()->willReturn(null);
 
@@ -245,21 +232,21 @@ class StateSpec extends ObjectBehavior
                 EntityId::fromProviderNameAndId('example', 1),
                 $transition,
                 $context,
-                true
-            ]
+                true,
+            ],
         );
 
         $this->shouldThrow(FlowException::class)->duringInstantiation();
     }
 
-    function it_transits_to_next_state(
+    public function it_transits_to_next_state(
         Workflow $workflow,
         Transition $transition,
         Step $stepTo,
         Context $context,
         ErrorCollection $errorCollection,
-        Properties $properties
-    ) {
+        Properties $properties,
+    ): void {
         $workflow
             ->getName()
             ->shouldNotBeCalled();
@@ -289,14 +276,14 @@ class StateSpec extends ObjectBehavior
             ->shouldBeAnInstanceOf(State::class);
     }
 
-    function it_fallbacks_to_transition_workflow_name_if_step_doesnt_contain_the_name(
+    public function it_fallbacks_to_transition_workflow_name_if_step_doesnt_contain_the_name(
         Workflow $workflow,
         Transition $transition,
         Step $stepTo,
         Context $context,
         ErrorCollection $errorCollection,
-        Properties $properties
-    ) {
+        Properties $properties,
+    ): void {
         $workflow
             ->getName()
             ->shouldBeCalled()
@@ -327,12 +314,12 @@ class StateSpec extends ObjectBehavior
             ->shouldBeAnInstanceOf(State::class);
     }
 
-    function it_fails_to_transit_if_target_step_is_not_defined(
+    public function it_fails_to_transit_if_target_step_is_not_defined(
         Transition $transition,
         Context $context,
         ErrorCollection $errorCollection,
-        Properties $properties
-    ) : void {
+        Properties $properties,
+    ): void {
         $transition->getStepTo()->willReturn(null);
 
         $transition->getName()

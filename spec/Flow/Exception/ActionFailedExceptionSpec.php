@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Netzmacht\Workflow\Flow\Exception;
 
-use function get_class;
 use Netzmacht\Workflow\Flow\Action;
 use Netzmacht\Workflow\Flow\Base;
 use Netzmacht\Workflow\Flow\Context;
@@ -12,6 +13,11 @@ use Netzmacht\Workflow\Flow\Exception\FlowException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
 use PhpSpec\ObjectBehavior;
+
+use function end;
+use function explode;
+use function get_class;
+use function trim;
 
 final class ActionFailedExceptionSpec extends ObjectBehavior
 {
@@ -45,7 +51,7 @@ final class ActionFailedExceptionSpec extends ObjectBehavior
 
     public function it_is_instantiable_with_action(Action $action): void
     {
-        $parts = explode('\\', trim(get_class($action->getWrappedObject()), '\\'));
+        $parts      = explode('\\', trim(get_class($action->getWrappedObject()), '\\'));
         $actionName = end($parts);
 
         $this->beConstructedThrough('action', [$action]);
@@ -56,8 +62,9 @@ final class ActionFailedExceptionSpec extends ObjectBehavior
 
     public function it_is_instantiable_with_labelled_action(): void
     {
-        $action = new class('Foo', 'foo') extends Base implements Action
+        $action = new class ('Foo', 'foo') extends Base implements Action
         {
+            /** {@inheritDoc} */
             public function getRequiredPayloadProperties(Item $item): array
             {
                 return [];
@@ -70,7 +77,6 @@ final class ActionFailedExceptionSpec extends ObjectBehavior
 
             public function transit(Transition $transition, Item $item, Context $context): void
             {
-
             }
         };
 
@@ -89,7 +95,7 @@ final class ActionFailedExceptionSpec extends ObjectBehavior
 
     public function it_allows_error_collection_when_instantiated_with_action(
         Action $action,
-        ErrorCollection $collection
+        ErrorCollection $collection,
     ): void {
         $this->beConstructedThrough('action', [$action, $collection]);
 

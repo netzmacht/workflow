@@ -1,15 +1,5 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow\Security;
@@ -17,26 +7,23 @@ namespace Netzmacht\Workflow\Flow\Security;
 use Assert\Assertion;
 use Netzmacht\Workflow\Flow\Workflow;
 
+use function explode;
+use function sprintf;
+
 /**
  * Class Permission describes a permission in a workflow.
- *
- * @package Netzmacht\Workflow\Security
  */
 class Permission
 {
     /**
      * The workflow name.
-     *
-     * @var string
      */
-    private $workflowName;
+    private string $workflowName;
 
     /**
      * The permission id.
-     *
-     * @var string
      */
-    private $permissionId;
+    private string $permissionId;
 
     /**
      * Construct.
@@ -90,11 +77,11 @@ class Permission
      */
     public static function fromString(string $permission): self
     {
-        list($workflowName, $permissionId) = explode(':', $permission);
+        [$workflowName, $permissionId] = explode(':', $permission);
 
         $message = sprintf(
             'Invalid permission string given. Expected "workflowName:permissionId, got "%s"".',
-            $permission
+            $permission,
         );
 
         self::guardValidPermission($workflowName, $permissionId, $message);
@@ -104,8 +91,6 @@ class Permission
 
     /**
      * Get the permission id.
-     *
-     * @return string
      */
     public function getPermissionId(): string
     {
@@ -114,8 +99,6 @@ class Permission
 
     /**
      * Get the workflow name.
-     *
-     * @return string
      */
     public function getWorkflowName(): string
     {
@@ -124,8 +107,6 @@ class Permission
 
     /**
      * Cast permission to a string representation.
-     *
-     * @return string
      */
     public function __toString(): string
     {
@@ -136,12 +117,10 @@ class Permission
      * Consider if permission equals with another one.
      *
      * @param Permission $permission Permission to check against.
-     *
-     * @return bool
      */
     public function equals(Permission $permission): bool
     {
-        return ((string) $this === (string) $permission);
+        return (string) $this === (string) $permission;
     }
 
     /**
@@ -150,13 +129,11 @@ class Permission
      * @param string      $workflowName The workflow name.
      * @param string      $permissionId The permission id.
      * @param string|null $message      Optional error message.
-     *
-     * @return void
      */
     protected static function guardValidPermission(
         string $workflowName,
         string $permissionId,
-        string $message = null
+        string|null $message = null,
     ): void {
         Assertion::notBlank($workflowName, $message);
         Assertion::notBlank($permissionId, $message);

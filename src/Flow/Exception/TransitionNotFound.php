@@ -1,48 +1,36 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow\Exception;
 
-use Exception;
+use Throwable;
+
+use function sprintf;
 
 /**
- * Class TransitionNotFoundException is thrown then transition was not found.
- *
- * @package Netzmacht\Workflow\Flow\Exception
+ * Class TransitionNotFoundException is thrown, then transition was not found.
  */
 class TransitionNotFound extends FlowException
 {
     /**
      * Construct.
      *
-     * @param string    $transitionName The not found transition name.
-     * @param string    $workflowName   Current workflow name.
-     * @param int       $code           Error code.
-     * @param Exception $previous       Previous thrown exception.
-     *
-     * @return TransitionNotFound
+     * @param string         $transitionName The not found transition name.
+     * @param string         $workflowName   Current workflow name.
+     * @param int            $code           Error code.
+     * @param Throwable|null $previous       Previous thrown exception.
      */
     public static function withName(
         string $transitionName,
         string $workflowName,
         int $code = 0,
-        Exception $previous = null
-    ) {
+        Throwable|null $previous = null,
+    ): TransitionNotFound {
         return new self(
             sprintf('Transition "%s" not found in workflow "%s"', $transitionName, $workflowName),
             $code,
-            $previous
+            $previous,
         );
     }
 }

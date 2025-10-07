@@ -1,15 +1,5 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow;
@@ -19,6 +9,7 @@ use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
 use Netzmacht\Workflow\Flow\Exception\FlowException;
 use Netzmacht\Workflow\Flow\Security\Permission;
+
 use function array_map;
 use function array_merge;
 
@@ -34,61 +25,54 @@ class Transition extends Base
      *
      * @var Action[]
      */
-    private $actions = [];
+    private array $actions = [];
 
     /**
      * Post actions which will be executed when new step is reached.
      *
      * @var Action[]
      */
-    private $postActions = [];
+    private array $postActions = [];
 
     /**
      * The step the transition is moving to.
-     *
-     * @var Step
      */
-    private $stepTo;
+    private Step $stepTo;
 
     /**
-     * A pre condition which has to be passed to execute transition.
-     *
-     * @var AndCondition
+     * A pre-condition which has to be passed to execute transition.
      */
-    private $preCondition;
+    private AndCondition $preCondition;
 
     /**
      * A condition which has to be passed to execute the transition.
-     *
-     * @var AndCondition
      */
-    private $condition;
+    private AndCondition $condition;
 
     /**
      * A set of permission being assigned to the transition.
-     *
-     * @var Permission|null
      */
-    private $permission;
+    private Permission|null $permission = null;
 
     /**
      * The corresponding workflow.
-     *
-     * @var Workflow
      */
-    private $workflow;
+    private Workflow $workflow;
 
     /**
-     * Transition constructor.
-     *
-     * @param string    $name     Name of the element.
-     * @param Workflow  $workflow The workflow to which the transition belongs.
-     * @param Step|null $stepTo   The target step.
-     * @param string    $label    Label of the element.
-     * @param array     $config   Configuration values.
+     * @param string               $name     Name of the element.
+     * @param Workflow             $workflow The workflow to which the transition belongs.
+     * @param Step|null            $stepTo   The target step.
+     * @param string               $label    Label of the element.
+     * @param array<string, mixed> $config   Configuration values.
      */
-    public function __construct(string $name, Workflow $workflow, ?Step $stepTo, string $label = '', array $config = [])
-    {
+    public function __construct(
+        string $name,
+        Workflow $workflow,
+        Step|null $stepTo,
+        string $label = '',
+        array $config = [],
+    ) {
         parent::__construct($name, $label, $config);
 
         $workflow->addTransition($this);
@@ -99,8 +83,6 @@ class Transition extends Base
 
     /**
      * Get the workflow.
-     *
-     * @return Workflow
      */
     public function getWorkflow(): Workflow
     {
@@ -157,20 +139,16 @@ class Transition extends Base
 
     /**
      * Get the target step.
-     *
-     * @return Step
      */
-    public function getStepTo():? Step
+    public function getStepTo(): Step|null
     {
         return $this->stepTo;
     }
 
     /**
      * Get the condition.
-     *
-     * @return Condition|null
      */
-    public function getCondition():? Condition
+    public function getCondition(): Condition|null
     {
         return $this->condition;
     }
@@ -184,9 +162,10 @@ class Transition extends Base
      */
     public function addCondition(Condition $condition): self
     {
-        if (!$this->condition) {
+        if (! $this->condition) {
             $this->condition = new AndCondition();
         }
+
         $this->condition->addCondition($condition);
 
         return $this;
@@ -194,10 +173,8 @@ class Transition extends Base
 
     /**
      * Get the precondition.
-     *
-     * @return Condition
      */
-    public function getPreCondition():? Condition
+    public function getPreCondition(): Condition|null
     {
         return $this->preCondition;
     }
@@ -211,7 +188,7 @@ class Transition extends Base
      */
     public function addPreCondition(Condition $preCondition): self
     {
-        if (!$this->preCondition) {
+        if (! $this->preCondition) {
             $this->preCondition = new AndCondition();
         }
 
@@ -225,7 +202,7 @@ class Transition extends Base
      *
      * @param Item $item Workflow item.
      *
-     * @return array
+     * @return list<string>
      */
     public function getRequiredPayloadProperties(Item $item): array
     {
@@ -234,7 +211,7 @@ class Transition extends Base
         }
 
         return array_merge(
-            ... array_map(
+            ...array_map(
                 // @codingStandardsIgnoreStart - Static functions not supported yet :-(
                 static function (Action $action) use ($item) {
                     return $action->getRequiredPayloadProperties($item);
@@ -242,7 +219,7 @@ class Transition extends Base
                 // @codingStandardsIgnoreStop
                 $this->actions
             ),
-            ... array_map(
+            ...array_map(
                 // @codingStandardsIgnoreStart - Static functions not supported yet :-(
                 static function (Action $action) use ($item) {
                     return $action->getRequiredPayloadProperties($item);
@@ -437,12 +414,10 @@ class Transition extends Base
     /**
      * Execute all actions.
      *
+     * @deprecated Deprecated since 2.1.0 and will be removed in version 3.0 Use Transition#execute instead.
+     *
      * @param Item    $item    The workflow item.
      * @param Context $context The transition context.
-     *
-     * @return bool
-     *
-     * @deprecated Deprecated since 2.1.0 and will be removed in version 3.0 Use Transition#execute instead.
      */
     public function executePostActions(Item $item, Context $context): bool
     {
@@ -462,12 +437,10 @@ class Transition extends Base
      * @param Condition|null $condition Condition to be checked.
      * @param Item           $item      Workflow item.
      * @param Context        $context   Condition context.
-     *
-     * @return bool
      */
-    private function performConditionCheck($condition, $item, $context): bool
+    private function performConditionCheck(Condition|null $condition, Item $item, Context $context): bool
     {
-        if (!$condition) {
+        if (! $condition) {
             return true;
         }
 
@@ -480,10 +453,8 @@ class Transition extends Base
      * @param Item     $item    Workflow item.
      * @param Context  $context Condition context.
      * @param Action[] $actions Action to execute.
-     *
-     * @return bool
      */
-    private function doExecuteActions(Item $item, Context $context, $actions): bool
+    private function doExecuteActions(Item $item, Context $context, array $actions): bool
     {
         $success = $this->isAllowed($item, $context);
 
@@ -495,7 +466,7 @@ class Transition extends Base
             } catch (ActionFailedException $e) {
                 $params = [
                     'exception' => $e->getMessage(),
-                    'action'    => $e->actionName()
+                    'action'    => $e->actionName(),
                 ];
                 $context->addError('transition.action.failed', $params, $e->errorCollection());
 
@@ -503,6 +474,6 @@ class Transition extends Base
             }
         }
 
-        return $success && !$context->getErrorCollection()->hasErrors();
+        return $success && ! $context->getErrorCollection()->hasErrors();
     }
 }

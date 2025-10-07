@@ -1,15 +1,5 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow\Condition\Workflow;
@@ -19,23 +9,14 @@ use Netzmacht\Workflow\Flow\Workflow;
 
 /**
  * Class ProviderTypeCondition check if entity matches a specific provider.
- *
- * @package Netzmacht\Workflow\Flow\Workflow\Condition
  */
 class ProviderNameCondition implements Condition
 {
     /**
      * Provider name to check against.
-     *
-     * @var string
      */
-    private $providerName;
+    private string $providerName;
 
-    /**
-     * ProviderNameCondition constructor.
-     *
-     * @param string $providerName
-     */
     public function __construct(string $providerName)
     {
         $this->providerName = $providerName;
@@ -43,8 +24,6 @@ class ProviderNameCondition implements Condition
 
     /**
      * Get the provider name to check against.
-     *
-     * @return string
      */
     public function getProviderName(): string
     {
@@ -52,7 +31,7 @@ class ProviderNameCondition implements Condition
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function match(Workflow $workflow, EntityId $entityId, $entity): bool
     {

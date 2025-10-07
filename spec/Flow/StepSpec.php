@@ -1,70 +1,57 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
+declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Flow;
 
 use Netzmacht\Workflow\Flow\Security\Permission;
 use PhpSpec\ObjectBehavior;
 
-/**
- * Class StepSpec
- *
- * @package spec\Netzmacht\Workflow\Flow
- */
 class StepSpec extends ObjectBehavior
 {
-    const NAME = 'test';
-    const LABEL = 'label';
-    const WORKFLOW_NAME = 'workflow';
+    public const string NAME          = 'test';
+    public const string LABEL         = 'label';
+    public const string WORKFLOW_NAME = 'workflow';
 
-    function let()
+    public function let(): void
     {
         $this->beConstructedWith(self::NAME, self::LABEL, [], self::WORKFLOW_NAME);
     }
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType('Netzmacht\Workflow\Flow\Step');
     }
 
-    function it_behaves_like_base_object()
+    public function it_behaves_like_base_object(): void
     {
         $this->shouldHaveType('Netzmacht\Workflow\Flow\Base');
     }
 
-    function it_is_not_final_by_default()
+    public function it_is_not_final_by_default(): void
     {
         $this->isFinal()->shouldReturn(false);
     }
 
-    function it_can_be_final()
+    public function it_can_be_final(): void
     {
         $this->setFinal(true)->shouldReturn($this);
         $this->isFinal()->shouldReturn(true);
     }
 
-    function it_has_no_allowed_transitions_by_default()
+    public function it_has_no_allowed_transitions_by_default(): void
     {
         $this->getAllowedTransitions()->shouldBeEqualTo([]);
     }
 
-    function it_allows_transition()
+    public function it_allows_transition(): void
     {
         $this->isTransitionAllowed('test')->shouldReturn(false);
         $this->allowTransition('test')->shouldReturn($this);
         $this->isTransitionAllowed('test')->shouldReturn(true);
     }
 
-    function it_disallows_transition()
+    public function it_disallows_transition(): void
     {
         $this->allowTransition('test');
         $this->isTransitionAllowed('test')->shouldReturn(true);
@@ -72,7 +59,7 @@ class StepSpec extends ObjectBehavior
         $this->isTransitionAllowed('test')->shouldReturn(false);
     }
 
-    function it_returns_allowed_transitions()
+    public function it_returns_allowed_transitions(): void
     {
         $this->allowTransition('test')->shouldReturn($this);
         $this->allowTransition('bar')->shouldReturn($this);
@@ -80,7 +67,7 @@ class StepSpec extends ObjectBehavior
         $this->getAllowedTransitions()->shouldReturn(['test', 'bar']);
     }
 
-    function it_does_not_allow_transition_when_being_final()
+    public function it_does_not_allow_transition_when_being_final(): void
     {
         $this->allowTransition('test')->shouldReturn($this);
         $this->isTransitionAllowed('test')->shouldReturn(true);
@@ -89,7 +76,7 @@ class StepSpec extends ObjectBehavior
         $this->isTransitionAllowed('test')->shouldReturn(false);
     }
 
-    function it_have_a_permission(Permission $permission)
+    public function it_have_a_permission(Permission $permission): void
     {
         $permission->equals($permission)->willReturn(false);
 
@@ -103,12 +90,12 @@ class StepSpec extends ObjectBehavior
         $this->getPermission()->shouldReturn($permission);
     }
 
-    function it_might_know_the_workflow_name(): void
+    public function it_might_know_the_workflow_name(): void
     {
         $this->getWorkflowName()->shouldBe(self::WORKFLOW_NAME);
     }
 
-    function it_migt_have_not_the_workflow_name(): void
+    public function it_migt_have_not_the_workflow_name(): void
     {
         $this->beConstructedWith(self::NAME, self::LABEL);
 

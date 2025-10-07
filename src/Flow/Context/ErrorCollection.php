@@ -1,42 +1,40 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow\Context;
 
+use ArrayIterator;
 use Countable;
+use InvalidArgumentException;
 use IteratorAggregate;
+use ReturnTypeWillChange;
+
+use function array_map;
+use function assert;
+use function count;
 
 /**
  * Class ErrorCollection collects error messages being raised during transition.
  *
- * @package Netzmacht\Workflow
+ * @psalm-type TError = array{0: string, 1: list<string>, 2: ErrorCollection|null}
+ * @psalm-type TErrorArray = list<array{0: string, 1: list<string>, 2: list<array>|null}
  */
 class ErrorCollection implements IteratorAggregate, Countable
 {
     /**
      * Stored errors.
      *
-     * @var array
+     * @var list<TError>
      */
-    private $errors = array();
+    private array $errors = [];
 
     /**
      * Construct.
      *
-     * @param array $errors Initial error messages.
+     * @param list<TError> $errors Initial error messages.
      */
-    public function __construct(array $errors = array())
+    public function __construct(array $errors = [])
     {
         $this->addErrors($errors);
     }
@@ -44,33 +42,29 @@ class ErrorCollection implements IteratorAggregate, Countable
     /**
      * Add a new error.
      *
-     * @param string          $message    Error message.
-     * @param array           $params     Params for the error message.
-     * @param ErrorCollection $collection Option. Child collection of the error.
+     * @param string               $message    Error message.
+     * @param list<string>         $params     Params for the error message.
+     * @param ErrorCollection|null $collection Option. Child collection of the error.
      *
      * @return $this
      */
-    public function addError(string $message, array $params = array(), ErrorCollection $collection = null)
+    public function addError(string $message, array $params = [], ErrorCollection|null $collection = null)
     {
-        $this->errors[] = array($message, $params, $collection);
+        $this->errors[] = [$message, $params, $collection];
 
         return $this;
     }
 
     /**
      * Check if any error isset.
-     *
-     * @return bool
      */
     public function hasErrors(): bool
     {
-        return !empty($this->errors);
+        return ! empty($this->errors);
     }
 
     /**
      * Count error messages.
-     *
-     * @return int
      */
     public function countErrors(): int
     {
@@ -78,13 +72,13 @@ class ErrorCollection implements IteratorAggregate, Countable
     }
 
     /**
-     * Get an error by it's index.
+     * Get an error by its index.
      *
      * @param int $index Error index.
      *
-     * @throws \InvalidArgumentException If error index is not set.
+     * @return TError
      *
-     * @return array
+     * @throws InvalidArgumentException If the error index is not set.
      */
     public function getError(int $index): array
     {
@@ -92,7 +86,7 @@ class ErrorCollection implements IteratorAggregate, Countable
             return $this->errors[$index];
         }
 
-        throw new \InvalidArgumentException('Error with index "' . $index . '" not set.');
+        throw new InvalidArgumentException('Error with index "' . $index . '" not set.');
     }
 
     /**
@@ -102,7 +96,7 @@ class ErrorCollection implements IteratorAggregate, Countable
      */
     public function reset(): self
     {
-        $this->errors = array();
+        $this->errors = [];
 
         return $this;
     }
@@ -110,14 +104,14 @@ class ErrorCollection implements IteratorAggregate, Countable
     /**
      * Add a set of errors.
      *
-     * @param array $errors List of errors.
+     * @param list<TError> $errors List of errors.
      *
      * @return $this
      */
     public function addErrors(array $errors): self
     {
         foreach ($errors as $error) {
-            list($message, $params, $collection) = (array) $error;
+            [$message, $params, $collection] = (array) $error;
 
             $this->addError($message, $params, $collection);
         }
@@ -128,7 +122,7 @@ class ErrorCollection implements IteratorAggregate, Countable
     /**
      * Get all errors.
      *
-     * @return array
+     * @return list<TError>
      */
     public function getErrors(): array
     {
@@ -136,39 +130,37 @@ class ErrorCollection implements IteratorAggregate, Countable
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
+    #[ReturnTypeWillChange]
     public function getIterator(): iterable
     {
-        return new \ArrayIterator($this->errors);
+        return new ArrayIterator($this->errors);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function count(): int
     {
         return $this->countErrors();
     }
 
     /**
-     * Convert error collection to an array.
+     * Convert the error collection to an array.
      *
-     * @return array
+     * @return TErrorArray
      */
     public function toArray(): array
     {
         return array_map(
-            function ($error) {
+            static function ($error) {
                 if ($error[2]) {
-                    /** @var ErrorCollection $collection */
                     $collection = $error[2];
-                    $error[2]   = $collection->toArray();
+                    assert($collection instanceof ErrorCollection);
+                    $error[2] = $collection->toArray();
                 }
 
                 return $error;
             },
-            $this->errors
+            $this->errors,
         );
     }
 }

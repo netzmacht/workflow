@@ -4,6 +4,7 @@ phpcq:
     - vendor/netzmacht/phpspec-phpcq-plugin/repository.json
   directories:
     - src
+    - src
     - spec
   artifact: .phpcq/build
   plugins:

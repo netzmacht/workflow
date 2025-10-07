@@ -1,19 +1,10 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Handler;
 
+use Exception;
 use Netzmacht\Workflow\Data\EntityRepository;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Exception\WorkflowException;
@@ -21,29 +12,24 @@ use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
+use Throwable;
 
 /**
  * Class RepositoryBasedTransitionHandler handles the transition to another step in the workflow.
  *
  * It uses an collection repository approach to store entities.
- *
- * @package Netzmacht\Workflow
  */
 class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
 {
     /**
      * The entity repository.
-     *
-     * @var EntityRepository
      */
-    private $entityRepository;
+    private EntityRepository $entityRepository;
 
     /**
      * The state repository.
-     *
-     * @var StateRepository
      */
-    private $stateRepository;
+    private StateRepository $stateRepository;
 
     /**
      * Construct.
@@ -60,21 +46,21 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
     public function __construct(
         Item $item,
         Workflow $workflow,
-        string $transitionName = null,
+        string|null $transitionName = null,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
-        TransactionHandler $transactionHandler
+        TransactionHandler $transactionHandler,
     ) {
         parent::__construct($item, $workflow, $transitionName, $transactionHandler);
-        
+
         $this->entityRepository = $entityRepository;
         $this->stateRepository  = $stateRepository;
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
-     * @throws \Exception If something went wrong during action execution.
+     * @throws Exception If something went wrong during action execution.
      */
     public function transit(): State
     {
@@ -90,7 +76,7 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
             }
 
             $this->entityRepository->add($this->getItem()->getEntity());
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             $this->transactionHandler->rollback();
 
             throw $e;

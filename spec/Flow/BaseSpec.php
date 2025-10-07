@@ -1,71 +1,57 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
+declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Flow;
 
 use Netzmacht\Workflow\Flow\Base;
 use PhpSpec\ObjectBehavior;
 
-/**
- * Class BaseSpec
- *
- * @package spec\Netzmacht\Workflow
- */
 class BaseSpec extends ObjectBehavior
 {
-    const NAME = 'test';
-    const LABEL = 'label';
-    const ID = 5;
+    public const string NAME  = 'test';
+    public const string LABEL = 'label';
+    public const int ID       = 5;
 
-    function let()
+    public function let(): void
     {
-        $this->beAnInstanceOf(BaseExample::class);
-        $this->beConstructedWith(static::NAME);
+        $this->beConstructedWith(self::NAME);
     }
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType(Base::class);
     }
 
-    function it_accepts_initial_config()
+    public function it_accepts_initial_config(): void
     {
-        $this->beConstructedWith(static::NAME, '', ['config' => 'test']);
+        $this->beConstructedWith(self::NAME, '', ['config' => 'test']);
         $this->getConfig()->shouldBe(['config' => 'test']);
     }
 
-    function it_accepts_initial_label()
+    public function it_accepts_initial_label(): void
     {
-        $this->beConstructedWith(static::NAME, static::LABEL);
-        $this->getLabel()->shouldBe(static::LABEL);
+        $this->beConstructedWith(self::NAME, self::LABEL);
+        $this->getLabel()->shouldBe(self::LABEL);
     }
 
-    function it_has_a_name()
+    public function it_has_a_name(): void
     {
-        $this->getName()->shouldReturn(static::NAME);
+        $this->getName()->shouldReturn(self::NAME);
     }
 
-    function it_has_a_label()
+    public function it_has_a_label(): void
     {
-        $this->setLabel(static::LABEL)->shouldReturn($this);
-        $this->getLabel()->shouldReturn(static::LABEL);
+        $this->setLabel(self::LABEL)->shouldReturn($this);
+        $this->getLabel()->shouldReturn(self::LABEL);
     }
 
-    function it_uses_name_as_label_if_no_label_given()
+    public function it_uses_name_as_label_if_no_label_given(): void
     {
-        $this->getLabel()->shouldReturn(static::NAME);
+        $this->getLabel()->shouldReturn(self::NAME);
     }
 
-    function it_has_config_values()
+    public function it_has_config_values(): void
     {
         $this->hasConfigValue('config')->shouldReturn(false);
         $this->setConfigValue('config', 'test')->shouldReturn($this);
@@ -73,19 +59,19 @@ class BaseSpec extends ObjectBehavior
         $this->hasConfigValue('config')->shouldReturn(true);
     }
 
-    function it_accepts_an_default_value_for_nonexisting_config_values()
+    public function it_accepts_an_default_value_for_nonexisting_config_values(): void
     {
         $this->getConfigValue('config', 'bar')->shouldReturn('bar');
     }
 
-    function it_adds_multiple_config_values()
+    public function it_adds_multiple_config_values(): void
     {
         $this->addConfig(['config' => 'foo', 'test' => 'bar'])->shouldReturn($this);
         $this->getConfigValue('config')->shouldReturn('foo');
         $this->getConfigValue('test')->shouldReturn('bar');
     }
 
-    function it_removes_a_config_value()
+    public function it_removes_a_config_value(): void
     {
         $this->setConfigValue('config', 'test');
         $this->hasConfigValue('config')->shouldReturn(true);
@@ -93,14 +79,9 @@ class BaseSpec extends ObjectBehavior
         $this->hasConfigValue('config')->shouldReturn(false);
     }
 
-    function it_returns_config()
+    public function it_returns_config(): void
     {
         $this->setConfigValue('config', 'test');
         $this->getConfig()->shouldBe(['config' => 'test']);
     }
-}
-
-class BaseExample extends Base
-{
-
 }

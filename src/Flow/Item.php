@@ -1,74 +1,57 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow;
 
 use Assert\Assertion;
-use const E_USER_DEPRECATED;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Exception\FlowException;
+
+use function count;
 use function trigger_error;
+
+use const E_USER_DEPRECATED;
 
 /**
  * Class Item stores workflow related data of an entity. It knows the state history and the current state.
- *
- * @package Netzmacht\Workflow
  */
 class Item
 {
     /**
      * Workflow name.
-     *
-     * @var string
      */
-    private $workflowName;
+    private string $workflowName;
 
     /**
      * Current step name.
-     *
-     * @var string
      */
-    private $currentStepName;
+    private string $currentStepName;
 
     /**
      * State history which is already persisted.
      *
      * @var State[]
      */
-    private $stateHistory = [];
+    private array $stateHistory = [];
 
     /**
      * Recorded state changes not persisted yet.
      *
      * @var State[]
      */
-    private $recordedStateChanges = [];
+    private array $recordedStateChanges = [];
 
     /**
      * Workflow entity.
-     *
-     * @var mixed
      */
-    private $entity;
+    private mixed $entity;
 
     /**
      * Entity id.
-     *
-     * @var EntityId
      */
-    private $entityId;
+    private EntityId $entityId;
 
     /**
      * Construct. Do not used constructor. Use named constructor static methods.
@@ -76,7 +59,7 @@ class Item
      * @param EntityId $entityId The entity id.
      * @param mixed    $entity   The entity for which the workflow is started.
      */
-    protected function __construct(EntityId $entityId, $entity)
+    protected function __construct(EntityId $entityId, mixed $entity)
     {
         $this->entityId = $entityId;
         $this->entity   = $entity;
@@ -92,7 +75,7 @@ class Item
      *
      * @return Item
      */
-    public static function initialize(EntityId $entityId, $entity): self
+    public static function initialize(EntityId $entityId, mixed $entity): self
     {
         return new Item($entityId, $entity);
     }
@@ -103,10 +86,8 @@ class Item
      * @param EntityId         $entityId     The entity id.
      * @param mixed            $entity       The entity.
      * @param State[]|iterable $stateHistory Set or already passed states.
-     *
-     * @return Item
      */
-    public static function reconstitute(EntityId $entityId, $entity, iterable $stateHistory): Item
+    public static function reconstitute(EntityId $entityId, mixed $entity, iterable $stateHistory): Item
     {
         Assertion::allIsInstanceOf($stateHistory, State::class);
 
@@ -127,14 +108,12 @@ class Item
      * @param Context    $context    The transition context.
      * @param bool       $success    The transition success.
      *
-     * @return State
-     *
      * @throws WorkflowException If workflow is already started.
      */
     public function start(
         Transition $transition,
         Context $context,
-        bool $success
+        bool $success,
     ): State {
         $this->guardNotStarted();
 
@@ -152,13 +131,11 @@ class Item
      * @param bool       $success    The transition success.
      *
      * @throws WorkflowException If workflow is not started.
-     *
-     * @return State
      */
     public function transit(
         Transition $transition,
         Context $context,
-        bool $success
+        bool $success,
     ): State {
         $this->guardStarted();
 
@@ -177,7 +154,7 @@ class Item
      *
      * @return State[]|iterable
      */
-    public function releaseRecordedStateChanges() : iterable
+    public function releaseRecordedStateChanges(): iterable
     {
         $recordedStates             = $this->recordedStateChanges;
         $this->recordedStateChanges = [];
@@ -187,18 +164,14 @@ class Item
 
     /**
      * Get the name of the current step.
-     *
-     * @return string
      */
-    public function getCurrentStepName(): ?string
+    public function getCurrentStepName(): string|null
     {
         return $this->currentStepName;
     }
 
     /**
      * Get the entity id.
-     *
-     * @return EntityId
      */
     public function getEntityId(): EntityId
     {
@@ -207,10 +180,8 @@ class Item
 
     /**
      * Get the entity.
-     *
-     * @return mixed
      */
-    public function getEntity()
+    public function getEntity(): mixed
     {
         return $this->entity;
     }
@@ -228,13 +199,11 @@ class Item
     /**
      * Get latest successful state.
      *
-     * @param bool $successfulOnly Return only success ful steps.
-     *
-     * @return State|false
-     *
      * @deprecated Use getLatestStateOccurred() or getLatestState() instead.
+     *
+     * @param bool $successfulOnly Return only success ful steps.
      */
-    public function getLatestState(bool $successfulOnly = true)
+    public function getLatestState(bool $successfulOnly = true): State|false
     {
         // @codingStandardsIgnoreStart
         @trigger_error(
@@ -243,7 +212,7 @@ class Item
         );
         // @codingStandardsIgnoreEnd
 
-        if (!$successfulOnly) {
+        if (! $successfulOnly) {
             return $this->getLatestStateOccurred();
         }
 
@@ -252,28 +221,24 @@ class Item
 
     /**
      * Get latest state which occurred no matter if successful or not.
-     *
-     * @return State|null
      */
-    public function getLatestStateOccurred(): ?State
+    public function getLatestStateOccurred(): State|null
     {
         if (count($this->stateHistory) === 0) {
             return null;
         }
 
-        $index = (count($this->stateHistory) - 1);
+        $index = count($this->stateHistory) - 1;
 
         return $this->stateHistory[$index];
     }
 
     /**
      * Get latest successful state which occurred.
-     *
-     * @return State|null
      */
-    public function getLatestSuccessfulState(): ?State
+    public function getLatestSuccessfulState(): State|null
     {
-        for ($index = (count($this->stateHistory) - 1); $index >= 0; $index--) {
+        for ($index = count($this->stateHistory) - 1; $index >= 0; $index--) {
             if ($this->stateHistory[$index]->isSuccessful()) {
                 return $this->stateHistory[$index];
             }
@@ -284,30 +249,24 @@ class Item
 
     /**
      * Get name of the workflow.
-     *
-     * @return string
      */
-    public function getWorkflowName(): ?string
+    public function getWorkflowName(): string|null
     {
         return $this->workflowName;
     }
 
     /**
      * Consider if workflow has started.
-     *
-     * @return bool
      */
     public function isWorkflowStarted(): bool
     {
-        return !empty($this->currentStepName);
+        return ! empty($this->currentStepName);
     }
 
     /**
      * Detach item from current workflow.
      *
      * You should only use it with care if the workflow has changed and there is no way to finish it.
-     *
-     * @return void
      */
     public function detach(): void
     {
@@ -317,8 +276,6 @@ class Item
 
     /**
      * Guard that workflow of item was not already started.
-     *
-     * @return void
      *
      * @throws FlowException If item workflow process was already started.
      */
@@ -332,13 +289,11 @@ class Item
     /**
      * Guard that workflow of item is started.
      *
-     * @return void
-     *
      * @throws FlowException If item workflow process was not started.
      */
     private function guardStarted(): void
     {
-        if (!$this->isWorkflowStarted()) {
+        if (! $this->isWorkflowStarted()) {
             throw new FlowException('Item has not started yet.');
         }
     }
@@ -347,10 +302,8 @@ class Item
      * Record a new state change.
      *
      * @param State $state The state being assigned.
-     *
-     * @return void
      */
-    private function record(State $state) : void
+    private function record(State $state): void
     {
         $this->recordedStateChanges[] = $state;
         $this->apply($state);
@@ -360,8 +313,6 @@ class Item
      * Apply a new state.
      *
      * @param State $state The state being assigned.
-     *
-     * @return void
      */
     private function apply(State $state): void
     {
@@ -369,7 +320,7 @@ class Item
         if ($state->isSuccessful()) {
             $this->currentStepName = $state->getStepName();
             $this->workflowName    = $state->getWorkflowName();
-        } elseif (!$this->isWorkflowStarted()) {
+        } elseif (! $this->isWorkflowStarted()) {
             $this->workflowName = $state->getWorkflowName();
         }
 

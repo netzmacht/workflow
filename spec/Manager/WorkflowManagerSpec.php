@@ -1,14 +1,6 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
+declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Manager;
 
@@ -25,46 +17,42 @@ use Netzmacht\Workflow\Handler\TransitionHandlerFactory;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-/**
- * Class ManagerSpec
- *
- * @package spec\Netzmacht\Contao\Workflow
- */
 class WorkflowManagerSpec extends ObjectBehavior
 {
-    const ENTITY_PROVIDER_NAME = 'provider_name';
+    public const string ENTITY_PROVIDER_NAME = 'provider_name';
 
-    const ENTITY_ID = 5;
+    public const int ENTITY_ID = 5;
 
-    protected static $entity = ['id' => 5];
+    /** @var array<string, mixed> */
+    protected static array $entity = ['id' => 5];
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType('Netzmacht\Workflow\Manager\Manager');
     }
 
-    function let(
+    public function let(
         TransitionHandlerFactory $transitionHandlerFactory,
         StateRepository $stateRepository,
-        Workflow $workflow
-    ) {
+        Workflow $workflow,
+    ): void {
         $workflow->getName()->willReturn('workflow_a');
 
         $this->beConstructedWith($transitionHandlerFactory, $stateRepository, [$workflow]);
     }
 
-    function it_gets_workflow(Workflow $workflow)
+    public function it_gets_workflow(Workflow $workflow): void
     {
-        $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
+        $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
 
         $workflow->supports($entityId, static::$entity)->willReturn(true);
 
         $this->getWorkflow($entityId, static::$entity)->shouldReturn($workflow);
     }
 
-    function it_gets_workflow_by_item(Workflow $workflow, Item $item)
+    public function it_gets_workflow_by_item(Workflow $workflow, Item $item): void
     {
-        $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
+        $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
 
         $item->getWorkflowName()->willReturn('workflow_a');
         $item->getEntityId()->willReturn($entityId);
@@ -75,7 +63,7 @@ class WorkflowManagerSpec extends ObjectBehavior
         $this->getWorkflowByItem($item)->shouldReturn($workflow);
     }
 
-    function it_adds_workflow(Workflow $anotherWorkflow)
+    public function it_adds_workflow(Workflow $anotherWorkflow): void
     {
         $anotherWorkflow->getName()->willReturn('another');
 
@@ -83,49 +71,49 @@ class WorkflowManagerSpec extends ObjectBehavior
         $this->getWorkflowByName('another')->shouldReturn($anotherWorkflow);
     }
 
-    function it_returns_false_if_no_supported_workflow_found(Workflow $workflow)
+    public function it_returns_false_if_no_supported_workflow_found(Workflow $workflow): void
     {
-        $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
+        $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
 
         $workflow->supports($entityId, static::$entity)->willReturn(false);
     }
 
-    function it_throws_workflow_not_found_when_specific_workflow_not_exists()
+    public function it_throws_workflow_not_found_when_specific_workflow_not_exists(): void
     {
-        $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
+        $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
 
         $this->shouldThrow(WorkflowNotFound::class)
             ->during('getWorkflowByName', [$entityId, static::$entity]);
     }
 
-    function it_knows_if_matching_workflow_exists(Workflow $workflow)
+    public function it_knows_if_matching_workflow_exists(Workflow $workflow): void
     {
-        $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
+        $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
 
         $workflow->supports($entityId, static::$entity)->willReturn(true);
         $this->hasWorkflow($entityId, static::$entity)->shouldReturn(true);
     }
 
-    function it_knows_if_no_matching_workflow_exists(Workflow $workflow)
+    public function it_knows_if_no_matching_workflow_exists(Workflow $workflow): void
     {
-        $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
+        $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
 
         $workflow->supports($entityId, static::$entity)->willReturn(false);
         $this->hasWorkflow($entityId, static::$entity)->shouldReturn(false);
     }
 
-    function it_adds_an_workflow(Workflow $anotherWorkflow)
+    public function it_adds_an_workflow(Workflow $anotherWorkflow): void
     {
         $this->getWorkflows()->shouldNotContain($anotherWorkflow);
         $this->addWorkflow($anotherWorkflow)->shouldReturn($this);
         $this->getWorkflows()->shouldContain($anotherWorkflow);
     }
 
-    function it_returns_false_if_no_matching_workflow_found(
+    public function it_returns_false_if_no_matching_workflow_found(
         Workflow $workflow,
-        Item $item
-    ) {
-        $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
+        Item $item,
+    ): void {
+        $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
 
         $item->getEntityId()->willReturn($entityId);
         $item->getEntity()->willReturn(static::$entity);
@@ -134,14 +122,14 @@ class WorkflowManagerSpec extends ObjectBehavior
         $this->handle($item)->shouldReturn(null);
     }
 
-    function it_creates_handler_for_start_transition(
+    public function it_creates_handler_for_start_transition(
         Workflow $workflow,
         Item $item,
         TransitionHandlerFactory $transitionHandlerFactory,
         StateRepository $stateRepository,
-        TransitionHandler $transitionHandler
-    ) {
-        $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
+        TransitionHandler $transitionHandler,
+    ): void {
+        $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
 
         $item->getWorkflowName()->willReturn('workflow_a');
         $item->getEntityId()->willReturn($entityId);
@@ -154,23 +142,23 @@ class WorkflowManagerSpec extends ObjectBehavior
             $item,
             $workflow,
             Argument::any(),
-            static::ENTITY_PROVIDER_NAME,
-            $stateRepository
+            self::ENTITY_PROVIDER_NAME,
+            $stateRepository,
         )->willReturn($transitionHandler);
 
         $this->handle($item)->shouldReturn($transitionHandler);
     }
 
-    function it_creates_handler_for_ongoing_transition(
+    public function it_creates_handler_for_ongoing_transition(
         Workflow $workflow,
         Item $item,
         TransitionHandlerFactory $transitionHandlerFactory,
         StateRepository $stateRepository,
         TransitionHandler $transitionHandler,
         Transition $transition,
-        Step $step
-    ) {
-        $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
+        Step $step,
+    ): void {
+        $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
 
         $step->getName()->willReturn('start');
         $step->isTransitionAllowed('next')->willReturn(true);
@@ -190,22 +178,21 @@ class WorkflowManagerSpec extends ObjectBehavior
             $item,
             $workflow,
             Argument::any(),
-            static::ENTITY_PROVIDER_NAME,
-            $stateRepository
+            self::ENTITY_PROVIDER_NAME,
+            $stateRepository,
         )
             ->willReturn($transitionHandler);
 
         $this->handle($item, 'next')->shouldReturn($transitionHandler);
     }
 
-
-    function it_throws_than_matches_workflow_is_not_same_as_current(
+    public function it_throws_than_matches_workflow_is_not_same_as_current(
         Workflow $workflow,
         Item $item,
         Transition $transition,
-        Step $step
-    ) {
-        $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
+        Step $step,
+    ): void {
+        $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
 
         $step->getName()->willReturn('start');
         $step->isTransitionAllowed('next')->willReturn(true);
@@ -226,11 +213,11 @@ class WorkflowManagerSpec extends ObjectBehavior
             ->duringHandle($item, 'next');
     }
 
-    function it_creates_an_item(
+    public function it_creates_an_item(
         StateRepository $stateRepository,
-        State $state
-    ) {
-        $entityId = EntityId::fromProviderNameAndId(static::ENTITY_PROVIDER_NAME, static::ENTITY_ID);
+        State $state,
+    ): void {
+        $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
 
         $state->getStepName()->willReturn('step');
         $state->getWorkflowName()->willReturn('workflow');
@@ -240,5 +227,4 @@ class WorkflowManagerSpec extends ObjectBehavior
 
         $this->createItem($entityId, static::$entity)->shouldHaveType('Netzmacht\Workflow\Flow\Item');
     }
-
 }

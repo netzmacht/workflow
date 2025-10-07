@@ -1,55 +1,37 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow;
 
 /**
  * Class Configurable is the base class for each flow elements.
- *
- * @package Netzmacht\Workflow\Flow
  */
 abstract class Base
 {
     /**
      * Configuration values.
      *
-     * @var array
+     * @var array<string, mixed>
      */
-    private $config = array();
+    private array $config = [];
 
     /**
      * Name of the element.
-     *
-     * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * Label of the element.
-     *
-     * @var string
      */
-    private $label;
+    private string $label;
 
     /**
-     * Construct.
-     *
-     * @param string $name   Name of the element.
-     * @param string $label  Label of the element.
-     * @param array  $config Configuration values.
+     * @param string               $name   Name of the element.
+     * @param string               $label  Label of the element.
+     * @param array<string, mixed> $config Configuration values.
      */
-    public function __construct(string $name, string $label = '', array $config = array())
+    public function __construct(string $name, string $label = '', array $config = [])
     {
         $this->name   = $name;
         $this->label  = $label ?: $name;
@@ -58,8 +40,6 @@ abstract class Base
 
     /**
      * Get element label.
-     *
-     * @return string
      */
     public function getLabel(): string
     {
@@ -82,8 +62,6 @@ abstract class Base
 
     /**
      * Get element name.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -98,7 +76,7 @@ abstract class Base
      *
      * @return $this
      */
-    public function setConfigValue(string $name, $value): self
+    public function setConfigValue(string $name, mixed $value): self
     {
         $this->config[$name] = $value;
 
@@ -110,10 +88,8 @@ abstract class Base
      *
      * @param string $name    Config property name.
      * @param mixed  $default Default value which is returned if config is not set.
-     *
-     * @return mixed
      */
-    public function getConfigValue(string $name, $default = null)
+    public function getConfigValue(string $name, mixed $default = null): mixed
     {
         if (isset($this->config[$name])) {
             return $this->config[$name];
@@ -126,8 +102,6 @@ abstract class Base
      * Consider if config value isset.
      *
      * @param string $name Name of the config value.
-     *
-     * @return bool
      */
     public function hasConfigValue(string $name): bool
     {
@@ -137,7 +111,7 @@ abstract class Base
     /**
      * Add multiple config properties.
      *
-     * @param array $values Config values.
+     * @param array<string, mixed> $values Config values.
      *
      * @return $this
      */
@@ -167,7 +141,7 @@ abstract class Base
     /**
      * Get configuration.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getConfig(): array
     {

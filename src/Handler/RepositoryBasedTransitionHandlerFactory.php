@@ -1,15 +1,5 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Handler;
@@ -22,24 +12,18 @@ use Netzmacht\Workflow\Transaction\TransactionHandler;
 
 /**
  * Class RepositoryBasedTransitionHandlerFactory creates a repository based transition handler.
- *
- * @package Netzmacht\Workflow\Factory
  */
 class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactory
 {
     /**
      * Transaction handler being used during workflow transitions.
-     *
-     * @var TransactionHandler
      */
-    private $transactionHandler;
+    private TransactionHandler $transactionHandler;
 
     /**
      * The entity manager.
-     *
-     * @var EntityManager
      */
-    private $entityManager;
+    private EntityManager $entityManager;
 
     /**
      * Construct.
@@ -49,7 +33,7 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
      */
     public function __construct(
         EntityManager $entityManager,
-        TransactionHandler $transactionHandler
+        TransactionHandler $transactionHandler,
     ) {
         $this->transactionHandler = $transactionHandler;
         $this->entityManager      = $entityManager;
@@ -63,15 +47,13 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
      * @param string|null     $transitionName  Transition name.
      * @param string          $providerName    Provider name.
      * @param StateRepository $stateRepository The state repository.
-     *
-     * @return TransitionHandler
      */
     public function createTransitionHandler(
         Item $item,
         Workflow $workflow,
-        ?string $transitionName,
+        string|null $transitionName,
         string $providerName,
-        StateRepository $stateRepository
+        StateRepository $stateRepository,
     ): TransitionHandler {
         return new RepositoryBasedTransitionHandler(
             $item,
@@ -79,23 +61,20 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
             $transitionName,
             $this->entityManager->getRepository($providerName),
             $stateRepository,
-            $this->transactionHandler
+            $this->transactionHandler,
         );
     }
 
     /**
      * Get the entity manager.
-     *
-     * @return EntityManager
      */
     public function getEntityManager(): EntityManager
     {
         return $this->entityManager;
     }
+
     /**
      * Get the transaction handler.
-     *
-     * @return TransactionHandler
      */
     public function getTransactionHandler(): TransactionHandler
     {

@@ -1,15 +1,5 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Handler;
@@ -22,88 +12,67 @@ use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
+use Throwable;
 
 /**
  * Class TransitionHandler handles the transition to another step in the workflow.
- *
- * @package Netzmacht\Workflow
  */
 interface TransitionHandler
 {
-    /**
-     * Get the workflow.
-     *
-     * @return Workflow
-     */
+    /** Get the workflow. */
     public function getWorkflow(): Workflow;
 
     /**
      * Get the item.
-     *
-     * @return Item
      */
     public function getItem(): Item;
 
     /**
      * Get the transition.
      *
-     * @return Transition
-     *
      * @throws TransitionNotFound If transition was not found.
      */
     public function getTransition(): Transition;
 
     /**
-     * Get current step. Will return null if workflow is not started yet.
-     *
-     * @return Step|null
+     * Get the current step. Will return null if a workflow is not started yet.
      */
-    public function getCurrentStep():? Step;
+    public function getCurrentStep(): Step|null;
 
     /**
      * Consider if it handles a start transition.
-     *
-     * @return bool
      */
     public function isWorkflowStarted(): bool;
 
     /**
      * Consider if input is required.
      *
-     * @return array
+     * @return list<string>
      */
     public function getRequiredPayloadProperties(): array;
 
     /**
      * Consider if transition is available.
-     *
-     * @return bool
      */
     public function isAvailable(): bool;
 
     /**
      * Get the context.
-     *
-     * @return Context
      */
     public function getContext(): Context;
 
     /**
      * Validate the input.
      *
-     * @param array $payload The payload.
-     *
-     * @return bool
+     * @param array<string, mixed> $payload The payload.
      */
     public function validate(array $payload = []): bool;
 
     /**
-     * Transit to next step.
+     * Transit to the next step.
      *
-     * @throws WorkflowException For a workflow specific error.
-     * @throws \Exception        For any error caused maybe by 3rd party code in the actions.
-     *
-     * @return State
+     * @throws WorkflowException For a workflow-specific error.
+     * @throws Throwable         For any error caused maybe by 3rd party code in the actions.
      */
     public function transit(): State;
 }

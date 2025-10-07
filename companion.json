@@ -3,7 +3,7 @@
     "projects/library"
   ],
   "config": {
-    "phpConstraint": "^8.2",
+    "phpConstraint": "^8.3",
     "directories": [
       "spec"
     ]

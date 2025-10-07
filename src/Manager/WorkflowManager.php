@@ -1,15 +1,5 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Manager;
@@ -24,36 +14,32 @@ use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Handler\TransitionHandler;
 use Netzmacht\Workflow\Handler\TransitionHandlerFactory;
 
+use function sprintf;
+
 /**
  * Class Manager handles a set of workflows.
  *
  * Usually there will a different workflow manager for different workflow types. The manager is the API entry point
  * when using the workflow API.
- *
- * @package Netzmacht\Workflow
  */
 class WorkflowManager implements Manager
 {
     /**
      * The state repository.
-     *
-     * @var StateRepository
      */
-    private $stateRepository;
+    private StateRepository $stateRepository;
 
     /**
      * A set of workflows.
      *
      * @var Workflow[]
      */
-    private $workflows;
+    private array $workflows;
 
     /**
      * A Transition handler factory.
-     *
-     * @var TransitionHandlerFactory
      */
-    private $handlerFactory;
+    private TransitionHandlerFactory $handlerFactory;
 
     /**
      * Construct.
@@ -65,7 +51,7 @@ class WorkflowManager implements Manager
     public function __construct(
         TransitionHandlerFactory $handlerFactory,
         StateRepository $stateRepository,
-        $workflows = []
+        array $workflows = [],
     ) {
         Assertion::allIsInstanceOf($workflows, Workflow::class);
 
@@ -74,37 +60,32 @@ class WorkflowManager implements Manager
         $this->stateRepository = $stateRepository;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function handle(Item $item, string $transitionName = null, bool $changeWorkflow = false): ?TransitionHandler
-    {
+    public function handle(
+        Item $item,
+        string|null $transitionName = null,
+        bool $changeWorkflow = false,
+    ): TransitionHandler|null {
         $entity = $item->getEntity();
 
-        if (!$this->hasWorkflow($item->getEntityId(), $entity)) {
+        if (! $this->hasWorkflow($item->getEntityId(), $entity)) {
             return null;
         }
 
         $workflow = $this->getWorkflowByItem($item);
 
-        if ($this->hasWorkflowChanged($item, $workflow, !$changeWorkflow) && $changeWorkflow) {
+        if ($this->hasWorkflowChanged($item, $workflow, ! $changeWorkflow) && $changeWorkflow) {
             $item->detach();
         }
 
-        $handler = $this->handlerFactory->createTransitionHandler(
+        return $this->handlerFactory->createTransitionHandler(
             $item,
             $workflow,
             $transitionName,
             $item->getEntityId()->getProviderName(),
-            $this->stateRepository
+            $this->stateRepository,
         );
-
-        return $handler;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function addWorkflow(Workflow $workflow): Manager
     {
         $this->workflows[] = $workflow;
@@ -113,7 +94,7 @@ class WorkflowManager implements Manager
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @throws WorkflowNotFound When no supporting workflow is found.
      */
@@ -129,7 +110,7 @@ class WorkflowManager implements Manager
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @throws WorkflowNotFound When no workflow with name is found.
      */
@@ -144,9 +125,6 @@ class WorkflowManager implements Manager
         throw WorkflowNotFound::withName($name);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getWorkflowByItem(Item $item): Workflow
     {
         if ($item->getWorkflowName()) {
@@ -161,7 +139,7 @@ class WorkflowManager implements Manager
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function hasWorkflow(EntityId $entityId, $entity): bool
     {
@@ -175,7 +153,7 @@ class WorkflowManager implements Manager
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getWorkflows(): iterable
     {
@@ -183,7 +161,7 @@ class WorkflowManager implements Manager
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createItem(EntityId $entityId, $entity): Item
     {
@@ -200,17 +178,15 @@ class WorkflowManager implements Manager
      * @param bool     $throw    If true an error is thrown.
      *
      * @throws FlowException If item workflow is not the same as current workflow.
-     *
-     * @return bool
      */
     private function hasWorkflowChanged(Item $item, Workflow $workflow, bool $throw = true): bool
     {
-        if ($item->isWorkflowStarted() && $item->getWorkflowName() != $workflow->getName()) {
+        if ($item->isWorkflowStarted() && $item->getWorkflowName() !== $workflow->getName()) {
             $message = sprintf(
                 'Item "%s" already process workflow "%s" and cannot be handled by "%s"',
                 $item->getEntityId(),
                 $item->getWorkflowName(),
-                $workflow->getName()
+                $workflow->getName(),
             );
 
             if ($throw) {

@@ -1,44 +1,32 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow\Exception;
 
-use function end;
 use Netzmacht\Workflow\Flow\Action;
 use Netzmacht\Workflow\Flow\Base;
 use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 
+use function end;
+use function explode;
+use function sprintf;
+use function trim;
+
 /**
  * Class TransactionActionFailed is thrown then a transaction action failed.
- *
- * @package Netzmacht\Workflow\Flow\Transition
  */
 class ActionFailedException extends FlowException
 {
     /**
      * The action name.
-     *
-     * @var string|null
      */
-    private $actionName;
+    private string|null $actionName = null;
 
     /**
      * Additional error collection.
-     *
-     * @var ErrorCollection|null
      */
-    private $errorCollection;
+    private ErrorCollection|null $errorCollection = null;
 
     /**
      * Create exception for with an action name.
@@ -48,7 +36,7 @@ class ActionFailedException extends FlowException
      *
      * @return ActionFailedException
      */
-    public static function namedAction(string $actionName, ?ErrorCollection $errorCollection = null): self
+    public static function namedAction(string $actionName, ErrorCollection|null $errorCollection = null): self
     {
         $exception                  = new self(sprintf('Execution of action "%s" failed.', $actionName));
         $exception->actionName      = $actionName;
@@ -65,12 +53,12 @@ class ActionFailedException extends FlowException
      *
      * @return ActionFailedException
      */
-    public static function action(Action $action, ?ErrorCollection $errorCollection = null): self
+    public static function action(Action $action, ErrorCollection|null $errorCollection = null): self
     {
         if ($action instanceof Base) {
             $actionName = $action->getLabel();
         } else {
-            $parts      = explode('\\', trim(get_class($action), '\\'));
+            $parts      = explode('\\', trim($action::class, '\\'));
             $actionName = end($parts);
         }
 
@@ -79,20 +67,16 @@ class ActionFailedException extends FlowException
 
     /**
      * Get the action name.
-     *
-     * @return string|null
      */
-    public function actionName(): ?string
+    public function actionName(): string|null
     {
         return $this->actionName;
     }
 
     /**
      * Get the error collection.
-     *
-     * @return ErrorCollection|null
      */
-    public function errorCollection(): ?ErrorCollection
+    public function errorCollection(): ErrorCollection|null
     {
         return $this->errorCollection;
     }

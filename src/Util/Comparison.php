@@ -1,41 +1,39 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Util;
 
+use ReflectionClass;
+
+use function array_map;
+use function call_user_func;
+use function explode;
+use function implode;
+use function lcfirst;
+use function strtolower;
+use function ucfirst;
+
 /**
- * Class Comparison is an util class to allow value comparison by passing two values.
- *
- * @package Netzmacht\Workflow\Util
+ * Class Comparison is a util class to allow value comparison by passing two values.
  */
 final class Comparison
 {
-    const EQUALS                 = '==';
-    const IDENTICAL              = '===';
-    const NOT_EQUALS             = '!=';
-    const NOT_IDENTICAL          = '!==';
-    const GREATER_THAN           = '>';
-    const LESSER_THAN            = '<';
-    const LESSER_THAN_OR_EQUALS  = '<=';
-    const GREATER_THAN_OR_EQUALS = '>=';
+    public const string EQUALS                 = '==';
+    public const string IDENTICAL              = '===';
+    public const string NOT_EQUALS             = '!=';
+    public const string NOT_IDENTICAL          = '!==';
+    public const string GREATER_THAN           = '>';
+    public const string LESSER_THAN            = '<';
+    public const string LESSER_THAN_OR_EQUALS  = '<=';
+    public const string GREATER_THAN_OR_EQUALS = '>=';
 
     /**
      * Operation method mapping cache.
      *
-     * @var array
+     * @var array<string, string>
      */
-    private static $operators;
+    private static array $operators;
 
     /**
      * Compare two values.
@@ -43,15 +41,13 @@ final class Comparison
      * @param mixed  $valueA   Value a.
      * @param mixed  $valueB   Value b.
      * @param string $operator The operator for the comparison.
-     *
-     * @return bool
      */
-    public static function compare($valueA, $valueB, string $operator): bool
+    public static function compare(mixed $valueA, mixed $valueB, string $operator): bool
     {
         $method = self::getOperatorMethod($operator);
 
         if ($method) {
-            return call_user_func([get_called_class(), $method], $valueA, $valueB);
+            return call_user_func([self::class, $method], $valueA, $valueB);
         }
 
         return false;
@@ -62,12 +58,10 @@ final class Comparison
      *
      * @param mixed $valueA Value a.
      * @param mixed $valueB Value b.
-     *
-     * @return bool
      */
-    public static function equals($valueA, $valueB): bool
+    public static function equals(mixed $valueA, mixed $valueB): bool
     {
-        return $valueA == $valueB;
+        return $valueA === $valueB;
     }
 
     /**
@@ -77,10 +71,8 @@ final class Comparison
      *
      * @param mixed $valueA Value a.
      * @param mixed $valueB Value b.
-     *
-     * @return bool
      */
-    public static function identical($valueA, $valueB): bool
+    public static function identical(mixed $valueA, mixed $valueB): bool
     {
         return $valueA === $valueB;
     }
@@ -90,12 +82,10 @@ final class Comparison
      *
      * @param mixed $valueA Value a.
      * @param mixed $valueB Value b.
-     *
-     * @return bool
      */
-    public static function notEquals($valueA, $valueB): bool
+    public static function notEquals(mixed $valueA, mixed $valueB): bool
     {
-        return !static::equals($valueA, $valueB);
+        return ! self::equals($valueA, $valueB);
     }
 
     /**
@@ -103,12 +93,10 @@ final class Comparison
      *
      * @param mixed $valueA Value a.
      * @param mixed $valueB Value b.
-     *
-     * @return bool
      */
-    public static function notIdentical($valueA, $valueB): bool
+    public static function notIdentical(mixed $valueA, mixed $valueB): bool
     {
-        return !static::identical($valueA, $valueB);
+        return ! self::identical($valueA, $valueB);
     }
 
     /**
@@ -116,10 +104,8 @@ final class Comparison
      *
      * @param mixed $valueA Value a.
      * @param mixed $valueB Value b.
-     *
-     * @return bool
      */
-    public static function greaterThan($valueA, $valueB): bool
+    public static function greaterThan(mixed $valueA, mixed $valueB): bool
     {
         return $valueA > $valueB;
     }
@@ -129,10 +115,8 @@ final class Comparison
      *
      * @param mixed $valueA Value a.
      * @param mixed $valueB Value b.
-     *
-     * @return bool
      */
-    public static function greaterThanOrEquals($valueA, $valueB): bool
+    public static function greaterThanOrEquals(mixed $valueA, mixed $valueB): bool
     {
         return $valueA >= $valueB;
     }
@@ -142,10 +126,8 @@ final class Comparison
      *
      * @param mixed $valueA Value a.
      * @param mixed $valueB Value b.
-     *
-     * @return bool
      */
-    public static function lesserThan($valueA, $valueB): bool
+    public static function lesserThan(mixed $valueA, mixed $valueB): bool
     {
         return $valueA < $valueB;
     }
@@ -155,10 +137,8 @@ final class Comparison
      *
      * @param mixed $valueA Value a.
      * @param mixed $valueB Value b.
-     *
-     * @return bool
      */
-    public static function lesserThanOrEquals($valueA, $valueB): bool
+    public static function lesserThanOrEquals(mixed $valueA, mixed $valueB): bool
     {
         return $valueA <= $valueB;
     }
@@ -167,10 +147,8 @@ final class Comparison
      * Get operator method. Returns false if metod not set.
      *
      * @param string $operator The current operator.
-     *
-     * @return string|bool
      */
-    private static function getOperatorMethod(string $operator)
+    private static function getOperatorMethod(string $operator): string|bool
     {
         $operators = self::getOperators();
 
@@ -184,25 +162,25 @@ final class Comparison
     /**
      * Get operator method mapping.
      *
-     * @return array
+     * @return array<string, string>
      */
     private static function getOperators(): array
     {
-        if (!is_array(self::$operators)) {
-            $reflector = new \ReflectionClass(get_called_class());
+        if (! isset(self::$operators)) {
+            $reflector = new ReflectionClass(self::class);
             $constants = $reflector->getConstants();
-            $operators = array();
+            $operators = [];
 
             foreach ($constants as $name => $operator) {
                 $parts = explode('_', $name);
                 $parts = array_map(
-                    function ($item) {
+                    static function ($item) {
                         $item = strtolower($item);
                         $item = ucfirst($item);
 
                         return $item;
                     },
-                    $parts
+                    $parts,
                 );
 
                 $operators[$operator] = lcfirst(implode('', $parts));

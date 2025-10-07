@@ -1,41 +1,28 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Data;
 
 use Assert\Assertion;
 
+use function explode;
+use function is_numeric;
+
 /**
  * Class EntityId identifies an entity by using its row id and provider name.
- *
- * @package Netzmacht\Workflow\Data
  */
 final class EntityId
 {
     /**
      * The identifier. Usually a database id.
-     *
-     * @var mixed
      */
-    private $identifier;
+    private mixed $identifier;
 
     /**
      * The provider name. Usually the database table name.
-     *
-     * @var string
      */
-    private $providerName;
+    private string $providerName;
 
     /**
      * Construct.
@@ -43,7 +30,7 @@ final class EntityId
      * @param string $providerName The provider name.
      * @param mixed  $identifier   The identifier.
      */
-    private function __construct(string $providerName, $identifier)
+    private function __construct(string $providerName, mixed $identifier)
     {
         // cast to int, but not for uuids
         if (is_numeric($identifier)) {
@@ -63,7 +50,7 @@ final class EntityId
      */
     public static function fromString(string $entityId): self
     {
-        list($providerName, $identifier) = explode('::', $entityId, 2);
+        [$providerName, $identifier] = explode('::', $entityId, 2);
 
         Assertion::notEmpty($providerName);
         Assertion::notEmpty($identifier);
@@ -79,25 +66,21 @@ final class EntityId
      *
      * @return static
      */
-    public static function fromProviderNameAndId(string $providerName, $identifier): self
+    public static function fromProviderNameAndId(string $providerName, mixed $identifier): self
     {
         return new static($providerName, $identifier);
     }
 
     /**
      * Get the identifier.
-     *
-     * @return mixed
      */
-    public function getIdentifier()
+    public function getIdentifier(): mixed
     {
         return $this->identifier;
     }
 
     /**
      * Get the provider name.
-     *
-     * @return string
      */
     public function getProviderName(): string
     {
@@ -108,18 +91,14 @@ final class EntityId
      * Consider if it is equal with another entity id.
      *
      * @param EntityId $entityId The entity id to compare with.
-     *
-     * @return bool
      */
     public function equals(EntityId $entityId): bool
     {
-        return ((string) $this == (string) $entityId);
+        return (string) $this === (string) $entityId;
     }
 
     /**
      * Cast entity id to string.
-     *
-     * @return string
      */
     public function __toString(): string
     {

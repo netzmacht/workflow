@@ -1,14 +1,6 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
+declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Flow;
 
@@ -17,45 +9,40 @@ use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context\Properties;
 use PhpSpec\ObjectBehavior;
 
-/**
- * Class ContextSpec
- *
- * @package spec\Netzmacht\Contao\Workflow\Flow
- */
 class ContextSpec extends ObjectBehavior
 {
-    const CUSTOM_NS = 'custom';
+    public const string CUSTOM_NS = 'custom';
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType(Context::class);
     }
 
-    function it_accepts_initial_properties(Properties $properties)
+    public function it_accepts_initial_properties(Properties $properties): void
     {
         $this->beConstructedWith($properties);
 
         $this->getProperties()->shouldBe($properties);
     }
 
-    function it_accepts_initial_payload(Properties $payload)
+    public function it_accepts_initial_payload(Properties $payload): void
     {
         $this->beConstructedWith(null, $payload);
 
         $this->getPayload()->shouldBe($payload);
     }
 
-    function it_has_properties()
+    public function it_has_properties(): void
     {
         $this->getProperties()->shouldHaveType(Properties::class);
     }
 
-    function it_has_payload()
+    public function it_has_payload(): void
     {
         $this->getPayload()->shouldHaveType(Properties::class);
     }
 
-    function it_has_error_collection()
+    public function it_has_error_collection(): void
     {
         $this->getErrorCollection()->shouldHaveType(ErrorCollection::class);
     }

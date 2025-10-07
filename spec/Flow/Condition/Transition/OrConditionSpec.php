@@ -1,18 +1,11 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
+declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
+use Netzmacht\Workflow\Flow\Condition\Transition\OrCondition;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use Netzmacht\Workflow\Flow\Item;
@@ -20,33 +13,28 @@ use Netzmacht\Workflow\Flow\Transition;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-/**
- * Class OrConditionSpec
- *
- * @package spec\Netzmacht\Workflow\Flow\Condition\Transition
- */
 class OrConditionSpec extends ObjectBehavior
 {
-    const ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Flow\Context\ErrorCollection';
+    public const string ERROR_COLLECTION_CLASS = ErrorCollection::class;
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Flow\Condition\Transition\OrCondition');
+        $this->shouldHaveType(OrCondition::class);
     }
 
-    function it_is_a_condition_collection()
+    public function it_is_a_condition_collection(): void
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Flow\Condition\Transition\ConditionCollection');
+        $this->shouldHaveType(ConditionCollection::class);
     }
 
-    function it_matches_if_any_child_matches(
+    public function it_matches_if_any_child_matches(
         Condition $conditionA,
         Condition $conditionB,
         Transition $transition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection
-    ) {
+        ErrorCollection $errorCollection,
+    ): void {
         $context->createCleanCopy()->willReturn($context);
         $context->getErrorCollection()->willReturn($errorCollection);
 
@@ -59,14 +47,14 @@ class OrConditionSpec extends ObjectBehavior
         $this->match($transition, $item, $context)->shouldReturn(true);
     }
 
-    function it_does_not_match_if_all_children_does_not(
+    public function it_does_not_match_if_all_children_does_not(
         Condition $conditionA,
         Condition $conditionB,
         Transition $transition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection
-    ) {
+        ErrorCollection $errorCollection,
+    ): void {
         $context->createCleanCopy()->willReturn($context);
         $context->getErrorCollection()->willReturn($errorCollection);
 
@@ -81,12 +69,12 @@ class OrConditionSpec extends ObjectBehavior
         $this->match($transition, $item, $context)->shouldReturn(false);
     }
 
-    function it_matches_if_no_children_exists(
+    public function it_matches_if_no_children_exists(
         Transition $transition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection
-    ) {
+        ErrorCollection $errorCollection,
+    ): void {
         $this->match($transition, $item, $context, $errorCollection)->shouldReturn(true);
     }
 }

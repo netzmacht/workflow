@@ -1,15 +1,5 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow\Condition\Workflow;
@@ -18,8 +8,6 @@ use Assert\Assertion;
 
 /**
  * Class ConditionCollection contains child condition which are called during match.
- *
- * @package Netzmacht\Workflow\Flow\Condition\Workflow
  */
 abstract class ConditionCollection implements Condition
 {
@@ -28,14 +16,14 @@ abstract class ConditionCollection implements Condition
      *
      * @var Condition[]|iterable
      */
-    protected $conditions = array();
+    protected iterable $conditions = [];
 
     /**
      * Construct.
      *
      * @param Condition[]|iterable $conditions Conditions.
      */
-    public function __construct(iterable $conditions = array())
+    public function __construct(iterable $conditions = [])
     {
         $this->addConditions($conditions);
     }
@@ -92,9 +80,11 @@ abstract class ConditionCollection implements Condition
     public function removeCondition(Condition $condition): self
     {
         foreach ($this->conditions as $index => $value) {
-            if ($value === $condition) {
-                unset($this->conditions[$index]);
+            if ($value !== $condition) {
+                continue;
             }
+
+            unset($this->conditions[$index]);
         }
 
         return $this;

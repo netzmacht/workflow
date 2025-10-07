@@ -1,15 +1,5 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Handler;
@@ -23,54 +13,42 @@ use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 
+use function sprintf;
+
 /**
  * AbstractTransitionHandler can be used as base class for transition handler implementations.
- *
- * @package Netzmacht\Workflow\Handler
  */
 abstract class AbstractTransitionHandler implements TransitionHandler
 {
     /**
      * The given entity.
-     *
-     * @var Item
      */
-    private $item;
+    private Item $item;
 
     /**
      * The current workflow.
-     *
-     * @var Workflow
      */
-    private $workflow;
+    private Workflow $workflow;
 
     /**
      * The transition name which will be handled.
-     *
-     * @var string
      */
-    private $transitionName;
+    private string $transitionName;
 
     /**
      * Validation state.
-     *
-     * @var bool
      */
-    private $validated;
+    private bool $validated;
 
     /**
      * The transaction handler.
-     *
-     * @var TransactionHandler
      */
-    protected $transactionHandler;
+    protected TransactionHandler $transactionHandler;
 
     /**
      * The transition context.
-     *
-     * @var Context
      */
-    private $context;
+    private Context $context;
 
     /**
      * Construct.
@@ -85,8 +63,8 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     public function __construct(
         Item $item,
         Workflow $workflow,
-        $transitionName,
-        TransactionHandler $transactionHandler
+        string $transitionName,
+        TransactionHandler $transactionHandler,
     ) {
         $this->item               = $item;
         $this->workflow           = $workflow;
@@ -97,9 +75,6 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         $this->guardAllowedTransition($transitionName);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getTransition(): Transition
     {
         if ($this->isWorkflowStarted()) {
@@ -109,40 +84,28 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         return $this->workflow->getStartTransition();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getWorkflow(): Workflow
     {
         return $this->workflow;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getItem(): Item
     {
         return $this->item;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getContext(): Context
     {
         return $this->context;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function isWorkflowStarted(): bool
     {
         return $this->item->isWorkflowStarted();
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getRequiredPayloadProperties(): array
     {
@@ -151,18 +114,13 @@ abstract class AbstractTransitionHandler implements TransitionHandler
 
     /**
      * Consider if transition is available.
-     *
-     * @return bool
      */
     public function isAvailable(): bool
     {
         return $this->getTransition()->isAvailable($this->item, $this->context);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCurrentStep():? Step
+    public function getCurrentStep(): Step|null
     {
         if ($this->isWorkflowStarted()) {
             $stepName = $this->item->getCurrentStepName();
@@ -174,7 +132,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function validate(array $payload = []): bool
     {
@@ -189,11 +147,11 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         }
 
         // Validate the actions
-        if (!$transition->validate($this->item, $this->context)) {
+        if (! $transition->validate($this->item, $this->context)) {
             $this->validated = false;
         }
 
-        if ($this->validated && !$transition->checkCondition($this->item, $this->context)) {
+        if ($this->validated && ! $transition->checkCondition($this->item, $this->context)) {
             $this->validated = false;
         }
 
@@ -202,8 +160,6 @@ abstract class AbstractTransitionHandler implements TransitionHandler
 
     /**
      * Execute the transition.
-     *
-     * @return State
      */
     protected function executeTransition(): State
     {
@@ -214,14 +170,14 @@ abstract class AbstractTransitionHandler implements TransitionHandler
      * Guard that transition was validated before.
      *
      * @throws FlowException If transition.
-     *
-     * @return void
      */
     protected function guardValidated(): void
     {
         if ($this->validated === null) {
             throw new FlowException('Transition was not validated so far.');
-        } elseif (!$this->validated) {
+        }
+
+        if (! $this->validated) {
             throw new FlowException('Transition is in a invalid state and can\'t be processed.');
         }
     }
@@ -232,12 +188,10 @@ abstract class AbstractTransitionHandler implements TransitionHandler
      * @param string|null $transitionName Transition to be processed.
      *
      * @throws FlowException If Transition is not allowed.
-     *
-     * @return void
      */
-    private function guardAllowedTransition(?string $transitionName): void
+    private function guardAllowedTransition(string|null $transitionName): void
     {
-        if (!$this->isWorkflowStarted()) {
+        if (! $this->isWorkflowStarted()) {
             if ($transitionName === null || $transitionName === $this->getWorkflow()->getStartTransition()->getName()) {
                 return;
             }
@@ -247,20 +201,20 @@ abstract class AbstractTransitionHandler implements TransitionHandler
                     'Not allowed to process transition "%s". Workflow "%s" not started for item "%s"',
                     $transitionName,
                     $this->workflow->getName(),
-                    $this->item->getEntityId()
-                )
+                    $this->item->getEntityId(),
+                ),
             );
         }
 
         $step = $this->getCurrentStep();
 
-        if (!$step->isTransitionAllowed($transitionName)) {
+        if (! $step->isTransitionAllowed($transitionName)) {
             throw new FlowException(
                 sprintf(
                     'Not allowed to process transition "%s". Transition is not allowed in step "%s"',
                     $transitionName,
-                    $step->getName()
-                )
+                    $step->getName(),
+                ),
             );
         }
     }

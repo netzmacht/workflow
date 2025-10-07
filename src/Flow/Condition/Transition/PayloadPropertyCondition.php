@@ -1,15 +1,5 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow\Condition\Transition;
@@ -19,49 +9,35 @@ use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Util\Comparison;
 
-/**
- * Class PayloadPropertyCondition
- */
 class PayloadPropertyCondition implements Condition
 {
     /**
      * Payload property name.
-     *
-     * @var string
      */
-    private $property;
+    private string $property;
 
     /**
      * Expected value.
-     *
-     * @var mixed
      */
-    private $value;
+    private mixed $value;
 
     /**
      * Comparison operator.
-     *
-     * @var string
      */
-    private $operator;
+    private string $operator;
 
     /**
-     * PayloadPropertyCondition constructor.
-     *
      * @param string $property Payload property name.
      * @param mixed  $value    Expected value.
      * @param string $operator Comparison operator.
      */
-    public function __construct(string $property, $value, string $operator = Comparison::EQUALS)
+    public function __construct(string $property, mixed $value, string $operator = Comparison::EQUALS)
     {
         $this->property = $property;
         $this->value    = $value;
         $this->operator = $operator;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function match(Transition $transition, Item $item, Context $context): bool
     {
         $payloadValue = $context->getPayload()->get($this->property);
@@ -77,7 +53,7 @@ class PayloadPropertyCondition implements Condition
                 'expected' => $this->value,
                 'actual'   => $payloadValue,
                 'operator' => $this->operator,
-            ]
+            ],
         );
 
         return false;

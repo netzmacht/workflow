@@ -1,14 +1,6 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
+declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Flow\Context;
 
@@ -18,11 +10,12 @@ use PhpSpec\ObjectBehavior;
 
 class ErrorCollectionSpec extends ObjectBehavior
 {
-    const MESSAGE = 'test %s %s';
+    public const string MESSAGE = 'test %s %s';
 
-    protected static $params = ['foo', 'baar'];
+    /** @var list<string> */
+    protected static array $params = ['foo', 'baar'];
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType(ErrorCollection::class);
     }
@@ -32,94 +25,94 @@ class ErrorCollectionSpec extends ObjectBehavior
         $this->shouldImplement(Countable::class);
     }
 
-    function it_adds_error()
+    public function it_adds_error(): void
     {
-        $this->addError(static::MESSAGE, static::$params)->shouldReturn($this);
-        $this->getErrors()->shouldContain([static::MESSAGE, static::$params, null]);
+        $this->addError(self::MESSAGE, static::$params)->shouldReturn($this);
+        $this->getErrors()->shouldContain([self::MESSAGE, static::$params, null]);
     }
 
-    function it_counts_errors()
+    public function it_counts_errors(): void
     {
         $this->countErrors()->shouldReturn(0);
         $this->count()->shouldReturn(0);
-        $this->addError(static::MESSAGE, static::$params);
+        $this->addError(self::MESSAGE, static::$params);
         $this->countErrors()->shouldReturn(1);
         $this->count()->shouldReturn(1);
-        $this->addError(static::MESSAGE, static::$params);
+        $this->addError(self::MESSAGE, static::$params);
         $this->countErrors()->shouldReturn(2);
         $this->count()->shouldReturn(2);
     }
 
-    function it_gets_error_by_index()
+    public function it_gets_error_by_index(): void
     {
-        $this->addError(static::MESSAGE, static::$params);
-        $this->getError(0)->shouldReturn([static::MESSAGE, static::$params, null]);
+        $this->addError(self::MESSAGE, static::$params);
+        $this->getError(0)->shouldReturn([self::MESSAGE, static::$params, null]);
     }
 
-    function it_throws_when_unknown_error_index_given()
+    public function it_throws_when_unknown_error_index_given(): void
     {
         $this->shouldThrow('InvalidArgumentException')->during('getError', [0]);
     }
 
-    function it_can_be_reset()
+    public function it_can_be_reset(): void
     {
-        $this->addError(static::MESSAGE, static::$params);
+        $this->addError(self::MESSAGE, static::$params);
         $this->hasErrors()->shouldReturn(true);
         $this->reset()->shouldReturn($this);
         $this->hasErrors()->shouldReturn(false);
     }
 
-    function it_adds_multiple_errors(ErrorCollection $errorCollection)
+    public function it_adds_multiple_errors(ErrorCollection $errorCollection): void
     {
         $errors = [
-            [static::MESSAGE, static::$params, null],
-            [static::MESSAGE, static::$params, $errorCollection],
+            [self::MESSAGE, static::$params, null],
+            [self::MESSAGE, static::$params, $errorCollection],
         ];
 
         $allErrors = [
-            [static::MESSAGE, static::$params, null],
-            [static::MESSAGE, static::$params, null],
-            [static::MESSAGE, static::$params, $errorCollection],
+            [self::MESSAGE, static::$params, null],
+            [self::MESSAGE, static::$params, null],
+            [self::MESSAGE, static::$params, $errorCollection],
         ];
 
         // make sure it does not override
-        $this->addError(static::MESSAGE, static::$params);
+        $this->addError(self::MESSAGE, static::$params);
 
         $this->addErrors($errors)->shouldReturn($this);
         $this->countErrors()->shouldReturn(3);
         $this->getErrors()->shouldReturn($allErrors);
     }
 
-    function it_iterates_over_errors()
+    public function it_iterates_over_errors(): void
     {
         $this->shouldHaveType('IteratorAggregate');
         $this->getIterator()->shouldHaveType('Traversable');
     }
 
-    function it_converts_to_array(ErrorCollection $errorCollection)
+    public function it_converts_to_array(ErrorCollection $errorCollection): void
     {
         $errors = [
-            [static::MESSAGE, static::$params, null],
-            [static::MESSAGE, static::$params, $errorCollection],
+            [self::MESSAGE, static::$params, null],
+            [self::MESSAGE, static::$params, $errorCollection],
         ];
 
         $errorCollection->toArray()
             ->shouldBeCalled()
-            ->willReturn([[static::MESSAGE, static::$params, null]]);
+            ->willReturn([[self::MESSAGE, static::$params, null]]);
 
         $this->addErrors($errors)->shouldReturn($this);
 
         $this->toArray()->shouldReturn(
             [
-                [static::MESSAGE, static::$params, null],
+                [self::MESSAGE, static::$params, null],
                 [
-                    static::MESSAGE,
+                    self::MESSAGE,
                     static::$params,
                     [
-                        [static::MESSAGE, static::$params, null],
+                        [self::MESSAGE, static::$params, null],
                     ],
                 ],
-            ]
+            ],
         );
     }
 }

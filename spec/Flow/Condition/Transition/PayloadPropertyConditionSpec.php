@@ -1,14 +1,6 @@
 <?php
 
-/**
- * workflow.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2017 netzmacht David Molineus. All rights reserved.
- * @license    LGPL-3.0 https://github.com/netzmacht/contao-leaflet-maps/blob/master/LICENSE
- * @filesource
- */
+declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
@@ -22,58 +14,53 @@ use Netzmacht\Workflow\Util\Comparison;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-/**
- * Class PayloadPropertyConditionSpec
- *
- * @package spec\Netzmacht\Workflow\Flow\Condition\Transition
- */
 class PayloadPropertyConditionSpec extends ObjectBehavior
 {
-    function let(Context $context, Properties $payload)
+    public function let(Context $context, Properties $payload): void
     {
         $context->getPayload()->willReturn($payload);
 
         $this->beConstructedWith('foo', 'bar');
     }
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType(PayloadPropertyCondition::class);
     }
 
-    function it_is_a_transition_condition()
+    public function it_is_a_transition_condition(): void
     {
         $this->shouldImplement(Condition::class);
     }
 
-    function it_compares_payload_property_with_expected_value(
+    public function it_compares_payload_property_with_expected_value(
         Transition $transition,
         Item $item,
         Context $context,
-        Properties $payload
-    ) {
+        Properties $payload,
+    ): void {
         $payload->get('foo')->willReturn('bar');
 
         $this->match($transition, $item, $context);
     }
 
-    function it_supports_different_operators(
+    public function it_supports_different_operators(
         Transition $transition,
         Item $item,
         Context $context,
-        Properties $payload
-    ) {
+        Properties $payload,
+    ): void {
         $this->beConstructedWith('foo', 3, Comparison::LESSER_THAN);
         $payload->get('foo')->willReturn(2);
         $this->match($transition, $item, $context);
     }
 
-    function it_creates_an_error_when_comparison_fails(
+    public function it_creates_an_error_when_comparison_fails(
         Transition $transition,
         Item $item,
         Context $context,
-        Properties $payload
-    ) {
+        Properties $payload,
+    ): void {
         $payload->get('foo')->willReturn('baz');
 
         $context->addError('transition.condition.payload_property.failed', Argument::type('array'))

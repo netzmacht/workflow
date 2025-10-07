@@ -1,102 +1,89 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
+declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Data;
 
 use Netzmacht\Workflow\Data\EntityId;
 use PhpSpec\ObjectBehavior;
 
-/**
- * Class EntityIdSpec
- *
- * @package spec\Netzmacht\Workflow\Data
- */
 class EntityIdSpec extends ObjectBehavior
 {
-    const PROVIDER_NAME = 'provider_example';
+    public const string PROVIDER_NAME = 'provider_example';
 
-    const IDENTIFIER = 10;
+    public const int IDENTIFIER = 10;
 
-    function let()
+    public function let(): void
     {
-        $this->beConstructedThrough('fromProviderNameAndId', [static::PROVIDER_NAME, static::IDENTIFIER]);
+        $this->beConstructedThrough('fromProviderNameAndId', [self::PROVIDER_NAME, self::IDENTIFIER]);
     }
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType(EntityId::class);
     }
 
-    function it_has_an_identifier()
+    public function it_has_an_identifier(): void
     {
         $this->getIdentifier()
-            ->shouldReturn(static::IDENTIFIER);
+            ->shouldReturn(self::IDENTIFIER);
     }
 
-    function it_has_a_provider_name()
+    public function it_has_a_provider_name(): void
     {
         $this->getProviderName()
-            ->shouldReturn(static::PROVIDER_NAME);
+            ->shouldReturn(self::PROVIDER_NAME);
     }
 
-    function it_equals_to_same_entity_id()
+    public function it_equals_to_same_entity_id(): void
     {
-        $otherEntityId = EntityId::fromString(static::PROVIDER_NAME . '::' . static::IDENTIFIER);
+        $otherEntityId = EntityId::fromString(self::PROVIDER_NAME . '::' . self::IDENTIFIER);
 
         $this->equals($otherEntityId)
             ->shouldReturn(true);
     }
 
-    function it_does_not_equals_to_another_entity_id_with_different_id()
+    public function it_does_not_equals_to_another_entity_id_with_different_id(): void
     {
-        $otherEntityId = EntityId::fromString(static::PROVIDER_NAME . '::' . (static::IDENTIFIER + 5));
+        $otherEntityId = EntityId::fromString(self::PROVIDER_NAME . '::' . (self::IDENTIFIER + 5));
 
         $this->equals($otherEntityId)
             ->shouldReturn(false);
     }
 
-    function it_does_not_equals_to_another_entity_id_with_different_provider_name()
+    public function it_does_not_equals_to_another_entity_id_with_different_provider_name(): void
     {
-        $otherEntityId = EntityId::fromString(static::PROVIDER_NAME . '_2::' . static::IDENTIFIER);
+        $otherEntityId = EntityId::fromString(self::PROVIDER_NAME . '_2::' . self::IDENTIFIER);
 
         $this->equals($otherEntityId)
             ->shouldReturn(false);
     }
 
-    function it_casts_to_string()
+    public function it_casts_to_string(): void
     {
         $this->__toString()
-            ->shouldReturn(static::PROVIDER_NAME . '::' . static::IDENTIFIER);
+            ->shouldReturn(self::PROVIDER_NAME . '::' . self::IDENTIFIER);
     }
 
-    function it_parses_string_representation()
+    public function it_parses_string_representation(): void
     {
-        $this->beConstructedThrough('fromString', [static::PROVIDER_NAME . '::' . static::IDENTIFIER]);
+        $this->beConstructedThrough('fromString', [self::PROVIDER_NAME . '::' . self::IDENTIFIER]);
 
         $this->getIdentifier()
-            ->shouldReturn(static::IDENTIFIER);
+            ->shouldReturn(self::IDENTIFIER);
 
         $this->getProviderName()
-            ->shouldReturn(static::PROVIDER_NAME);
+            ->shouldReturn(self::PROVIDER_NAME);
     }
 
-    function it_constructs_from_scalars()
+    public function it_constructs_from_scalars(): void
     {
-        $this->beConstructedThrough('fromProviderNameAndId', [static::PROVIDER_NAME, static::IDENTIFIER]);
+        $this->beConstructedThrough('fromProviderNameAndId', [self::PROVIDER_NAME, self::IDENTIFIER]);
 
         $this->getIdentifier()
-            ->shouldReturn(static::IDENTIFIER);
+            ->shouldReturn(self::IDENTIFIER);
 
         $this->getProviderName()
-            ->shouldReturn(static::PROVIDER_NAME);
+            ->shouldReturn(self::PROVIDER_NAME);
     }
 }

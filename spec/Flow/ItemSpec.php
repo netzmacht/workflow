@@ -1,14 +1,6 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
+declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Flow;
 
@@ -23,59 +15,52 @@ use Netzmacht\Workflow\Flow\Workflow;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-/**
- * Class ItemSpec
- *
- * @package spec\Netzmacht\Workflow\Flow
- */
 class ItemSpec extends ObjectBehavior
 {
-    protected static $entity = ['id' => 5];
+    /** @var array<string, mixed> */
+    protected static array $entity = ['id' => 5];
 
-    /**
-     * @var EntityId
-     */
-    private $entityId;
+    private EntityId $entityId;
 
-    function let()
+    public function let(): void
     {
         $this->entityId = EntityId::fromProviderNameAndId('entity', 4);
 
         $this->beConstructedThrough('initialize', [$this->entityId, static::$entity]);
     }
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType('Netzmacht\Workflow\Flow\Item');
     }
 
-    function it_restores_state_history(State $state)
+    public function it_restores_state_history(State $state): void
     {
         $this->beConstructedThrough('reconstitute', [$this->entityId, static::$entity, [$state]]);
     }
 
-    function it_has_an_entity_id()
+    public function it_has_an_entity_id(): void
     {
         $this->getEntityId()->shouldReturn($this->entityId);
     }
 
-    function it_has_an_entity()
+    public function it_has_an_entity(): void
     {
         $this->getEntity()->shouldReturn(static::$entity);
     }
 
-    function it_knows_if_workflow_is_started()
+    public function it_knows_if_workflow_is_started(): void
     {
         $this->isWorkflowStarted()->shouldReturn(false);
     }
 
-    function it_transits_to_a_successful_state(
+    public function it_transits_to_a_successful_state(
         State $state,
         State $newState,
         Transition $transition,
         Context $context,
-        ErrorCollection $errorCollection
-    ) {
+        ErrorCollection $errorCollection,
+    ): void {
         $state->getStepName()->willReturn('start');
         $state->getWorkflowName()->willReturn('workflow_name');
         $state->isSuccessful()->willReturn(true);
@@ -97,15 +82,14 @@ class ItemSpec extends ObjectBehavior
         $this->getLatestState()->shouldNotBe($state);
     }
 
-
-    function it_starts_a_new_workflow_state(
+    public function it_starts_a_new_workflow_state(
         Transition $transition,
         Workflow $workflow,
         Step $step,
         Context $context,
         ErrorCollection $errorCollection,
-        Properties $properties
-    ) {
+        Properties $properties,
+    ): void {
         $workflow->getName()->willReturn('workflow');
         $step->getName()->willReturn('step');
         $step->getWorkflowName()->willReturn('workflow');
@@ -164,8 +148,8 @@ class ItemSpec extends ObjectBehavior
         Context $context,
         ErrorCollection $errorCollection,
         Properties $payload,
-        Properties $properties
-    ) : void {
+        Properties $properties,
+    ): void {
         $transition->getWorkflow()
             ->willReturn($workflow);
 

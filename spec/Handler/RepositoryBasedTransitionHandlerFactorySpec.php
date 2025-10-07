@@ -1,14 +1,6 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
+declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Handler;
 
@@ -20,42 +12,38 @@ use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 use PhpSpec\ObjectBehavior;
 
-/**
- * Class EventDispatchingTransitionHandlerFactorySpec
- *
- * @package spec\Netzmacht\Workflow\Factory
- */
 class RepositoryBasedTransitionHandlerFactorySpec extends ObjectBehavior
 {
-    protected static $entity = ['id' => 5];
+    /** @var array<string, mixed> */
+    protected static array $entity = ['id' => 5];
 
-    function let(TransactionHandler $transactionHandler, EntityManager $entityManager)
+    public function let(TransactionHandler $transactionHandler, EntityManager $entityManager): void
     {
         $this->beConstructedWith($entityManager, $transactionHandler);
     }
 
-    function it_is_initializable()
+    public function it_is_initializable(): void
     {
         $this->shouldHaveType('Netzmacht\Workflow\Handler\RepositoryBasedTransitionHandlerFactory');
     }
 
-    function it_gets_entity_manager(EntityManager $entityManager)
+    public function it_gets_entity_manager(EntityManager $entityManager): void
     {
         $this->getEntityManager()->shouldReturn($entityManager);
     }
 
-    function it_gets_transaction_handler(TransactionHandler $transactionHandler)
+    public function it_gets_transaction_handler(TransactionHandler $transactionHandler): void
     {
         $this->getTransactionHandler()->shouldReturn($transactionHandler);
     }
 
-    function it_creates_the_repository_based_transition_handler(
+    public function it_creates_the_repository_based_transition_handler(
         Item $item,
         Workflow $workflow,
         StateRepository $stateRepository,
         EntityManager $entityManager,
-        EntityRepository $entityRepository
-    ) {
+        EntityRepository $entityRepository,
+    ): void {
         $entityManager->getRepository('test')->willReturn($entityRepository);
 
         $item->isWorkflowStarted()->willReturn(false);
@@ -66,7 +54,7 @@ class RepositoryBasedTransitionHandlerFactorySpec extends ObjectBehavior
             $workflow,
             null,
             'test',
-            $stateRepository
+            $stateRepository,
         )
             ->shouldHaveType('Netzmacht\Workflow\Handler\RepositoryBasedTransitionHandler');
     }

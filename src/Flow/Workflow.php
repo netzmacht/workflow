@@ -1,15 +1,5 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow;
@@ -20,57 +10,52 @@ use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
 use Netzmacht\Workflow\Flow\Exception\StepNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\TransitionNotFound;
 
+use function array_filter;
+use function array_map;
+use function array_values;
+use function in_array;
+
 /**
  * Class Workflow stores all information of a step processing workflow.
- *
- * @package Netzmacht\Workflow\Flow
  */
 class Workflow extends Base
 {
     /**
      * Transitions being available in the workflow.
      *
-     * @var Transition[]
+     * @var list<Transition>
      */
-    private $transitions = array();
+    private array $transitions = [];
 
     /**
      * Steps being available in the workflow.
      *
-     * @var Step[]
+     * @var list<Step>
      */
-    private $steps = array();
+    private array $steps = [];
 
     /**
      * The start transition.
-     *
-     * @var Transition
      */
-    private $startTransition;
+    private Transition $startTransition;
 
     /**
      * Condition to supports if workflow can handle an entity.
-     *
-     * @var AndCondition
      */
-    private $condition;
+    private AndCondition $condition;
 
     /**
      * Name of the provider.
-     *
-     * @var string
      */
-    private $providerName;
+    private string $providerName;
 
     /**
-     * Construct.
-     *
-     * @param string $name         The name of the workflow.
-     * @param string $providerName Name of the provider.
-     * @param string $label        The label of the workflow.
-     * @param array  $config       Extra config.
+     * @param string               $name         The name of the workflow.
+     * @param string               $providerName Name of the provider.
+     * @param string               $label        The label of the workflow.
+     * @param array<string, mixed> $config       Extra config.
      */
-    public function __construct(string $name, string $providerName, string $label = '', array $config = array())
+    public function __construct(string $name, string $providerName, string $label = '', array $config = [])
     {
         parent::__construct($name, $label, $config);
 
@@ -85,7 +70,7 @@ class Workflow extends Base
      *
      * @return $this
      */
-    public function addTransition(Transition $transition, $startTransition = false): self
+    public function addTransition(Transition $transition, bool $startTransition = false): self
     {
         if (in_array($transition, $this->transitions)) {
             return $this;
@@ -105,14 +90,14 @@ class Workflow extends Base
      *
      * @param string $transitionName The name of the transition.
      *
-     * @throws TransitionNotFound If transition is not found.
+     * @return Transition If transition is not found.
      *
-     * @return \Netzmacht\Workflow\Flow\Transition If transition is not found.
+     * @throws TransitionNotFound If transition is not found.
      */
     public function getTransition(string $transitionName): Transition
     {
         foreach ($this->transitions as $transition) {
-            if ($transition->getName() == $transitionName) {
+            if ($transition->getName() === $transitionName) {
                 return $transition;
             }
         }
@@ -123,15 +108,15 @@ class Workflow extends Base
     /**
      * Get allowed transitions for a workflow item.
      *
-     * @param Item    $item    Workflow item.
-     * @param Context $context Transition context.
-     *
-     * @throws StepNotFoundException If Step does not exists.
-     * @throws TransitionNotFound If transition does not exists.
+     * @param Item         $item    Workflow item.
+     * @param Context|null $context Transition context.
      *
      * @return Transition[]|iterable
+     *
+     * @throws StepNotFoundException If Step does not exist.
+     * @throws TransitionNotFound If transition does not exist.
      */
-    public function getAvailableTransitions(Item $item, Context $context = null): iterable
+    public function getAvailableTransitions(Item $item, Context|null $context = null): iterable
     {
         if ($context) {
             $context = $context->createCleanCopy();
@@ -139,32 +124,32 @@ class Workflow extends Base
             $context = new Context();
         }
 
-        if (!$item->isWorkflowStarted() || $item->getWorkflowName() !== $this->getName()) {
-            $transitions = array($this->getStartTransition());
+        if (! $item->isWorkflowStarted() || $item->getWorkflowName() !== $this->getName()) {
+            $transitions = [$this->getStartTransition()];
         } else {
             $step        = $this->getStep($item->getCurrentStepName());
             $transitions = array_map(
                 function ($transitionName) {
                     return $this->getTransition($transitionName);
                 },
-                $step->getAllowedTransitions()
+                $step->getAllowedTransitions(),
             );
         }
 
         return array_values(
             array_filter(
                 $transitions,
-                function (Transition $transition) use ($item, $context) {
+                static function (Transition $transition) use ($item, $context) {
                     return $transition->isAvailable($item, $context);
-                }
-            )
+                },
+            ),
         );
     }
 
     /**
      * Get all transitions.
      *
-     * @return Transition[]|iterable
+     * @return iterable<Transition>
      */
     public function getTransitions(): iterable
     {
@@ -175,8 +160,6 @@ class Workflow extends Base
      * Check if transition is part of the workflow.
      *
      * @param string $transitionName Transition name.
-     *
-     * @return bool
      */
     public function hasTransition(string $transitionName): bool
     {
@@ -195,20 +178,18 @@ class Workflow extends Base
      * @param Item    $item           The workflow item.
      * @param Context $context        Transition context.
      * @param string  $transitionName The transition name.
-     *
-     * @return bool
      */
     public function isTransitionAvailable(
         Item $item,
         Context $context,
-        string $transitionName
+        string $transitionName,
     ): bool {
-        if (!$item->isWorkflowStarted()) {
+        if (! $item->isWorkflowStarted()) {
             return $this->getStartTransition()->getName() === $transitionName;
         }
 
         $step = $this->getStep($item->getCurrentStepName());
-        if (!$step->isTransitionAllowed($transitionName)) {
+        if (! $step->isTransitionAllowed($transitionName)) {
             return false;
         }
 
@@ -236,14 +217,12 @@ class Workflow extends Base
      *
      * @param string $stepName The step name.
      *
-     * @return Step
-     *
      * @throws StepNotFoundException If step is not found.
      */
     public function getStep(string $stepName): Step
     {
         foreach ($this->steps as $step) {
-            if ($step->getName() == $stepName) {
+            if ($step->getName() === $stepName) {
                 return $step;
             }
         }
@@ -255,13 +234,11 @@ class Workflow extends Base
      * Check if step with a name exist.
      *
      * @param string $stepName The step name.
-     *
-     * @return bool
      */
     public function hasStep(string $stepName): bool
     {
         foreach ($this->steps as $step) {
-            if ($step->getName() == $stepName) {
+            if ($step->getName() === $stepName) {
                 return true;
             }
         }
@@ -274,9 +251,9 @@ class Workflow extends Base
      *
      * @param string $transitionName Name of start transition.
      *
-     * @throws TransitionNotFound If transition is not part of the workflow.
-     *
      * @return $this
+     *
+     * @throws TransitionNotFound If transition is not part of the workflow.
      */
     public function setStartTransition(string $transitionName): self
     {
@@ -287,8 +264,6 @@ class Workflow extends Base
 
     /**
      * Get the start transition.
-     *
-     * @return Transition
      */
     public function getStartTransition(): Transition
     {
@@ -297,10 +272,8 @@ class Workflow extends Base
 
     /**
      * Get the current condition.
-     *
-     * @return AndCondition
      */
-    public function getCondition():? AndCondition
+    public function getCondition(): AndCondition|null
     {
         return $this->condition;
     }
@@ -314,7 +287,7 @@ class Workflow extends Base
      */
     public function addCondition(Condition $condition)
     {
-        if (!$this->condition) {
+        if (! $this->condition) {
             $this->condition = new AndCondition();
         }
 
@@ -325,8 +298,6 @@ class Workflow extends Base
 
     /**
      * Get provider name.
-     *
-     * @return string
      */
     public function getProviderName(): string
     {
@@ -338,12 +309,10 @@ class Workflow extends Base
      *
      * @param EntityId $entityId The entity id.
      * @param mixed    $entity   The entity.
-     *
-     * @return bool
      */
-    public function supports(EntityId $entityId, $entity): bool
+    public function supports(EntityId $entityId, mixed $entity): bool
     {
-        if (!$this->condition) {
+        if (! $this->condition) {
             return true;
         }
 

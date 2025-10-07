@@ -1,15 +1,5 @@
 <?php
 
-/**
- * Workflow library.
- *
- * @package    workflow
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2014-2017 netzmacht David Molineus
- * @license    LGPL 3.0 https://github.com/netzmacht/workflow
- * @filesource
- */
-
 declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Flow;
@@ -19,35 +9,27 @@ use Netzmacht\Workflow\Flow\Context\Properties;
 
 /**
  * Class Context provides extra information for a transition.
- *
- * @package Netzmacht\Workflow\Flow
  */
 class Context
 {
-    const NAMESPACE_DEFAULT = 'default';
+    public const string NAMESPACE_DEFAULT = 'default';
 
-    const NAMESPACE_ENTITY = 'entity';
+    public const string NAMESPACE_ENTITY = 'entity';
 
     /**
      * Properties which will be stored as state data.
-     *
-     * @var Properties
      */
-    private $properties;
+    private Properties $properties;
 
     /**
      * Transition payload.
-     *
-     * @var Properties
      */
-    private $payload;
+    private Properties $payload;
 
     /**
      * Error collection.
-     *
-     * @var ErrorCollection
      */
-    private $errorCollection;
+    private ErrorCollection $errorCollection;
 
     /**
      * Construct.
@@ -57,9 +39,9 @@ class Context
      * @param ErrorCollection|null $errorCollection Error collection.
      */
     public function __construct(
-        Properties $properties = null,
-        Properties $payload = null,
-        ErrorCollection $errorCollection = null
+        Properties|null $properties = null,
+        Properties|null $payload = null,
+        ErrorCollection|null $errorCollection = null,
     ) {
         $this->properties      = $properties ?: new Properties();
         $this->payload         = $payload ?: new Properties();
@@ -68,28 +50,22 @@ class Context
 
     /**
      * Get properties.
-     *
-     * @return Properties
      */
-    public function getProperties()
+    public function getProperties(): Properties
     {
         return $this->properties;
     }
 
     /**
      * Get payload.
-     *
-     * @return Properties
      */
-    public function getPayload()
+    public function getPayload(): Properties
     {
         return $this->payload;
     }
 
     /**
      * Get error collection.
-     *
-     * @return ErrorCollection
      */
     public function getErrorCollection(): ErrorCollection
     {
@@ -99,13 +75,11 @@ class Context
     /**
      * Add an error.
      *
-     * @param string          $message    Error message.
-     * @param array           $params     Params for the error message.
-     * @param ErrorCollection $collection Option. Child collection of the error.
-     *
-     * @return self
+     * @param string               $message    Error message.
+     * @param list<string>         $params     Params for the error message.
+     * @param ErrorCollection|null $collection Option. Child collection of the error.
      */
-    public function addError(string $message, array $params = array(), ErrorCollection $collection = null): self
+    public function addError(string $message, array $params = [], ErrorCollection|null $collection = null): self
     {
         $this->errorCollection->addError($message, $params, $collection);
 
@@ -115,11 +89,9 @@ class Context
     /**
      * Get a new context with an empty error collection.
      *
-     * @param array|null $payload Optional pass a new set of payload.
-     *
-     * @return Context
+     * @param array<string, mixed>|null $payload Optional pass a new set of payload.
      */
-    public function createCleanCopy(array $payload = null): Context
+    public function createCleanCopy(array|null $payload = null): Context
     {
         if ($payload !== null) {
             $payload = new Properties($payload);
