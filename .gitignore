@@ -1,28 +1,11 @@
-# OS
-.DS_Store
-Thumbs.db
-.directory
+# Companion
+/.env.companion
 
-# IDEs 
-.buildpath
-.project
-.settings/
-.build/
-.external*/
-.idea/
-nbproject/
+# Composer
+/composer.lock
+/vendor
 
-# composer related
-vendor/
-composer.lock
-
-# build
-build/
-build.properties
-
-# Translations
-.tx
-
-# NPM
-node_modules
-package-lock.json
+# PHPCQ
+/.phpcq
+/.phpcq.yaml
+/.phpcs-cache

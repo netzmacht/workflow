@@ -1,43 +1,50 @@
 {
-    "name": "netzmacht/workflow",
-    "type": "library",
-    "description": "Workflow library",
-    "keywords": [
-        "workflow",
-        "transition",
-        "states"
-    ],
-    "license": "LGPL-3.0-or-later",
-    "authors": [
-        {
-            "name": "David Molineus",
-            "email": "mail@netzmacht.de",
-            "homepage": "https://netzmacht.de",
-            "role": "Developer"
-        }
-    ],
-    "require": {
-        "php": ">=7.1",
-        "beberlei/assert": "^2.0 || ^3.0"
-    },
-    "require-dev": {
-        "phpcq/all-tasks": "^1.2",
-        "phpspec/phpspec": "~5.0 || ~6.0"
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "2.1.x-dev",
-            "dev-develop": "2.2.x-dev"
-        }
-    },
-    "autoload": {
-        "psr-4": {
-            "Netzmacht\\Workflow\\": "src/"
-        }
-    },
-    "support": {
-        "email": "mail@netzmacht.de",
-        "issues": "https://github.com/netzmacht/workflow/issues",
-        "source": "https://github.com/netzmacht/workflow"
+  "name": "netzmacht/workflow",
+  "type": "library",
+  "description": "Workflow library",
+  "keywords": [
+    "workflow",
+    "transition",
+    "states"
+  ],
+  "license": "LGPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "David Molineus",
+      "email": "mail@netzmacht.de",
+      "homepage": "https://netzmacht.de",
+      "role": "Developer"
     }
+  ],
+  "require": {
+    "php": "^8.2",
+    "beberlei/assert": "^2.0 || ^3.0"
+  },
+  "require-dev": {
+    "phpspec/phpspec": "^7.0 || ^8.0",
+    "phpcq/runner-bootstrap": "@dev",
+    "netzmacht/phpspec-phpcq-plugin": "@dev"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "2.1.x-dev",
+      "dev-develop": "2.2.x-dev"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "Netzmacht\\Workflow\\": "src/"
+    }
+  },
+  "support": {
+    "email": "mail@netzmacht.de",
+    "issues": "https://github.com/netzmacht/workflow/issues",
+    "source": "https://github.com/netzmacht/workflow"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "sort-packages": true
+  }
 }
