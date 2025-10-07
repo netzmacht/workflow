@@ -6,6 +6,7 @@ namespace Netzmacht\Workflow\Flow\Condition\Workflow;
 
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Workflow;
+use Override;
 
 /**
  * Class ProviderTypeCondition check if entity matches a specific provider.
@@ -33,6 +34,7 @@ class ProviderNameCondition implements Condition
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function match(Workflow $workflow, EntityId $entityId, $entity): bool
     {
         if ($this->providerName) {

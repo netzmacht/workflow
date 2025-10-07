@@ -6,6 +6,7 @@ namespace Netzmacht\Workflow\Flow\Condition\Workflow;
 
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Workflow;
+use Override;
 
 /**
  * This condition checks a config parameter value
@@ -42,6 +43,7 @@ class ConfigValueCondition implements Condition
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function match(Workflow $workflow, EntityId $entityId, $entity): bool
     {
         $value = $workflow->getConfigValue($this->name);

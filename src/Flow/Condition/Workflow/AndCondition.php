@@ -6,6 +6,7 @@ namespace Netzmacht\Workflow\Flow\Condition\Workflow;
 
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Workflow;
+use Override;
 
 /**
  * Class AndCondition matches if all child conditions matches.
@@ -15,6 +16,7 @@ class AndCondition extends ConditionCollection
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function match(Workflow $workflow, EntityId $entityId, $entity): bool
     {
         foreach ($this->conditions as $condition) {

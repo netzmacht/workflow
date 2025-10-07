@@ -12,6 +12,7 @@ use Netzmacht\Workflow\Flow\Exception\ActionFailedException;
 use Netzmacht\Workflow\Flow\Exception\FlowException;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
+use Override;
 use PhpSpec\ObjectBehavior;
 
 use function end;
@@ -65,16 +66,19 @@ final class ActionFailedExceptionSpec extends ObjectBehavior
         $action = new class ('Foo', 'foo') extends Base implements Action
         {
             /** {@inheritDoc} */
+            #[Override]
             public function getRequiredPayloadProperties(Item $item): array
             {
                 return [];
             }
 
+            #[Override]
             public function validate(Item $item, Context $context): bool
             {
                 return true;
             }
 
+            #[Override]
             public function transit(Transition $transition, Item $item, Context $context): void
             {
             }

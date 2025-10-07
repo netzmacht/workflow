@@ -8,6 +8,7 @@ use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Util\Comparison;
+use Override;
 
 class PayloadPropertyCondition implements Condition
 {
@@ -38,6 +39,7 @@ class PayloadPropertyCondition implements Condition
         $this->operator = $operator;
     }
 
+    #[Override]
     public function match(Transition $transition, Item $item, Context $context): bool
     {
         $payloadValue = $context->getPayload()->get($this->property);

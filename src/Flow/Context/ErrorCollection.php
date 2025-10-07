@@ -8,6 +8,7 @@ use ArrayIterator;
 use Countable;
 use InvalidArgumentException;
 use IteratorAggregate;
+use Override;
 use ReturnTypeWillChange;
 
 use function array_map;
@@ -132,12 +133,14 @@ class ErrorCollection implements IteratorAggregate, Countable
     /**
      * {@inheritDoc}
      */
+    #[Override]
     #[ReturnTypeWillChange]
     public function getIterator(): iterable
     {
         return new ArrayIterator($this->errors);
     }
 
+    #[Override]
     public function count(): int
     {
         return $this->countErrors();

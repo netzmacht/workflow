@@ -13,6 +13,7 @@ use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Handler\TransitionHandler;
 use Netzmacht\Workflow\Handler\TransitionHandlerFactory;
+use Override;
 
 use function sprintf;
 
@@ -60,6 +61,7 @@ class WorkflowManager implements Manager
         $this->stateRepository = $stateRepository;
     }
 
+    #[Override]
     public function handle(
         Item $item,
         string|null $transitionName = null,
@@ -86,6 +88,7 @@ class WorkflowManager implements Manager
         );
     }
 
+    #[Override]
     public function addWorkflow(Workflow $workflow): Manager
     {
         $this->workflows[] = $workflow;
@@ -98,6 +101,7 @@ class WorkflowManager implements Manager
      *
      * @throws WorkflowNotFound When no supporting workflow is found.
      */
+    #[Override]
     public function getWorkflow(EntityId $entityId, $entity): Workflow
     {
         foreach ($this->workflows as $workflow) {
@@ -114,6 +118,7 @@ class WorkflowManager implements Manager
      *
      * @throws WorkflowNotFound When no workflow with name is found.
      */
+    #[Override]
     public function getWorkflowByName(string $name): Workflow
     {
         foreach ($this->workflows as $workflow) {
@@ -125,6 +130,7 @@ class WorkflowManager implements Manager
         throw WorkflowNotFound::withName($name);
     }
 
+    #[Override]
     public function getWorkflowByItem(Item $item): Workflow
     {
         if ($item->getWorkflowName()) {
@@ -141,6 +147,7 @@ class WorkflowManager implements Manager
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function hasWorkflow(EntityId $entityId, $entity): bool
     {
         foreach ($this->workflows as $workflow) {
@@ -155,6 +162,7 @@ class WorkflowManager implements Manager
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function getWorkflows(): iterable
     {
         return $this->workflows;
@@ -163,6 +171,7 @@ class WorkflowManager implements Manager
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function createItem(EntityId $entityId, $entity): Item
     {
         $stateHistory = $this->stateRepository->find($entityId);

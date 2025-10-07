@@ -8,6 +8,7 @@ use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Handler\TransitionHandler;
+use Override;
 
 /**
  * Workflow manager decorator caching the items and the relation between workflows and entities.
@@ -43,6 +44,7 @@ class CachedManager implements Manager
         $this->manager = $manager;
     }
 
+    #[Override]
     public function handle(
         Item $item,
         string|null $transitionName = null,
@@ -51,6 +53,7 @@ class CachedManager implements Manager
         return $this->manager->handle($item, $transitionName);
     }
 
+    #[Override]
     public function addWorkflow(Workflow $workflow): Manager
     {
         $this->manager->addWorkflow($workflow);
@@ -61,6 +64,7 @@ class CachedManager implements Manager
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function getWorkflow(EntityId $entityId, $entity): Workflow
     {
         $key = (string) $entityId;
@@ -72,11 +76,13 @@ class CachedManager implements Manager
         return $this->workflows[$key];
     }
 
+    #[Override]
     public function getWorkflowByName(string $name): Workflow
     {
         return $this->manager->getWorkflowByName($name);
     }
 
+    #[Override]
     public function getWorkflowByItem(Item $item): Workflow
     {
         return $this->getWorkflow($item->getEntityId(), $item->getEntity());
@@ -85,6 +91,7 @@ class CachedManager implements Manager
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function hasWorkflow(EntityId $entityId, $entity): bool
     {
         $key = (string) $entityId;
@@ -99,6 +106,7 @@ class CachedManager implements Manager
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function getWorkflows(): iterable
     {
         return $this->manager->getWorkflows();
@@ -107,6 +115,7 @@ class CachedManager implements Manager
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function createItem(EntityId $entityId, $entity): Item
     {
         $key = (string) $entityId;

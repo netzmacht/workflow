@@ -12,6 +12,7 @@ use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
+use Override;
 
 use function sprintf;
 
@@ -75,6 +76,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         $this->guardAllowedTransition($transitionName);
     }
 
+    #[Override]
     public function getTransition(): Transition
     {
         if ($this->isWorkflowStarted()) {
@@ -84,21 +86,25 @@ abstract class AbstractTransitionHandler implements TransitionHandler
         return $this->workflow->getStartTransition();
     }
 
+    #[Override]
     public function getWorkflow(): Workflow
     {
         return $this->workflow;
     }
 
+    #[Override]
     public function getItem(): Item
     {
         return $this->item;
     }
 
+    #[Override]
     public function getContext(): Context
     {
         return $this->context;
     }
 
+    #[Override]
     public function isWorkflowStarted(): bool
     {
         return $this->item->isWorkflowStarted();
@@ -107,6 +113,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function getRequiredPayloadProperties(): array
     {
         return $this->getTransition()->getRequiredPayloadProperties($this->item);
@@ -115,11 +122,13 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * Consider if transition is available.
      */
+    #[Override]
     public function isAvailable(): bool
     {
         return $this->getTransition()->isAvailable($this->item, $this->context);
     }
 
+    #[Override]
     public function getCurrentStep(): Step|null
     {
         if ($this->isWorkflowStarted()) {
@@ -134,6 +143,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function validate(array $payload = []): bool
     {
         // first build the form

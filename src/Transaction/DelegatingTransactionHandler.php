@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Netzmacht\Workflow\Transaction;
 
+use Override;
+
 /**
  * Class DelegatingTransactionHandler delegates transaction commands to its children handlers.
  */
@@ -22,6 +24,7 @@ class DelegatingTransactionHandler implements TransactionHandler
         $this->transactionHandlers = $transactionHandlers;
     }
 
+    #[Override]
     public function begin(): void
     {
         foreach ($this->transactionHandlers as $handler) {
@@ -29,6 +32,7 @@ class DelegatingTransactionHandler implements TransactionHandler
         }
     }
 
+    #[Override]
     public function commit(): void
     {
         foreach ($this->transactionHandlers as $handler) {
@@ -36,6 +40,7 @@ class DelegatingTransactionHandler implements TransactionHandler
         }
     }
 
+    #[Override]
     public function rollback(): void
     {
         foreach ($this->transactionHandlers as $handler) {

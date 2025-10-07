@@ -9,6 +9,7 @@ use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
+use Override;
 
 /**
  * Class RepositoryBasedTransitionHandlerFactory creates a repository based transition handler.
@@ -48,6 +49,7 @@ class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactor
      * @param string          $providerName    Provider name.
      * @param StateRepository $stateRepository The state repository.
      */
+    #[Override]
     public function createTransitionHandler(
         Item $item,
         Workflow $workflow,

@@ -15,6 +15,7 @@ use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
+use Override;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
@@ -451,16 +452,19 @@ class TransitionSpec extends ObjectBehavior
         return new class implements Action
         {
             /** {@inheritDoc} */
+            #[Override]
             public function getRequiredPayloadProperties(Item $item): array
             {
                 return [];
             }
 
+            #[Override]
             public function validate(Item $item, Context $context): bool
             {
                 return true;
             }
 
+            #[Override]
             public function transit(Transition $transition, Item $item, Context $context): void
             {
                 throw new ActionFailedException();

@@ -12,6 +12,7 @@ use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
+use Override;
 use Throwable;
 
 /**
@@ -62,6 +63,7 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
      *
      * @throws Exception If something went wrong during action execution.
      */
+    #[Override]
     public function transit(): State
     {
         $this->guardValidated();
