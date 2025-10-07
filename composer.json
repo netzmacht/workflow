@@ -1,13 +1,13 @@
 {
   "name": "netzmacht/workflow",
-  "type": "library",
   "description": "Workflow library",
+  "license": "LGPL-3.0-or-later",
+  "type": "library",
   "keywords": [
     "workflow",
     "transition",
     "states"
   ],
-  "license": "LGPL-3.0-or-later",
   "authors": [
     {
       "name": "David Molineus",
@@ -16,35 +16,35 @@
       "role": "Developer"
     }
   ],
+  "support": {
+    "email": "mail@netzmacht.de",
+    "issues": "https://github.com/netzmacht/workflow/issues",
+    "source": "https://github.com/netzmacht/workflow"
+  },
   "require": {
     "php": "^8.2",
     "beberlei/assert": "^2.0 || ^3.0"
   },
   "require-dev": {
-    "phpspec/phpspec": "^7.0 || ^8.0",
+    "netzmacht/phpspec-phpcq-plugin": "@dev",
     "phpcq/runner-bootstrap": "@dev",
-    "netzmacht/phpspec-phpcq-plugin": "@dev"
-  },
-  "extra": {
-    "branch-alias": {
-      "dev-master": "2.1.x-dev",
-      "dev-develop": "2.2.x-dev"
-    }
+    "phpspec/phpspec": "^7.0 || ^8.0"
   },
   "autoload": {
     "psr-4": {
       "Netzmacht\\Workflow\\": "src/"
     }
   },
-  "support": {
-    "email": "mail@netzmacht.de",
-    "issues": "https://github.com/netzmacht/workflow/issues",
-    "source": "https://github.com/netzmacht/workflow"
-  },
   "config": {
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true
     },
     "sort-packages": true
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-develop": "2.2.x-dev",
+      "dev-master": "2.1.x-dev"
+    }
   }
 }
