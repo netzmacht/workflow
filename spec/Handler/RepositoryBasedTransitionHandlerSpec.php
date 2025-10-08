@@ -15,6 +15,7 @@ use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
+use Netzmacht\Workflow\Handler\RepositoryBasedTransitionHandler;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -33,29 +34,32 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
     private Transition $transition;
 
+    private Step $step;
+
     public function let(
         Item $item,
         Workflow $workflow,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
         TransactionHandler $transactionHandler,
-        Step $step,
         State $state,
     ): void {
         $this->entityId = EntityId::fromProviderNameAndId('entity', '2');
+
+        $this->step = new Step(self::STEP_NAME);
+        $this->step->allowTransition(self::TRANSITION_NAME);
 
         $workflow->addTransition(Argument::type(Transition::class))->willReturn($workflow);
         $this->transition = new Transition(
             self::TRANSITION_NAME,
             $workflow->getWrappedObject(),
-            $step->getWrappedObject(),
+            $this->step,
         );
 
-        $workflow->getStep(self::STEP_NAME)->willReturn($step);
+        $workflow->getStep(self::STEP_NAME)->willReturn($this->step);
         $workflow->getStartTransition()->willReturn($this->transition);
         $workflow->getName()->willReturn(self::WORKFLOW_NAME);
 
-        $step->isTransitionAllowed(self::TRANSITION_NAME)->willReturn(true);
         $workflow->getTransition(self::TRANSITION_NAME)->willReturn($this->transition);
 
         $item->transit($this->transition, Argument::type(Context::class))
@@ -77,7 +81,7 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
     public function it_is_initializable(): void
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Handler\RepositoryBasedTransitionHandler');
+        $this->shouldHaveType(RepositoryBasedTransitionHandler::class);
     }
 
     public function it_gets_workflow(Workflow $workflow): void
@@ -118,14 +122,14 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $this->getItem()->shouldReturn($item);
     }
 
-    public function it_gets_current_step_for_started_workflow(Item $item, Workflow $workflow, Step $step): void
+    public function it_gets_current_step_for_started_workflow(Item $item, Workflow $workflow): void
     {
         $item->isWorkflowStarted()->willReturn(true);
-        $item->getCurrentStepName()->willReturn('start');
+        $item->getCurrentStepName()->willReturn(self::STEP_NAME);
 
-        $workflow->getStep('start')->willReturn($step);
+        $workflow->getStep('start')->willReturn($this->step);
 
-        $this->getCurrentStep()->shouldReturn($step);
+        $this->getCurrentStep()->shouldReturn($this->step);
     }
 
     public function it_gets_null_instead_of_step_if_not_started(
@@ -192,12 +196,12 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $this->getContext()->shouldHaveType(Context::class);
     }
 
-    public function it_validates(Workflow $workflow, Step $step): void
+    public function it_validates(Workflow $workflow): void
     {
         $this->transition = new Transition(
             self::TRANSITION_NAME,
             $workflow->getWrappedObject(),
-            $step->getWrappedObject(),
+            $this->step,
         );
 
         $this->transition->addAction($this->actionWithRequiredPayload(['foo']));

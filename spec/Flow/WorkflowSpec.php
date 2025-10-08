@@ -26,15 +26,17 @@ final class WorkflowSpec extends ObjectBehavior
 
     private Transition $transition;
 
-    public function let(Step $transitionStep): void
+    private Step $step;
+
+    public function let(): void
     {
         $this->beConstructedWith(self::NAME, self::PROVIDER);
 
-        $transitionStep->getName()->willReturn(self::START_STEP);
+        $this->step = new Step(self::START_STEP);
 
-        $this->transition = new Transition('start', $this->getWrappedObject(), $transitionStep->getWrappedObject());
+        $this->transition = new Transition('start', $this->getWrappedObject(), $this->step);
 
-        $this->addStep($transitionStep);
+        $this->addStep($this->step);
         $this->addTransition($this->transition);
         $this->setStartTransition('start');
     }
@@ -49,9 +51,9 @@ final class WorkflowSpec extends ObjectBehavior
         $this->shouldHaveType(Base::class);
     }
 
-    public function it_adds_a_step(Step $anotherStep): void
+    public function it_adds_a_step(): void
     {
-        $anotherStep->getName()->willReturn('another');
+        $anotherStep = new Step('another');
 
         $this->addStep($anotherStep)->shouldReturn($this);
         $this->getStep('another')->shouldReturn($anotherStep);
@@ -62,9 +64,9 @@ final class WorkflowSpec extends ObjectBehavior
         $this->shouldThrow('Netzmacht\Workflow\Flow\Exception\StepNotFoundException')->duringGetStep('not_set');
     }
 
-    public function it_adds_a_transition(Step $step): void
+    public function it_adds_a_transition(): void
     {
-        $transition = new Transition('another', $this->getWrappedObject(), $step->getWrappedObject());
+        $transition = new Transition('another', $this->getWrappedObject(), new Step('target'));
 
         $this->addTransition($transition)->shouldReturn($this);
         $this->getTransition('another')->shouldReturn($transition);
@@ -115,33 +117,30 @@ final class WorkflowSpec extends ObjectBehavior
         $this->isTransitionAvailable($item, new Context(), 'start2')->shouldReturn(false);
     }
 
-    public function it_knows_if_transition_is_not_available_for_an_item(Item $item, Step $step): void
+    public function it_knows_if_transition_is_not_available_for_an_item(Item $item): void
     {
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('started');
 
-        $step->getName()->willReturn('started');
-        $step->isTransitionAllowed('start')->willReturn(false);
+        $step = new Step('started');
         $this->addStep($step);
 
         $this->isTransitionAvailable($item, new Context(), 'start')->shouldReturn(false);
     }
 
-    public function it_knows_if_transition_is_available_for_an_item(
-        Item $item,
-        Step $step,
-    ): void {
+    public function it_knows_if_transition_is_available_for_an_item(Item $item): void
+    {
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('started');
 
         $context = new Context();
 
-        $transition = new Transition('next', $this->getWrappedObject(), $step->getWrappedObject());
-        $this->addTransition($transition);
-
-        $step->getName()->willReturn('started');
-        $step->isTransitionAllowed('next')->willReturn(true);
+        $step = new Step('started');
+        $step->allowTransition('next');
         $this->addStep($step);
+
+        $transition = new Transition('next', $this->getWrappedObject());
+        $this->addTransition($transition);
 
         $this->isTransitionAvailable($item, $context, 'next')->shouldReturn(true);
     }

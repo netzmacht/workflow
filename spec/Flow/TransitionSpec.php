@@ -27,11 +27,15 @@ final class TransitionSpec extends ObjectBehavior
     /** @var array<string, mixed> */
     protected static array $entity = ['id' => 5];
 
-    public function let(Workflow $workflow, Step $step): void
+    private Step $step;
+
+    public function let(Workflow $workflow): void
     {
         $workflow->addTransition(Argument::any())->willReturn($workflow);
 
-        $this->beConstructedWith(self::NAME, $workflow, $step);
+        $this->step = new Step('step');
+
+        $this->beConstructedWith(self::NAME, $workflow, $this->step);
     }
 
     public function it_is_initializable(): void
@@ -61,9 +65,9 @@ final class TransitionSpec extends ObjectBehavior
         $this->getPostActions()->shouldReturn([$action]);
     }
 
-    public function it_has_a_target_step(Step $step): void
+    public function it_has_a_target_step(): void
     {
-        $this->getStepTo()->shouldReturn($step);
+        $this->getStepTo()->shouldReturn($this->step);
     }
 
     public function it_knows_if_input_data_is_not_required(Action $action, Item $item): void

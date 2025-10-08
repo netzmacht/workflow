@@ -15,7 +15,7 @@ use function in_array;
  *
  * @psalm-suppress ClassMustBeFinal
  */
-class Step extends Base
+final class Step extends Base
 {
     /**
      * The allowed transition names.

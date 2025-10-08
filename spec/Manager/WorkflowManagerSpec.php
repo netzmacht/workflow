@@ -157,12 +157,11 @@ final class WorkflowManagerSpec extends ObjectBehavior
         TransitionHandlerFactory $handlerFactory,
         StateRepository $stateRepository,
         TransitionHandler $transitionHandler,
-        Step $step,
     ): void {
         $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
 
-        $step->getName()->willReturn('start');
-        $step->isTransitionAllowed('next')->willReturn(true);
+        $step = new Step('start');
+        $step->allowTransition('next');
 
         $item->getEntityId()->willReturn($entityId);
         $item->getEntity()->willReturn(self::$entity);
@@ -171,7 +170,7 @@ final class WorkflowManagerSpec extends ObjectBehavior
         $item->getWorkflowName()->willReturn('workflow_a');
 
         $workflow->addTransition(Argument::type(Transition::class))->willReturn($workflow);
-        $transition = new Transition('next', $workflow->getWrappedObject(), $step->getWrappedObject());
+        $transition = new Transition('next', $workflow->getWrappedObject(), $step);
 
         $workflow->supports($entityId, self::$entity)->willReturn(true);
         $workflow->getStep('start')->willReturn($step);
@@ -190,17 +189,14 @@ final class WorkflowManagerSpec extends ObjectBehavior
         $this->handle($item, 'next')->shouldReturn($transitionHandler);
     }
 
-    public function it_throws_than_matches_workflow_is_not_same_as_current(
-        Workflow $workflow,
-        Item $item,
-        Step $step,
-    ): void {
-        $workflow->addTransition(Argument::type(Transition::class))->willReturn($workflow);
-        $transition = new Transition('next', $workflow->getWrappedObject(), $step->getWrappedObject());
-        $entityId   = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
+    public function it_throws_than_matches_workflow_is_not_same_as_current(Workflow $workflow, Item $item): void
+    {
+        $step = new Step('start');
+        $step->allowTransition('next');
 
-        $step->getName()->willReturn('start');
-        $step->isTransitionAllowed('next')->willReturn(true);
+        $workflow->addTransition(Argument::type(Transition::class))->willReturn($workflow);
+        $transition = new Transition('next', $workflow->getWrappedObject());
+        $entityId   = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
 
         $item->getEntityId()->willReturn($entityId);
         $item->getEntity()->willReturn(self::$entity);

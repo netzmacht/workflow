@@ -26,7 +26,7 @@ final class ItemSpec extends ObjectBehavior
 
         $workflow->addTransition(Argument::type(Transition::class))->willReturn($workflow);
 
-        $this->beConstructedThrough('initialize', [$this->entityId, static::$entity]);
+        $this->beConstructedThrough('initialize', [$this->entityId, self::$entity]);
     }
 
     public function it_is_initializable(): void
@@ -36,7 +36,7 @@ final class ItemSpec extends ObjectBehavior
 
     public function it_restores_state_history(State $state): void
     {
-        $this->beConstructedThrough('reconstitute', [$this->entityId, static::$entity, [$state]]);
+        $this->beConstructedThrough('reconstitute', [$this->entityId, self::$entity, [$state]]);
     }
 
     public function it_has_an_entity_id(): void
@@ -46,7 +46,7 @@ final class ItemSpec extends ObjectBehavior
 
     public function it_has_an_entity(): void
     {
-        $this->getEntity()->shouldReturn(static::$entity);
+        $this->getEntity()->shouldReturn(self::$entity);
     }
 
     public function it_knows_if_workflow_is_started(): void
@@ -58,7 +58,6 @@ final class ItemSpec extends ObjectBehavior
         State $state,
         State $newState,
         Workflow $workflow,
-        Step $step,
     ): void {
         $state->getStepName()->willReturn('start');
         $state->getWorkflowName()->willReturn('workflow_name');
@@ -71,7 +70,7 @@ final class ItemSpec extends ObjectBehavior
 
         $this->it_restores_state_history($state);
 
-        $transition = new Transition('transition_name', $workflow->getWrappedObject(), $step->getWrappedObject());
+        $transition = new Transition('transition_name', $workflow->getWrappedObject(), new Step('test'));
 
         $this->transit($transition, new Context(), true);
 
@@ -85,15 +84,14 @@ final class ItemSpec extends ObjectBehavior
 
     public function it_starts_a_new_workflow_state(
         Workflow $workflow,
-        Step $step,
     ): void {
         $workflow->getName()->willReturn('workflow');
-        $step->getName()->willReturn('step');
-        $step->getWorkflowName()->willReturn('workflow');
 
-        $transition = new Transition('transition_name', $workflow->getWrappedObject(), $step->getWrappedObject());
+        $step = new Step('step', workflowName: 'workflow');
 
-        $this->beConstructedThrough('initialize', [$this->entityId, static::$entity]);
+        $transition = new Transition('transition_name', $workflow->getWrappedObject(), $step);
+
+        $this->beConstructedThrough('initialize', [$this->entityId, self::$entity]);
         $this->start($transition, new Context(), true)->shouldHaveType(State::class);
     }
 
@@ -106,7 +104,7 @@ final class ItemSpec extends ObjectBehavior
         $state->getStepName()->willReturn('start');
         $state->getWorkflowName()->shouldBeCalled();
 
-        $this->beConstructedThrough('reconstitute', [$this->entityId, static::$entity, [$state, $failedState]]);
+        $this->beConstructedThrough('reconstitute', [$this->entityId, self::$entity, [$state, $failedState]]);
 
         $this->getCurrentStepName()->shouldReturn('start');
         $this->getLatestSuccessfulState()->shouldReturn($state);
@@ -122,7 +120,7 @@ final class ItemSpec extends ObjectBehavior
         $state->getStepName()->willReturn('start');
         $state->getWorkflowName()->shouldBeCalled();
 
-        $this->beConstructedThrough('reconstitute', [$this->entityId, static::$entity, [$state, $failedState]]);
+        $this->beConstructedThrough('reconstitute', [$this->entityId, self::$entity, [$state, $failedState]]);
 
         $this->getLatestSuccessfulState()->shouldReturn($state);
         $this->getLatestStateOccurred()->shouldReturn($failedState);
@@ -130,18 +128,12 @@ final class ItemSpec extends ObjectBehavior
 
     public function it_records_state_changes_and_release_them(
         Workflow $workflow,
-        Step $stepTo,
     ): void {
         $context    = new Context();
-        $transition = new Transition('transition', $workflow->getWrappedObject(), $stepTo->getWrappedObject());
+        $stepTo     = new Step('step_to', workflowName: 'workflow');
+        $transition = new Transition('transition', $workflow->getWrappedObject(), $stepTo);
 
         $workflow->getName()
-            ->willReturn('workflow');
-
-        $stepTo->getName()
-            ->willReturn('step_to');
-
-        $stepTo->getWorkflowName()
             ->willReturn('workflow');
 
         $this->start($transition, $context, true);
