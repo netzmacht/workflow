@@ -39,8 +39,9 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
     private State $state;
 
+    private Item $item;
+
     public function let(
-        Item $item,
         Workflow $workflow,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
@@ -51,7 +52,7 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $this->step = new Step(self::STEP_NAME);
         $this->step->allowTransition(self::TRANSITION_NAME);
 
-        $this->state = new State($this->entityId, 'workflow', 'start', 'step', true, [], new DateTimeImmutable());
+        $this->state = new State($this->entityId, 'workflow', 'start', self::STEP_NAME, true, [], new DateTimeImmutable());
 
         $workflow->addTransition(Argument::type(Transition::class))->willReturn($workflow);
         $this->transition = new Transition(
@@ -66,15 +67,14 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
         $workflow->getTransition(self::TRANSITION_NAME)->willReturn($this->transition);
 
-        $item->transit($this->transition, Argument::type(Context::class))
-            ->willReturn($this->state);
-
-        $item->isWorkflowStarted()->willReturn(true);
-        $item->getCurrentStepName()->willReturn(self::STEP_NAME);
-        $item->getEntity()->willReturn(self::$entity);
+        $this->item = Item::reconstitute(
+            $this->entityId,
+            self::$entity,
+            [new State($this->entityId, 'workflow_a', 'start', self::STEP_NAME, true, [], new DateTimeImmutable())],
+        );
 
         $this->beConstructedWith(
-            $item,
+            $this->item,
             $workflow,
             self::TRANSITION_NAME,
             $entityRepository,
@@ -94,14 +94,13 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
     }
 
     public function it_gets_start_transition_if_not_started(
-        Item $item,
         Workflow $workflow,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
         TransactionHandler $transactionHandler,
     ): void {
         $this->beConstructedWith(
-            $item,
+            $this->item,
             $workflow,
             null,
             $entityRepository,
@@ -109,21 +108,17 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             $transactionHandler,
         );
 
-        $item->isWorkflowStarted()->willReturn(false);
-        $item->getEntityId()->willReturn($this->entityId);
         $this->getTransition()->shouldReturn($this->transition);
     }
 
-    public function it_gets_transition_if_already_started(Item $item): void
+    public function it_gets_transition_if_already_started(): void
     {
-        $item->isWorkflowStarted()->willReturn(true);
-
         $this->getTransition()->shouldReturn($this->transition);
     }
 
-    public function it_gets_item(Item $item): void
+    public function it_gets_item(): void
     {
-        $this->getItem()->shouldReturn($item);
+        $this->getItem()->shouldReturn($this->item);
     }
 
     public function it_gets_current_step_for_started_workflow(Item $item, Workflow $workflow): void
@@ -157,21 +152,20 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $this->getCurrentStep()->shouldBeNull();
     }
 
-    public function it_checks_if_workflow_is_started(Item $item): void
+    public function it_checks_if_workflow_is_started(): void
     {
-        $item->isWorkflowStarted()->willReturn(true);
         $this->isWorkflowStarted()->shouldReturn(true);
     }
 
     public function it_checks_if_workflow_is_not_started(
-        Item $item,
         Workflow $workflow,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
         TransactionHandler $transactionHandler,
     ): void {
+        $item = new State($this->entityId, 'workflow', 'start', self::STEP_NAME, false, [], new DateTimeImmutable());
         $this->beConstructedWith(
-            $item,
+            $this->item,
             $workflow,
             null,
             $entityRepository,
@@ -179,7 +173,6 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
             $transactionHandler,
         );
 
-        $item->isWorkflowStarted()->willReturn(false);
         $this->isWorkflowStarted()->shouldReturn(false);
     }
 
@@ -218,25 +211,8 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $this->shouldThrow(WorkflowException::class)->duringTransit();
     }
 
-    public function it_transits_to_next_state(Item $item): void
+    public function it_transits_to_next_state(): void
     {
-        $newState = new State(
-            $this->entityId,
-            'workflow',
-            self::TRANSITION_NAME,
-            self::STEP_NAME,
-            true,
-            [],
-            new DateTimeImmutable(),
-        );
-
-        $item->getLatestStateOccurred()->willReturn($this->state);
-        $item->releaseRecordedStateChanges()
-            ->shouldBeCalledOnce()
-            ->willReturn([$newState]);
-
-        $item->transit($this->transition, Argument::type(Context::class), true)->willReturn($newState);
-
         $this->validate([]);
         $this->transit()->shouldHaveType(State::class);
     }

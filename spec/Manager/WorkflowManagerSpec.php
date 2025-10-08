@@ -53,13 +53,10 @@ final class WorkflowManagerSpec extends ObjectBehavior
         $this->getWorkflow($entityId, self::$entity)->shouldReturn($workflow);
     }
 
-    public function it_gets_workflow_by_item(Workflow $workflow, Item $item): void
+    public function it_gets_workflow_by_item(Workflow $workflow): void
     {
         $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
-
-        $item->getWorkflowName()->willReturn('workflow_a');
-        $item->getEntityId()->willReturn($entityId);
-        $item->getEntity()->willReturn(self::$entity);
+        $item     = Item::initialize($entityId, self::$entity);
 
         $workflow->supports($entityId, self::$entity)->willReturn(true);
 
@@ -112,14 +109,10 @@ final class WorkflowManagerSpec extends ObjectBehavior
         $this->getWorkflows()->shouldContain($anotherWorkflow);
     }
 
-    public function it_returns_false_if_no_matching_workflow_found(
-        Workflow $workflow,
-        Item $item,
-    ): void {
+    public function it_returns_false_if_no_matching_workflow_found(Workflow $workflow): void
+    {
         $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
-
-        $item->getEntityId()->willReturn($entityId);
-        $item->getEntity()->willReturn(self::$entity);
+        $item     = Item::initialize($entityId, self::$entity);
 
         $workflow->supports($entityId, self::$entity)->willReturn(false);
         $this->handle($item)->shouldReturn(null);
@@ -127,17 +120,12 @@ final class WorkflowManagerSpec extends ObjectBehavior
 
     public function it_creates_handler_for_start_transition(
         Workflow $workflow,
-        Item $item,
         TransitionHandlerFactory $handlerFactory,
         StateRepository $stateRepository,
         TransitionHandler $transitionHandler,
     ): void {
         $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
-
-        $item->getWorkflowName()->willReturn('workflow_a');
-        $item->getEntityId()->willReturn($entityId);
-        $item->getEntity()->willReturn(self::$entity);
-        $item->isWorkflowStarted()->willReturn(false);
+        $item     = Item::initialize($entityId, self::$entity);
 
         $workflow->supports($entityId, self::$entity)->willReturn(true);
 
@@ -154,21 +142,15 @@ final class WorkflowManagerSpec extends ObjectBehavior
 
     public function it_creates_handler_for_ongoing_transition(
         Workflow $workflow,
-        Item $item,
         TransitionHandlerFactory $handlerFactory,
         StateRepository $stateRepository,
         TransitionHandler $transitionHandler,
     ): void {
         $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
+        $item     = Item::reconstitute($entityId, self::$entity, []);
 
         $step = new Step('start');
         $step->allowTransition('next');
-
-        $item->getEntityId()->willReturn($entityId);
-        $item->getEntity()->willReturn(self::$entity);
-        $item->isWorkflowStarted()->willReturn(true);
-        $item->getCurrentStepName()->willReturn('start');
-        $item->getWorkflowName()->willReturn('workflow_a');
 
         $workflow->addTransition(Argument::type(Transition::class))->willReturn($workflow);
         $transition = new Transition('next', $workflow->getWrappedObject(), $step);
@@ -190,7 +172,7 @@ final class WorkflowManagerSpec extends ObjectBehavior
         $this->handle($item, 'next')->shouldReturn($transitionHandler);
     }
 
-    public function it_throws_than_matches_workflow_is_not_same_as_current(Workflow $workflow, Item $item): void
+    public function it_throws_than_matches_workflow_is_not_same_as_current(Workflow $workflow): void
     {
         $step = new Step('start');
         $step->allowTransition('next');
@@ -199,11 +181,11 @@ final class WorkflowManagerSpec extends ObjectBehavior
         $transition = new Transition('next', $workflow->getWrappedObject());
         $entityId   = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
 
-        $item->getEntityId()->willReturn($entityId);
-        $item->getEntity()->willReturn(self::$entity);
-        $item->isWorkflowStarted()->willReturn(true);
-        $item->getCurrentStepName()->willReturn('start');
-        $item->getWorkflowName()->willReturn('workflow_a');
+        $item = Item::reconstitute(
+            $entityId,
+            self::$entity,
+            [new State($entityId, 'workflow_a', 'start', 'step', true, [], new DateTimeImmutable())],
+        );
 
         $workflow->supports($entityId, self::$entity)->willReturn(true);
         $workflow->getStep('start')->willReturn($step);
@@ -215,9 +197,8 @@ final class WorkflowManagerSpec extends ObjectBehavior
             ->duringHandle($item, 'next');
     }
 
-    public function it_creates_an_item(
-        StateRepository $stateRepository,
-    ): void {
+    public function it_creates_an_item(StateRepository $stateRepository): void
+    {
         $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
         $state    = new State($entityId, 'workflow', 'start', 'step', true, [], new DateTimeImmutable());
 

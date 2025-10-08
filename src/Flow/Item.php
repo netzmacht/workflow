@@ -14,10 +14,8 @@ use function count;
 
 /**
  * Class Item stores workflow-related data of an entity. It knows the state history and the current state.
- *
- * @psalm-suppress ClassMustBeFinal
  */
-class Item
+final class Item
 {
     /**
      * Workflow name.
