@@ -22,7 +22,7 @@ interface Manager
     /**
      * Handle a workflow transition of an entity will createRepository a transition handler.
      *
-     * If no matching workflow definition is found null will be returned.
+     * If no matching workflow definition is found, null will be returned.
      *
      * @param Item        $item           The current workflow item.
      * @param string|null $transitionName Transition name, required if the workflow has already started.

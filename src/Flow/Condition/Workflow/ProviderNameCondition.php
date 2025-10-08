@@ -11,7 +11,7 @@ use Override;
 /**
  * Class ProviderTypeCondition check if entity matches a specific provider.
  */
-class ProviderNameCondition implements Condition
+final class ProviderNameCondition implements Condition
 {
     /**
      * Provider name to check against.

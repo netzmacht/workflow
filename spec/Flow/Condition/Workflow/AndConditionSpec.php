@@ -9,7 +9,7 @@ use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
 use Netzmacht\Workflow\Flow\Workflow;
 use PhpSpec\ObjectBehavior;
 
-class AndConditionSpec extends ObjectBehavior
+final class AndConditionSpec extends ObjectBehavior
 {
     /** @var array<string, mixed> */
     protected static array $entity = ['id' => 5];

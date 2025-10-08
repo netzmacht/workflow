@@ -10,7 +10,7 @@ use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Util\Comparison;
 use Override;
 
-class PayloadPropertyCondition implements Condition
+final class PayloadPropertyCondition implements Condition
 {
     /**
      * Payload property name.

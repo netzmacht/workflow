@@ -12,7 +12,8 @@ use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 use PhpSpec\ObjectBehavior;
 
-class RepositoryBasedTransitionHandlerFactorySpec extends ObjectBehavior
+/** @SuppressWarnings(PHPMD.LongClassName) */
+final class RepositoryBasedTransitionHandlerFactorySpec extends ObjectBehavior
 {
     /** @var array<string, mixed> */
     protected static array $entity = ['id' => 5];

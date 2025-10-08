@@ -11,7 +11,7 @@ use Throwable;
 
 use function sprintf;
 
-class WorkflowNotFound extends RuntimeException implements WorkflowException
+final class WorkflowNotFound extends RuntimeException implements WorkflowException
 {
     /**
      * Create exception with the workflow name.

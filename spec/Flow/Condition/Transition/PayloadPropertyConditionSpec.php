@@ -14,11 +14,13 @@ use Netzmacht\Workflow\Util\Comparison;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class PayloadPropertyConditionSpec extends ObjectBehavior
+final class PayloadPropertyConditionSpec extends ObjectBehavior
 {
-    public function let(Context $context, Properties $payload): void
+    public function let(Context $context): void
     {
+        $payload = new Properties(['foo' => 'bar']);
         $context->getPayload()->willReturn($payload);
+        $context->addError(Argument::cetera())->willReturn($context);
 
         $this->beConstructedWith('foo', 'bar');
     }
@@ -37,10 +39,7 @@ class PayloadPropertyConditionSpec extends ObjectBehavior
         Transition $transition,
         Item $item,
         Context $context,
-        Properties $payload,
     ): void {
-        $payload->get('foo')->willReturn('bar');
-
         $this->match($transition, $item, $context);
     }
 
@@ -48,10 +47,8 @@ class PayloadPropertyConditionSpec extends ObjectBehavior
         Transition $transition,
         Item $item,
         Context $context,
-        Properties $payload,
     ): void {
         $this->beConstructedWith('foo', 3, Comparison::LESSER_THAN);
-        $payload->get('foo')->willReturn(2);
         $this->match($transition, $item, $context);
     }
 
@@ -59,10 +56,8 @@ class PayloadPropertyConditionSpec extends ObjectBehavior
         Transition $transition,
         Item $item,
         Context $context,
-        Properties $payload,
     ): void {
-        $payload->get('foo')->willReturn('baz');
-
+        $this->beConstructedWith('foo', 3, Comparison::EQUALS);
         $context->addError('transition.condition.payload_property.failed', Argument::type('array'))
             ->shouldBeCalled();
 

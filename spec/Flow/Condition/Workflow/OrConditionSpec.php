@@ -6,22 +6,24 @@ namespace spec\Netzmacht\Workflow\Flow\Condition\Workflow;
 
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
+use Netzmacht\Workflow\Flow\Condition\Workflow\ConditionCollection;
+use Netzmacht\Workflow\Flow\Condition\Workflow\OrCondition;
 use Netzmacht\Workflow\Flow\Workflow;
 use PhpSpec\ObjectBehavior;
 
-class OrConditionSpec extends ObjectBehavior
+final class OrConditionSpec extends ObjectBehavior
 {
     /** @var array<string, mixed> */
     protected static array $entity = ['id' => 4];
 
     public function it_is_initializable(): void
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Flow\Condition\Workflow\OrCondition');
+        $this->shouldHaveType(OrCondition::class);
     }
 
     public function it_is_a_condition_collection(): void
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Flow\Condition\Workflow\ConditionCollection');
+        $this->shouldHaveType(ConditionCollection::class);
     }
 
     public function it_matches_if_one_child_matches(

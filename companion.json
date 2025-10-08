@@ -15,7 +15,8 @@
     "phpcq": {
       "plugins": {
         "phpunit": false,
-        "phpspec": true
+        "phpspec": true,
+        "rector": false
       },
       "defaults": {
         "repositories": [
@@ -37,10 +38,9 @@
             "phpcpd": {
               "config": {
                 "exclude": [
-                  "src/Resources/contao/dca/tl_cowegis_popup.php",
-                  "src/Resources/contao/dca/tl_cowegis_style.php",
-                  "src/Resources/contao/dca/tl_cowegis_icon.php",
-                  "src/Resources/contao/dca/tl_cowegis_control.php"
+                  "spec/Manager/WorkflowManagerSpec.php",
+                  "spec/Flow/Condition/Transition/ConditionCollectionSpec.php",
+                  "spec/Flow/Condition/Workflow/ConditionCollectionSpec.php"
                 ]
               }
             }
@@ -51,6 +51,9 @@
     "psalm": {
       "configuration": {
         "errorLevel": "3"
+      },
+      "project-files": {
+        "directories": ["src"]
       }
     }
   }

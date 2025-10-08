@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Flow;
 
+use Netzmacht\Workflow\Flow\Base;
 use Netzmacht\Workflow\Flow\Security\Permission;
+use Netzmacht\Workflow\Flow\Step;
 use PhpSpec\ObjectBehavior;
 
-class StepSpec extends ObjectBehavior
+final class StepSpec extends ObjectBehavior
 {
     public const string NAME          = 'test';
     public const string LABEL         = 'label';
@@ -20,12 +22,12 @@ class StepSpec extends ObjectBehavior
 
     public function it_is_initializable(): void
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Flow\Step');
+        $this->shouldHaveType(Step::class);
     }
 
     public function it_behaves_like_base_object(): void
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Flow\Base');
+        $this->shouldHaveType(Base::class);
     }
 
     public function it_is_not_final_by_default(): void
@@ -76,14 +78,12 @@ class StepSpec extends ObjectBehavior
         $this->isTransitionAllowed('test')->shouldReturn(false);
     }
 
-    public function it_have_a_permission(Permission $permission): void
+    public function it_has_a_permission(): void
     {
-        $permission->equals($permission)->willReturn(false);
+        $permission = Permission::fromString('workflow:permission');
 
         $this->getPermission()->shouldReturn(null);
         $this->hasPermission($permission)->shouldReturn(false);
-
-        $permission->equals($permission)->willReturn(true);
 
         $this->setPermission($permission)->shouldReturn($this);
         $this->hasPermission($permission)->shouldReturn(true);

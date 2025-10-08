@@ -9,7 +9,7 @@ use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use Netzmacht\Workflow\Flow\Context\Properties;
 use PhpSpec\ObjectBehavior;
 
-class ContextSpec extends ObjectBehavior
+final class ContextSpec extends ObjectBehavior
 {
     public const string CUSTOM_NS = 'custom';
 
@@ -18,15 +18,18 @@ class ContextSpec extends ObjectBehavior
         $this->shouldHaveType(Context::class);
     }
 
-    public function it_accepts_initial_properties(Properties $properties): void
+    public function it_accepts_initial_properties(): void
     {
+        $properties = new Properties();
         $this->beConstructedWith($properties);
 
         $this->getProperties()->shouldBe($properties);
     }
 
-    public function it_accepts_initial_payload(Properties $payload): void
+    public function it_accepts_initial_payload(): void
     {
+        $payload = new Properties();
+
         $this->beConstructedWith(null, $payload);
 
         $this->getPayload()->shouldBe($payload);

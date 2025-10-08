@@ -12,7 +12,7 @@ use function sprintf;
 /**
  * Class StepNotFoundException is thrown when step is not found.
  */
-class StepNotFoundException extends FlowException
+final class StepNotFoundException extends FlowException
 {
     /**
      * Construct.

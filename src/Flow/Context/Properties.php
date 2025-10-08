@@ -6,7 +6,7 @@ namespace Netzmacht\Workflow\Flow\Context;
 
 use function array_key_exists;
 
-class Properties
+final class Properties
 {
     /** @param array<string, mixed> $properties Properties. */
     public function __construct(private array $properties = [])

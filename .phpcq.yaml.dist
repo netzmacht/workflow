@@ -4,7 +4,6 @@ phpcq:
     - vendor/netzmacht/phpspec-phpcq-plugin/repository.json
   directories:
     - src
-    - src
     - spec
   artifact: .phpcq/build
   plugins:
@@ -32,9 +31,6 @@ phpcq:
     psalm:
       version: ^1.0
       signed: false
-    rector:
-      version: ^1.0
-      signed: false
     phpcs:
       version: ^1.0
       signed: false
@@ -56,7 +52,6 @@ phpcq:
 tasks:
   fix:
     - composer-normalize-fix
-    - rector-fix
     - phpcbf
   verify:
     - composer-normalize
@@ -66,7 +61,6 @@ tasks:
     - phploc
     - phpmd
     - psalm
-    - rector
     - phpcs
     - phpspec
   default:
@@ -82,14 +76,9 @@ tasks:
   phpcpd:
     config:
       exclude:
-        - src/Resources/contao/dca/tl_cowegis_popup.php
-        - src/Resources/contao/dca/tl_cowegis_style.php
-        - src/Resources/contao/dca/tl_cowegis_icon.php
-        - src/Resources/contao/dca/tl_cowegis_control.php
-  rector-fix:
-    config:
-      dry-run: false
-    plugin: rector
+        - spec/Manager/WorkflowManagerSpec.php
+        - spec/Flow/Condition/Transition/ConditionCollectionSpec.php
+        - spec/Flow/Condition/Workflow/ConditionCollectionSpec.php
   phpcs:
     config:
       standard: ~

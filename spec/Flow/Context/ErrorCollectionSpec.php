@@ -8,7 +8,7 @@ use Countable;
 use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use PhpSpec\ObjectBehavior;
 
-class ErrorCollectionSpec extends ObjectBehavior
+final class ErrorCollectionSpec extends ObjectBehavior
 {
     public const string MESSAGE = 'test %s %s';
 
@@ -62,9 +62,10 @@ class ErrorCollectionSpec extends ObjectBehavior
         $this->hasErrors()->shouldReturn(false);
     }
 
-    public function it_adds_multiple_errors(ErrorCollection $errorCollection): void
+    public function it_adds_multiple_errors(): void
     {
-        $errors = [
+        $errorCollection = new ErrorCollection();
+        $errors          = [
             [self::MESSAGE, static::$params, null],
             [self::MESSAGE, static::$params, $errorCollection],
         ];
@@ -89,16 +90,13 @@ class ErrorCollectionSpec extends ObjectBehavior
         $this->getIterator()->shouldHaveType('Traversable');
     }
 
-    public function it_converts_to_array(ErrorCollection $errorCollection): void
+    public function it_converts_to_array(): void
     {
-        $errors = [
+        $errorCollection = new ErrorCollection();
+        $errors          = [
             [self::MESSAGE, static::$params, null],
             [self::MESSAGE, static::$params, $errorCollection],
         ];
-
-        $errorCollection->toArray()
-            ->shouldBeCalled()
-            ->willReturn([[self::MESSAGE, static::$params, null]]);
 
         $this->addErrors($errors)->shouldReturn($this);
 
@@ -108,9 +106,7 @@ class ErrorCollectionSpec extends ObjectBehavior
                 [
                     self::MESSAGE,
                     static::$params,
-                    [
-                        [self::MESSAGE, static::$params, null],
-                    ],
+                    [],
                 ],
             ],
         );

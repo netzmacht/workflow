@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace spec\Netzmacht\Workflow\Flow;
 
 use Netzmacht\Workflow\Flow\Action;
+use Netzmacht\Workflow\Flow\Base;
+use Netzmacht\Workflow\Flow\Condition\Transition\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Context\ErrorCollection;
@@ -19,7 +21,7 @@ use Override;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class TransitionSpec extends ObjectBehavior
+final class TransitionSpec extends ObjectBehavior
 {
     private const string NAME = 'transition_name';
 
@@ -35,12 +37,12 @@ class TransitionSpec extends ObjectBehavior
 
     public function it_is_initializable(): void
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Flow\Transition');
+        $this->shouldHaveType(Transition::class);
     }
 
     public function it_behaves_like_base(): void
     {
-        $this->shouldImplement('Netzmacht\Workflow\Flow\Base');
+        $this->shouldImplement(Base::class);
     }
 
     public function it_knows_workflow(Workflow $workflow): void
@@ -85,27 +87,23 @@ class TransitionSpec extends ObjectBehavior
         $this->getRequiredPayloadProperties($item)->shouldReturn(['foo']);
     }
 
-    public function it_checks_a_precondition(
-        Condition $condition,
-        Item $item,
-        Context $context,
-        ErrorCollection $errorCollection,
-    ): void {
+    public function it_checks_a_precondition(Condition $condition, Item $item, Context $context): void
+    {
+        $errorCollection = new ErrorCollection();
+
         $context->createCleanCopy(Argument::any())->willReturn($context);
         $context->getErrorCollection()->willReturn($errorCollection);
 
         $condition->match($this, $item, $context)->willReturn(true);
 
         $this->addPreCondition($condition)->shouldReturn($this);
-        $this->checkPreCondition($item, $context, $errorCollection)->shouldReturn(true);
+        $this->checkPreCondition($item, $context)->shouldReturn(true);
     }
 
-    public function it_checks_a_precondition_failing(
-        Condition $condition,
-        Item $item,
-        Context $context,
-        ErrorCollection $errorCollection,
-    ): void {
+    public function it_checks_a_precondition_failing(Condition $condition, Item $item, Context $context): void
+    {
+        $errorCollection = new ErrorCollection();
+
         $context->createCleanCopy(Argument::any())->willReturn($context);
         $context->getErrorCollection()->willReturn($errorCollection);
 
@@ -114,44 +112,46 @@ class TransitionSpec extends ObjectBehavior
         $context->addError(Argument::cetera())->shouldBeCalled();
 
         $this->addPreCondition($condition)->shouldReturn($this);
-        $this->checkPreCondition($item, $context, $errorCollection)->shouldReturn(false);
+        $this->checkPreCondition($item, $context)->shouldReturn(false);
     }
 
     public function it_gets_condition(Condition $condition): void
     {
         $this->getCondition()->shouldReturn(null);
         $this->addCondition($condition);
-        $this->getCondition()->shouldHaveType('Netzmacht\Workflow\Flow\Condition\Transition\AndCondition');
+        $this->getCondition()->shouldHaveType(AndCondition::class);
     }
 
     public function it_gets_pre_condition(Condition $condition): void
     {
         $this->getPreCondition()->shouldReturn(null);
         $this->addPreCondition($condition);
-        $this->getPreCondition()->shouldHaveType('Netzmacht\Workflow\Flow\Condition\Transition\AndCondition');
+        $this->getPreCondition()->shouldHaveType(AndCondition::class);
     }
 
     public function it_checks_a_condition(
         Condition $condition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
     ): void {
+        $errorCollection = new ErrorCollection();
+
         $context->createCleanCopy(Argument::any())->willReturn($context);
         $context->getErrorCollection()->willReturn($errorCollection);
 
         $condition->match($this, $item, $context)->willReturn(true);
 
         $this->addCondition($condition)->shouldReturn($this);
-        $this->checkCondition($item, $context, $errorCollection)->shouldReturn(true);
+        $this->checkCondition($item, $context)->shouldReturn(true);
     }
 
     public function it_checks_a_condition_failing(
         Condition $condition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
     ): void {
+        $errorCollection = new ErrorCollection();
+
         $context->createCleanCopy(Argument::any())->willReturn($context);
         $context->getErrorCollection()->willReturn($errorCollection);
 
@@ -160,7 +160,7 @@ class TransitionSpec extends ObjectBehavior
         $context->addError(Argument::cetera())->shouldBeCalled();
 
         $this->addCondition($condition)->shouldReturn($this);
-        $this->checkCondition($item, $context, $errorCollection)->shouldReturn(false);
+        $this->checkCondition($item, $context)->shouldReturn(false);
     }
 
     public function it_is_allowed_by_conditions(
@@ -168,8 +168,9 @@ class TransitionSpec extends ObjectBehavior
         Condition $condition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
     ): void {
+        $errorCollection = new ErrorCollection();
+
         $context->createCleanCopy(Argument::any())->willReturn($context);
         $context->getErrorCollection()->willReturn($errorCollection);
 
@@ -179,7 +180,7 @@ class TransitionSpec extends ObjectBehavior
         $this->addCondition($condition);
         $this->addPreCondition($condition);
 
-        $this->isAllowed($item, $context, $errorCollection)->shouldReturn(true);
+        $this->isAllowed($item, $context)->shouldReturn(true);
     }
 
     public function it_is_not_allowed_by_failing_pre_condition(
@@ -187,8 +188,9 @@ class TransitionSpec extends ObjectBehavior
         Condition $condition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
     ): void {
+        $errorCollection = new ErrorCollection();
+
         $context->createCleanCopy(Argument::any())->willReturn($context);
         $context->getErrorCollection()->willReturn($errorCollection);
 
@@ -200,7 +202,7 @@ class TransitionSpec extends ObjectBehavior
         $this->addCondition($condition);
         $this->addPreCondition($preCondition);
 
-        $this->isAllowed($item, $context, $errorCollection)->shouldReturn(false);
+        $this->isAllowed($item, $context)->shouldReturn(false);
     }
 
     public function it_is_not_allowed_by_failing_condition(
@@ -208,8 +210,9 @@ class TransitionSpec extends ObjectBehavior
         Condition $condition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
     ): void {
+        $errorCollection = new ErrorCollection();
+
         $context->createCleanCopy(Argument::any())->willReturn($context);
         $context->getErrorCollection()->willReturn($errorCollection);
 
@@ -221,7 +224,7 @@ class TransitionSpec extends ObjectBehavior
         $this->addCondition($condition);
         $this->addPreCondition($preCondition);
 
-        $this->isAllowed($item, $context, $errorCollection)->shouldReturn(false);
+        $this->isAllowed($item, $context)->shouldReturn(false);
     }
 
     public function it_is_available_when_passing_conditions(
@@ -229,7 +232,6 @@ class TransitionSpec extends ObjectBehavior
         Condition $condition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
     ): void {
         $context->createCleanCopy(Argument::any())->willReturn($context);
 
@@ -239,7 +241,7 @@ class TransitionSpec extends ObjectBehavior
         $this->addCondition($condition);
         $this->addPreCondition($preCondition);
 
-        $this->isAvailable($item, $context, $errorCollection)->shouldReturn(true);
+        $this->isAvailable($item, $context)->shouldReturn(true);
     }
 
     public function it_is_not_available_when_condition_fails(
@@ -247,8 +249,9 @@ class TransitionSpec extends ObjectBehavior
         Condition $condition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
     ): void {
+        $errorCollection = new ErrorCollection();
+
         $context->createCleanCopy(Argument::any())->willReturn($context);
         $context->getErrorCollection()->willReturn($errorCollection);
 
@@ -266,7 +269,7 @@ class TransitionSpec extends ObjectBehavior
         $context->addError(Argument::cetera())->shouldBeCalled();
 
         $this
-            ->isAvailable($item, $context, $errorCollection)
+            ->isAvailable($item, $context)
             ->shouldReturn(false);
     }
 
@@ -276,8 +279,9 @@ class TransitionSpec extends ObjectBehavior
         Item $item,
         Context $context,
         Action $action,
-        ErrorCollection $errorCollection,
     ): void {
+        $errorCollection = new ErrorCollection();
+
         $context->createCleanCopy(Argument::any())->willReturn($context);
         $context->getErrorCollection()->willReturn($errorCollection);
 
@@ -298,7 +302,7 @@ class TransitionSpec extends ObjectBehavior
         $this->addPreCondition($preCondition);
 
         $this
-            ->isAvailable($item, $context, $errorCollection)
+            ->isAvailable($item, $context)
             ->shouldReturn(false);
     }
 
@@ -307,7 +311,6 @@ class TransitionSpec extends ObjectBehavior
         Condition $condition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
         Action $action,
     ): void {
         $context->createCleanCopy(Argument::any())->willReturn($context);
@@ -326,13 +329,12 @@ class TransitionSpec extends ObjectBehavior
         $this->addCondition($condition);
         $this->addPreCondition($preCondition);
 
-        $this->isAvailable($item, $context, $errorCollection)->shouldReturn(true);
+        $this->isAvailable($item, $context)->shouldReturn(true);
     }
 
     public function it_executes(
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
         Action $action,
         Action $postAction,
         State $state,
@@ -340,13 +342,11 @@ class TransitionSpec extends ObjectBehavior
         $this->addAction($action);
         $this->addPostAction($postAction);
 
+        $errorCollection = new ErrorCollection();
+
         $context->getErrorCollection()
             ->shouldBeCalled()
             ->willReturn($errorCollection);
-
-        $errorCollection->hasErrors()
-            ->shouldBeCalled()
-            ->willReturn(false);
 
         $item->isWorkflowStarted()
             ->shouldBeCalled()
@@ -371,25 +371,35 @@ class TransitionSpec extends ObjectBehavior
     public function it_executes_actions(
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
         Action $action,
+        State $state,
+        State $newState,
     ): void {
+        $item->getLatestStateOccurred()->willReturn($state, $newState);
+        $item->isWorkflowStarted()->willReturn(true);
+        $item->transit($this->getWrappedObject(), $context, true)->willReturn($newState);
         $action->transit($this, $item, $context)->shouldBeCalled();
         $this->addAction($action);
 
+        $errorCollection = new ErrorCollection();
         $context->getErrorCollection()->willReturn($errorCollection);
-        $errorCollection->hasErrors()->willReturn(false);
 
-        $this->executeActions($item, $context, $errorCollection)->shouldReturn(true);
+        $this->execute($item, $context)->shouldReturn($newState);
     }
 
     public function it_catches_action_failed_exceptions_during_action_execution(
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
+        State $state,
+        State $newState,
     ): void {
+        $item->getLatestStateOccurred()->willReturn($state, $newState);
+        $item->isWorkflowStarted()->willReturn(true);
+        $item->transit($this->getWrappedObject(), $context, false)->willReturn($newState);
+
         $this->addAction($this->throwingAction());
 
+        $errorCollection = new ErrorCollection();
         $context->getProperties()->willReturn([]);
 
         $context
@@ -398,55 +408,68 @@ class TransitionSpec extends ObjectBehavior
 
         $context->getErrorCollection()->willReturn($errorCollection);
 
-        $this->executeActions($item, $context, $errorCollection);
+        $this->execute($item, $context);
     }
 
     public function it_executes_post_actions(
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
         Action $action,
+        State $state,
+        State $newState,
     ): void {
+        $item->getLatestStateOccurred()->willReturn($state, $newState);
+        $item->isWorkflowStarted()->willReturn(true);
+        $item->transit($this->getWrappedObject(), $context, true)->willReturn($newState);
+
         $action->transit($this, $item, $context)->shouldBeCalled();
         $this->addPostAction($action);
 
-        $context->getErrorCollection()->willReturn($errorCollection);
-        $errorCollection->hasErrors()->willReturn(false);
+        $context->getErrorCollection()->willReturn(new ErrorCollection());
 
-        $this->executePostActions($item, $context, $errorCollection)->shouldReturn(true);
+        $this->execute($item, $context)->shouldReturn($newState);
     }
 
     public function it_catches_action_failed_exceptions_during_post_action_execution(
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
+        State $state,
+        State $newState,
     ): void {
+        $item->getLatestStateOccurred()->willReturn($state, $newState);
+        $item->isWorkflowStarted()->willReturn(true);
+        $item->transit($this->getWrappedObject(), $context, true)->willReturn($newState);
+
         $this->addPostAction($this->throwingAction());
 
+        $context->getErrorCollection()->willReturn(new ErrorCollection());
         $context->getProperties()->willReturn([]);
 
         $context
             ->addError('transition.action.failed', Argument::type('array'), Argument::any())
             ->shouldBeCalled();
 
-        $this->executePostActions($item, $context, $errorCollection);
+        $this->execute($item, $context);
     }
 
-    public function it_has_permission(Permission $permission): void
+    public function it_has_permission(): void
     {
-        $permission->equals($permission)->willReturn(true);
+        $permission = Permission::fromString('workflow:permission');
 
         $this->setPermission($permission)->shouldReturn($this);
         $this->hasPermission($permission)->shouldReturn(true);
         $this->getPermission()->shouldReturn($permission);
     }
 
-    public function it_does_not_require_a_permission(Permission $permission): void
+    public function it_does_not_require_a_permission(): void
     {
+        $permission = Permission::fromString('workflow:permission');
+
         $this->getPermission()->shouldReturn(null);
         $this->hasPermission($permission)->shouldReturn(false);
     }
 
+    /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
     private function throwingAction(): Action
     {
         return new class implements Action

@@ -14,9 +14,9 @@ abstract class ConditionCollection implements Condition
     /**
      * Child conditions of the collection.
      *
-     * @var Condition[]|iterable
+     * @var list<Condition>
      */
-    protected iterable $conditions = [];
+    protected array $conditions = [];
 
     /**
      * Construct.

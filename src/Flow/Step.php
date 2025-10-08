@@ -11,7 +11,9 @@ use function array_values;
 use function in_array;
 
 /**
- * Class Step defines fixed step in the workflow process.
+ * Class Step defines a fixed step in the workflow process.
+ *
+ * @psalm-suppress ClassMustBeFinal
  */
 class Step extends Base
 {

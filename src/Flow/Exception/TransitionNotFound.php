@@ -11,7 +11,7 @@ use function sprintf;
 /**
  * Class TransitionNotFoundException is thrown, then transition was not found.
  */
-class TransitionNotFound extends FlowException
+final class TransitionNotFound extends FlowException
 {
     /**
      * Construct.

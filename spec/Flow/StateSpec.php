@@ -17,7 +17,7 @@ use Netzmacht\Workflow\Flow\Workflow;
 use PhpSpec\ObjectBehavior;
 
 /** @psalm-import-type TErrorArray from ErrorCollection */
-class StateSpec extends ObjectBehavior
+final class StateSpec extends ObjectBehavior
 {
     private const string WORKFLOW_NAME        = 'workflow_name';
     private const string TARGET_WORKFLOW_NAME = 'workflow_name_target';
@@ -167,9 +167,10 @@ class StateSpec extends ObjectBehavior
         Transition $transition,
         Step $stepTo,
         Context $context,
-        ErrorCollection $errorCollection,
-        Properties $properties,
     ): void {
+        $errorCollection = new ErrorCollection();
+        $properties      = new Properties();
+
         $stepTo->getName()->willReturn(self::STEP_TO);
 
         $transition->getWorkflow()->willReturn($workflow);
@@ -181,14 +182,8 @@ class StateSpec extends ObjectBehavior
         $context->getProperties()
             ->willReturn($properties);
 
-        $properties->toArray()
-            ->willReturn([]);
-
         $context->getErrorCollection()
             ->willReturn($errorCollection);
-
-        $errorCollection->getErrors()
-            ->willReturn([]);
 
         $this->beConstructedThrough(
             'start',
@@ -205,9 +200,10 @@ class StateSpec extends ObjectBehavior
         Workflow $workflow,
         Transition $transition,
         Context $context,
-        ErrorCollection $errorCollection,
-        Properties $properties,
     ): void {
+        $errorCollection = new ErrorCollection();
+        $properties      = new Properties();
+
         $transition->getWorkflow()->willReturn($workflow);
         $transition->getStepTo()->willReturn(null);
 
@@ -217,14 +213,8 @@ class StateSpec extends ObjectBehavior
         $context->getProperties()
             ->willReturn($properties);
 
-        $properties->toArray()
-            ->willReturn([]);
-
         $context->getErrorCollection()
             ->willReturn($errorCollection);
-
-        $errorCollection->getErrors()
-            ->willReturn([]);
 
         $this->beConstructedThrough(
             'start',
@@ -244,9 +234,10 @@ class StateSpec extends ObjectBehavior
         Transition $transition,
         Step $stepTo,
         Context $context,
-        ErrorCollection $errorCollection,
-        Properties $properties,
     ): void {
+        $errorCollection = new ErrorCollection();
+        $properties      = new Properties();
+
         $workflow
             ->getName()
             ->shouldNotBeCalled();
@@ -263,14 +254,8 @@ class StateSpec extends ObjectBehavior
         $context->getProperties()
             ->willReturn($properties);
 
-        $properties->toArray()
-            ->willReturn([]);
-
         $context->getErrorCollection()
             ->willReturn($errorCollection);
-
-        $errorCollection->toArray()
-            ->willReturn([]);
 
         $this->transit($transition, $context, true)
             ->shouldBeAnInstanceOf(State::class);
@@ -281,9 +266,10 @@ class StateSpec extends ObjectBehavior
         Transition $transition,
         Step $stepTo,
         Context $context,
-        ErrorCollection $errorCollection,
-        Properties $properties,
     ): void {
+        $errorCollection = new ErrorCollection();
+        $properties      = new Properties();
+
         $workflow
             ->getName()
             ->shouldBeCalled()
@@ -301,25 +287,18 @@ class StateSpec extends ObjectBehavior
         $context->getProperties()
             ->willReturn($properties);
 
-        $properties->toArray()
-            ->willReturn([]);
-
         $context->getErrorCollection()
             ->willReturn($errorCollection);
-
-        $errorCollection->toArray()
-            ->willReturn([]);
 
         $this->transit($transition, $context, true)
             ->shouldBeAnInstanceOf(State::class);
     }
 
-    public function it_fails_to_transit_if_target_step_is_not_defined(
-        Transition $transition,
-        Context $context,
-        ErrorCollection $errorCollection,
-        Properties $properties,
-    ): void {
+    public function it_fails_to_transit_if_target_step_is_not_defined(Transition $transition, Context $context): void
+    {
+        $errorCollection = new ErrorCollection();
+        $properties      = new Properties();
+
         $transition->getStepTo()->willReturn(null);
 
         $transition->getName()
@@ -328,14 +307,8 @@ class StateSpec extends ObjectBehavior
         $context->getProperties()
             ->willReturn($properties);
 
-        $properties->toArray()
-            ->willReturn([]);
-
         $context->getErrorCollection()
             ->willReturn($errorCollection);
-
-        $errorCollection->getErrors()
-            ->willReturn([]);
 
         $this->shouldThrow(FlowException::class)
             ->during('transit', [$transition, $context, true]);

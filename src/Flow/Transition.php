@@ -12,52 +12,44 @@ use Netzmacht\Workflow\Flow\Security\Permission;
 
 use function array_map;
 use function array_merge;
+use function sprintf;
 
 /**
  * Class Transition handles the transition from a step to another.
  *
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @psalm-suppress ClassMustBeFinal
  */
 class Transition extends Base
 {
     /**
      * Actions which will be executed during the transition.
      *
-     * @var Action[]
+     * @var list<Action>
      */
     private array $actions = [];
 
     /**
      * Post actions which will be executed when new step is reached.
      *
-     * @var Action[]
+     * @var list<Action>
      */
     private array $postActions = [];
 
     /**
-     * The step the transition is moving to.
-     */
-    private Step $stepTo;
-
-    /**
      * A pre-condition which has to be passed to execute transition.
      */
-    private AndCondition $preCondition;
+    private AndCondition|null $preCondition = null;
 
     /**
      * A condition which has to be passed to execute the transition.
      */
-    private AndCondition $condition;
+    private AndCondition|null $condition = null;
 
     /**
      * A set of permission being assigned to the transition.
      */
     private Permission|null $permission = null;
-
-    /**
-     * The corresponding workflow.
-     */
-    private Workflow $workflow;
 
     /**
      * @param string               $name     Name of the element.
@@ -68,17 +60,14 @@ class Transition extends Base
      */
     public function __construct(
         string $name,
-        Workflow $workflow,
-        Step|null $stepTo,
+        private readonly Workflow $workflow,
+        private readonly Step|null $stepTo,
         string $label = '',
         array $config = [],
     ) {
         parent::__construct($name, $label, $config);
 
         $workflow->addTransition($this);
-
-        $this->workflow = $workflow;
-        $this->stepTo   = $stepTo;
     }
 
     /**
@@ -106,7 +95,7 @@ class Transition extends Base
     /**
      * Get all actions.
      *
-     * @return Action[]|iterable
+     * @return iterable<Action>
      */
     public function getActions(): iterable
     {
@@ -114,7 +103,7 @@ class Transition extends Base
     }
 
     /**
-     * Add an post action to the transition.
+     * Add an post-action to the transition.
      *
      * @param Action $action The added action.
      *
@@ -212,21 +201,17 @@ class Transition extends Base
 
         return array_merge(
             ...array_map(
-                // @codingStandardsIgnoreStart - Static functions not supported yet :-(
                 static function (Action $action) use ($item) {
                     return $action->getRequiredPayloadProperties($item);
                 },
-                // @codingStandardsIgnoreStop
-                $this->actions
+                $this->actions,
             ),
             ...array_map(
-                // @codingStandardsIgnoreStart - Static functions not supported yet :-(
                 static function (Action $action) use ($item) {
                     return $action->getRequiredPayloadProperties($item);
                 },
-                // @codingStandardsIgnoreStop
-                $this->postActions
-            )
+                $this->postActions,
+            ),
         );
     }
 
@@ -235,8 +220,6 @@ class Transition extends Base
      *
      * @param Item    $item    Workflow item.
      * @param Context $context Transition context.
-     *
-     * @return bool
      */
     public function validate(Item $item, Context $context): bool
     {
@@ -259,8 +242,6 @@ class Transition extends Base
      * @param Item    $item    Workflow item.
      * @param Context $context Transition context.
      *
-     * @return State
-     *
      * @throws FlowException When transition fails.
      */
     public function execute(Item $item, Context $context): State
@@ -278,13 +259,15 @@ class Transition extends Base
 
         $this->doExecuteActions($item, $context, $this->postActions);
 
-        if ($this->getStepTo() === null && $currentState === $item->getLatestStateOccurred()) {
+        $newState = $item->getLatestStateOccurred();
+
+        if (! $newState || ($this->getStepTo() === null && $currentState === $item->getLatestStateOccurred())) {
             throw new FlowException(
-                sprintf('No state changes within the transition "%s"', $this->getName())
+                sprintf('No state changes within the transition "%s"', $this->getName()),
             );
         }
 
-        return $item->getLatestStateOccurred();
+        return $newState;
     }
 
     /**
@@ -292,8 +275,6 @@ class Transition extends Base
      *
      * @param Item    $item    The Item.
      * @param Context $context The transition context.
-     *
-     * @return bool
      */
     public function isAllowed(Item $item, Context $context): bool
     {
@@ -311,8 +292,6 @@ class Transition extends Base
      *
      * @param Item    $item    The Item.
      * @param Context $context The transition context.
-     *
-     * @return bool
      */
     public function isAvailable(Item $item, Context $context): bool
     {
@@ -328,8 +307,6 @@ class Transition extends Base
      *
      * @param Item    $item    The Item.
      * @param Context $context The transition context.
-     *
-     * @return bool
      */
     public function checkPreCondition(Item $item, Context $context): bool
     {
@@ -341,8 +318,6 @@ class Transition extends Base
      *
      * @param Item    $item    The Item.
      * @param Context $context The transition context.
-     *
-     * @return bool
      */
     public function checkCondition(Item $item, Context $context): bool
     {
@@ -367,8 +342,6 @@ class Transition extends Base
      * Consider if permission is assigned to transition.
      *
      * @param Permission $permission Permission being check.
-     *
-     * @return bool
      */
     public function hasPermission(Permission $permission): bool
     {
@@ -381,54 +354,10 @@ class Transition extends Base
 
     /**
      * Get assigned permission. Returns null if no transition is set.
-     *
-     * @return Permission|null
      */
-    public function getPermission():? Permission
+    public function getPermission(): Permission|null
     {
         return $this->permission;
-    }
-
-    /**
-     * Execute all actions.
-     *
-     * @param Item    $item    The workflow item.
-     * @param Context $context The transition context.
-     *
-     * @return bool
-     *
-     * @deprecated Deprecated since 2.1.0 and will be removed in version 3.0 Use Transition#execute instead.
-     */
-    public function executeActions(Item $item, Context $context): bool
-    {
-        // @codingStandardsIgnoreStart
-        @trigger_error(
-            __METHOD__ . ' is deprecated. Use execute().',
-            E_USER_DEPRECATED
-        );
-        // @codingStandardsIgnoreEnd
-
-        return $this->doExecuteActions($item, $context, $this->actions);
-    }
-
-    /**
-     * Execute all actions.
-     *
-     * @deprecated Deprecated since 2.1.0 and will be removed in version 3.0 Use Transition#execute instead.
-     *
-     * @param Item    $item    The workflow item.
-     * @param Context $context The transition context.
-     */
-    public function executePostActions(Item $item, Context $context): bool
-    {
-        // @codingStandardsIgnoreStart
-        @trigger_error(
-            __METHOD__ . ' is deprecated. Use execute().',
-            E_USER_DEPRECATED
-        );
-        // @codingStandardsIgnoreEnd
-
-        return $this->doExecuteActions($item, $context, $this->postActions);
     }
 
     /**
@@ -466,7 +395,7 @@ class Transition extends Base
             } catch (ActionFailedException $e) {
                 $params = [
                     'exception' => $e->getMessage(),
-                    'action'    => $e->actionName(),
+                    'action'    => (string) $e->actionName(),
                 ];
                 $context->addError('transition.action.failed', $params, $e->errorCollection());
 

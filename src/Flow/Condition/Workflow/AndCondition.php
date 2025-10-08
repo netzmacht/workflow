@@ -11,7 +11,7 @@ use Override;
 /**
  * Class AndCondition matches if all child conditions matches.
  */
-class AndCondition extends ConditionCollection
+final class AndCondition extends ConditionCollection
 {
     /**
      * {@inheritDoc}

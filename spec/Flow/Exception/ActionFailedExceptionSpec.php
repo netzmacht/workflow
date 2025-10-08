@@ -61,6 +61,7 @@ final class ActionFailedExceptionSpec extends ObjectBehavior
         $this->actionName()->shouldReturn($actionName);
     }
 
+    /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
     public function it_is_instantiable_with_labelled_action(): void
     {
         $action = new class ('Foo', 'foo') extends Base implements Action
@@ -90,17 +91,17 @@ final class ActionFailedExceptionSpec extends ObjectBehavior
         $this->actionName()->shouldReturn('foo');
     }
 
-    public function it_allows_error_collection_when_instantiated_with_named_action(ErrorCollection $collection): void
+    public function it_allows_error_collection_when_instantiated_with_named_action(): void
     {
+        $collection = new ErrorCollection();
         $this->beConstructedThrough('namedAction', ['foo', $collection]);
 
         $this->errorCollection()->shouldReturn($collection);
     }
 
-    public function it_allows_error_collection_when_instantiated_with_action(
-        Action $action,
-        ErrorCollection $collection,
-    ): void {
+    public function it_allows_error_collection_when_instantiated_with_action(Action $action): void
+    {
+        $collection = new ErrorCollection();
         $this->beConstructedThrough('action', [$action, $collection]);
 
         $this->errorCollection()->shouldReturn($collection);

@@ -7,16 +7,21 @@ namespace Netzmacht\Workflow\Flow;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Condition\Workflow\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
+use Netzmacht\Workflow\Flow\Exception\FlowException;
 use Netzmacht\Workflow\Flow\Exception\StepNotFoundException;
 use Netzmacht\Workflow\Flow\Exception\TransitionNotFound;
 
 use function array_filter;
 use function array_map;
 use function array_values;
+use function assert;
 use function in_array;
+use function sprintf;
 
 /**
  * Class Workflow stores all information of a step processing workflow.
+ *
+ * @psalm-suppress ClassMustBeFinal
  */
 class Workflow extends Base
 {
@@ -37,12 +42,12 @@ class Workflow extends Base
     /**
      * The start transition.
      */
-    private Transition $startTransition;
+    private Transition|null $startTransition = null;
 
     /**
-     * Condition to supports if workflow can handle an entity.
+     * Condition to support if the workflow can handle an entity.
      */
-    private AndCondition $condition;
+    private AndCondition|null $condition = null;
 
     /**
      * Name of the provider.
@@ -66,7 +71,7 @@ class Workflow extends Base
      * Add a transition to the workflow.
      *
      * @param Transition $transition      Transition to be added.
-     * @param bool       $startTransition True if transition will be the start transition.
+     * @param bool       $startTransition True if transition is the start transition.
      *
      * @return $this
      */
@@ -111,7 +116,7 @@ class Workflow extends Base
      * @param Item         $item    Workflow item.
      * @param Context|null $context Transition context.
      *
-     * @return Transition[]|iterable
+     * @return iterable<Transition>
      *
      * @throws StepNotFoundException If Step does not exist.
      * @throws TransitionNotFound If transition does not exist.
@@ -127,13 +132,18 @@ class Workflow extends Base
         if (! $item->isWorkflowStarted() || $item->getWorkflowName() !== $this->getName()) {
             $transitions = [$this->getStartTransition()];
         } else {
-            $step        = $this->getStep($item->getCurrentStepName());
-            $transitions = array_map(
-                function ($transitionName) {
-                    return $this->getTransition($transitionName);
-                },
-                $step->getAllowedTransitions(),
-            );
+            $transitions = [];
+            $stepName    = $item->getCurrentStepName();
+
+            if ($stepName !== null) {
+                $step        = $this->getStep($stepName);
+                $transitions = array_map(
+                    function ($transitionName) {
+                        return $this->getTransition($transitionName);
+                    },
+                    $step->getAllowedTransitions(),
+                );
+            }
         }
 
         return array_values(
@@ -188,7 +198,10 @@ class Workflow extends Base
             return $this->getStartTransition()->getName() === $transitionName;
         }
 
-        $step = $this->getStep($item->getCurrentStepName());
+        $stepName = $item->getCurrentStepName();
+        assert($stepName !== null);
+
+        $step = $this->getStep($stepName);
         if (! $step->isTransitionAllowed($transitionName)) {
             return false;
         }
@@ -231,7 +244,7 @@ class Workflow extends Base
     }
 
     /**
-     * Check if step with a name exist.
+     * Check if step with a name exists.
      *
      * @param string $stepName The step name.
      */
@@ -247,7 +260,7 @@ class Workflow extends Base
     }
 
     /**
-     * Set transition as start transition.
+     * Set transition as a start transition.
      *
      * @param string $transitionName Name of start transition.
      *
@@ -267,6 +280,10 @@ class Workflow extends Base
      */
     public function getStartTransition(): Transition
     {
+        if ($this->startTransition === null) {
+            throw new FlowException(sprintf('Start transition for workflow "%s" is not set', $this->getName()));
+        }
+
         return $this->startTransition;
     }
 
@@ -285,7 +302,7 @@ class Workflow extends Base
      *
      * @return $this
      */
-    public function addCondition(Condition $condition)
+    public function addCondition(Condition $condition): self
     {
         if (! $this->condition) {
             $this->condition = new AndCondition();
@@ -297,7 +314,7 @@ class Workflow extends Base
     }
 
     /**
-     * Get provider name.
+     * Get the provider name.
      */
     public function getProviderName(): string
     {

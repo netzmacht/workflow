@@ -7,7 +7,8 @@ namespace spec\Netzmacht\Workflow\Util;
 use Netzmacht\Workflow\Util\Comparison;
 use PhpSpec\ObjectBehavior;
 
-class ComparisonSpec extends ObjectBehavior
+/** @extends ObjectBehavior<array-key, mixed> */
+final class ComparisonSpec extends ObjectBehavior
 {
     public function it_is_initializable(): void
     {

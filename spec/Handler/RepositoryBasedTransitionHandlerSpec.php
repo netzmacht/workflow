@@ -17,7 +17,7 @@ use Netzmacht\Workflow\Transaction\TransactionHandler;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
+final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 {
     public const string TRANSITION_NAME = 'transition_name';
 

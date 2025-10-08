@@ -16,7 +16,7 @@ use function trim;
 /**
  * Class TransactionActionFailed is thrown then a transaction action failed.
  */
-class ActionFailedException extends FlowException
+final class ActionFailedException extends FlowException
 {
     /**
      * The action name.

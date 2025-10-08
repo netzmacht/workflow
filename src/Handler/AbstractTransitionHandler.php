@@ -14,6 +14,7 @@ use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Transaction\TransactionHandler;
 use Override;
 
+use function assert;
 use function sprintf;
 
 /**
@@ -34,12 +35,12 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * The transition name which will be handled.
      */
-    private string $transitionName;
+    private string|null $transitionName;
 
     /**
      * Validation state.
      */
-    private bool $validated;
+    private bool|null $validated = null;
 
     /**
      * The transaction handler.
@@ -56,15 +57,15 @@ abstract class AbstractTransitionHandler implements TransitionHandler
      *
      * @param Item               $item               The item.
      * @param Workflow           $workflow           The current workflow.
-     * @param string             $transitionName     The transition to be handled.
+     * @param string|null        $transitionName     The transition to be handled.
      * @param TransactionHandler $transactionHandler TransactionHandler take care of transactions.
      *
-     * @throws FlowException If invalid transition name is given.
+     * @throws FlowException If an invalid transition name is given.
      */
     public function __construct(
         Item $item,
         Workflow $workflow,
-        string $transitionName,
+        string|null $transitionName,
         TransactionHandler $transactionHandler,
     ) {
         $this->item               = $item;
@@ -80,6 +81,16 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     public function getTransition(): Transition
     {
         if ($this->isWorkflowStarted()) {
+            if ($this->transitionName === null) {
+                throw new FlowException(
+                    sprintf(
+                        'No transition name given. Workflow "%s" is already started for item "%s"',
+                        $this->workflow->getName(),
+                        $this->item->getEntityId(),
+                    ),
+                );
+            }
+
             return $this->workflow->getTransition($this->transitionName);
         }
 
@@ -133,6 +144,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     {
         if ($this->isWorkflowStarted()) {
             $stepName = $this->item->getCurrentStepName();
+            assert($stepName !== null);
 
             return $this->workflow->getStep($stepName);
         }
@@ -179,7 +191,7 @@ abstract class AbstractTransitionHandler implements TransitionHandler
     /**
      * Guard that transition was validated before.
      *
-     * @throws FlowException If transition.
+     * @throws FlowException If transition is not validated.
      */
     protected function guardValidated(): void
     {
@@ -216,7 +228,18 @@ abstract class AbstractTransitionHandler implements TransitionHandler
             );
         }
 
+        if ($transitionName === null) {
+            throw new FlowException(
+                sprintf(
+                    'Workflow "%s" is already started. No transition can be processed for item "%s"',
+                    $this->workflow->getName(),
+                    $this->item->getEntityId(),
+                ),
+            );
+        }
+
         $step = $this->getCurrentStep();
+        assert($step instanceof Step);
 
         if (! $step->isTransitionAllowed($transitionName)) {
             throw new FlowException(

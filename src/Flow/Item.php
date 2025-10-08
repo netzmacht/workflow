@@ -9,25 +9,25 @@ use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Exception\WorkflowException;
 use Netzmacht\Workflow\Flow\Exception\FlowException;
 
+use function assert;
 use function count;
-use function trigger_error;
-
-use const E_USER_DEPRECATED;
 
 /**
- * Class Item stores workflow related data of an entity. It knows the state history and the current state.
+ * Class Item stores workflow-related data of an entity. It knows the state history and the current state.
+ *
+ * @psalm-suppress ClassMustBeFinal
  */
 class Item
 {
     /**
      * Workflow name.
      */
-    private string $workflowName;
+    private string|null $workflowName = null;
 
     /**
      * Current step name.
      */
-    private string $currentStepName;
+    private string|null $currentStepName = null;
 
     /**
      * State history which is already persisted.
@@ -37,7 +37,7 @@ class Item
     private array $stateHistory = [];
 
     /**
-     * Recorded state changes not persisted yet.
+     * Recorded state changes aren't persisted yet.
      *
      * @var State[]
      */
@@ -102,13 +102,13 @@ class Item
     }
 
     /**
-     * Start an item and return current state.
+     * Start an item and return the current state.
      *
      * @param Transition $transition The transition being executed.
      * @param Context    $context    The transition context.
      * @param bool       $success    The transition success.
      *
-     * @throws WorkflowException If workflow is already started.
+     * @throws WorkflowException If the workflow is already started.
      */
     public function start(
         Transition $transition,
@@ -130,7 +130,7 @@ class Item
      * @param Context    $context    The transition context.
      * @param bool       $success    The transition success.
      *
-     * @throws WorkflowException If workflow is not started.
+     * @throws WorkflowException If the workflow is not started.
      */
     public function transit(
         Transition $transition,
@@ -139,7 +139,8 @@ class Item
     ): State {
         $this->guardStarted();
 
-        $state = $this->getLatestState();
+        $state = $this->getLatestSuccessfulState();
+        assert($state instanceof State);
         $state = $state->transit($transition, $context, $success);
 
         $this->record($state);
@@ -152,7 +153,7 @@ class Item
      *
      * Reset the internal recorded state changes and return them.
      *
-     * @return State[]|iterable
+     * @return iterable<State>
      */
     public function releaseRecordedStateChanges(): iterable
     {
@@ -189,34 +190,11 @@ class Item
     /**
      * Get the state history of the workflow item.
      *
-     * @return State[]|iterable
+     * @return iterable<State>
      */
     public function getStateHistory(): iterable
     {
         return $this->stateHistory;
-    }
-
-    /**
-     * Get latest successful state.
-     *
-     * @deprecated Use getLatestStateOccurred() or getLatestState() instead.
-     *
-     * @param bool $successfulOnly Return only success ful steps.
-     */
-    public function getLatestState(bool $successfulOnly = true): State|false
-    {
-        // @codingStandardsIgnoreStart
-        @trigger_error(
-            __METHOD__ . ' is deprecated. Use getLatestStateOccurred() or getLatestState() instead.',
-            E_USER_DEPRECATED
-        );
-        // @codingStandardsIgnoreEnd
-
-        if (! $successfulOnly) {
-            return $this->getLatestStateOccurred();
-        }
-
-        return $this->getLatestSuccessfulState() ?: false;
     }
 
     /**
@@ -256,15 +234,15 @@ class Item
     }
 
     /**
-     * Consider if workflow has started.
+     * Consider if the workflow has started.
      */
     public function isWorkflowStarted(): bool
     {
-        return ! empty($this->currentStepName);
+        return $this->currentStepName !== null;
     }
 
     /**
-     * Detach item from current workflow.
+     * Detach item from the current workflow.
      *
      * You should only use it with care if the workflow has changed and there is no way to finish it.
      */
@@ -277,7 +255,7 @@ class Item
     /**
      * Guard that workflow of item was not already started.
      *
-     * @throws FlowException If item workflow process was already started.
+     * @throws FlowException If an item workflow process was already started.
      */
     private function guardNotStarted(): void
     {
@@ -289,7 +267,7 @@ class Item
     /**
      * Guard that workflow of item is started.
      *
-     * @throws FlowException If item workflow process was not started.
+     * @throws FlowException If an item workflow process was not started.
      */
     private function guardStarted(): void
     {

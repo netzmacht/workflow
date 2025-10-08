@@ -12,7 +12,7 @@ use Override;
 /**
  * Class AndCondition matches if all child conditions does.
  */
-class AndCondition extends ConditionCollection
+final class AndCondition extends ConditionCollection
 {
     #[Override]
     public function match(Transition $transition, Item $item, Context $context): bool

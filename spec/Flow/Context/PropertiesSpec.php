@@ -7,7 +7,7 @@ namespace spec\Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Context\Properties;
 use PhpSpec\ObjectBehavior;
 
-class PropertiesSpec extends ObjectBehavior
+final class PropertiesSpec extends ObjectBehavior
 {
     public function it_is_initializable(): void
     {

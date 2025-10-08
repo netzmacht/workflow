@@ -18,9 +18,9 @@ use Throwable;
 /**
  * Class RepositoryBasedTransitionHandler handles the transition to another step in the workflow.
  *
- * It uses an collection repository approach to store entities.
+ * It uses a collection repository approach to store entities.
  */
-class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
+final class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
 {
     /**
      * The entity repository.
@@ -38,16 +38,16 @@ class RepositoryBasedTransitionHandler extends AbstractTransitionHandler
      * @param Item               $item               The item.
      * @param Workflow           $workflow           The current workflow.
      * @param string|null        $transitionName     The transition to be handled.
-     * @param EntityRepository   $entityRepository   EntityRepository which stores changes.
-     * @param StateRepository    $stateRepository    StateRepository which stores new states.
+     * @param EntityRepository   $entityRepository   EntityRepository, which stores changes.
+     * @param StateRepository    $stateRepository    StateRepository, which stores new states.
      * @param TransactionHandler $transactionHandler TransactionHandler take care of transactions.
      *
-     * @throws WorkflowException If invalid transition name is given.
+     * @throws WorkflowException If an invalid transition name is given.
      */
     public function __construct(
         Item $item,
         Workflow $workflow,
-        string|null $transitionName = null,
+        string|null $transitionName,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
         TransactionHandler $transactionHandler,

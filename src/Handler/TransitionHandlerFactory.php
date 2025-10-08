@@ -9,7 +9,7 @@ use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Workflow;
 
 /**
- * Interface TransitionHandlerFactory describes factory for the workflow transition handler.
+ * Interface TransitionHandlerFactory describes the factory for the workflow transition handler.
  */
 interface TransitionHandlerFactory
 {

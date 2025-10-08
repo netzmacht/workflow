@@ -15,7 +15,7 @@ use Netzmacht\Workflow\Flow\Workflow;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class ItemSpec extends ObjectBehavior
+final class ItemSpec extends ObjectBehavior
 {
     /** @var array<string, mixed> */
     protected static array $entity = ['id' => 5];
@@ -59,7 +59,6 @@ class ItemSpec extends ObjectBehavior
         State $newState,
         Transition $transition,
         Context $context,
-        ErrorCollection $errorCollection,
     ): void {
         $state->getStepName()->willReturn('start');
         $state->getWorkflowName()->willReturn('workflow_name');
@@ -78,8 +77,8 @@ class ItemSpec extends ObjectBehavior
         $this->getWorkflowName()->shouldReturn('workflow_name');
         $this->getStateHistory()->shouldReturn([$state, $newState]);
 
-        $this->getLatestState()->shouldHaveType('Netzmacht\Workflow\Flow\State');
-        $this->getLatestState()->shouldNotBe($state);
+        $this->getLatestSuccessfulState()->shouldHaveType('Netzmacht\Workflow\Flow\State');
+        $this->getLatestSuccessfulState()->shouldNotBe($state);
     }
 
     public function it_starts_a_new_workflow_state(
@@ -87,9 +86,10 @@ class ItemSpec extends ObjectBehavior
         Workflow $workflow,
         Step $step,
         Context $context,
-        ErrorCollection $errorCollection,
-        Properties $properties,
     ): void {
+        $errorCollection = new ErrorCollection();
+        $properties      = new Properties();
+
         $workflow->getName()->willReturn('workflow');
         $step->getName()->willReturn('step');
         $step->getWorkflowName()->willReturn('workflow');
@@ -98,11 +98,8 @@ class ItemSpec extends ObjectBehavior
         $transition->getName()->willReturn('transition_name');
         $transition->getStepTo()->willReturn($step);
 
-        $properties->toArray()->willReturn([]);
         $context->getProperties()->willReturn($properties);
-
         $context->getErrorCollection()->willReturn($errorCollection);
-        $errorCollection->toArray()->willReturn([]);
 
         $this->beConstructedThrough('initialize', [$this->entityId, static::$entity]);
         $this->start($transition, $context, true)->shouldHaveType('Netzmacht\Workflow\Flow\State');
@@ -120,7 +117,6 @@ class ItemSpec extends ObjectBehavior
         $this->beConstructedThrough('reconstitute', [$this->entityId, static::$entity, [$state, $failedState]]);
 
         $this->getCurrentStepName()->shouldReturn('start');
-        $this->getLatestState()->shouldReturn($state);
         $this->getLatestSuccessfulState()->shouldReturn($state);
         $this->getLatestStateOccurred()->shouldReturn($failedState);
     }
@@ -136,7 +132,6 @@ class ItemSpec extends ObjectBehavior
 
         $this->beConstructedThrough('reconstitute', [$this->entityId, static::$entity, [$state, $failedState]]);
 
-        $this->getLatestState(false)->shouldReturn($failedState);
         $this->getLatestSuccessfulState()->shouldReturn($state);
         $this->getLatestStateOccurred()->shouldReturn($failedState);
     }
@@ -146,10 +141,11 @@ class ItemSpec extends ObjectBehavior
         Workflow $workflow,
         Step $stepTo,
         Context $context,
-        ErrorCollection $errorCollection,
-        Properties $payload,
-        Properties $properties,
     ): void {
+        $errorCollection = new ErrorCollection();
+        $properties      = new Properties();
+        $payload         = new Properties();
+
         $transition->getWorkflow()
             ->willReturn($workflow);
 
@@ -171,23 +167,11 @@ class ItemSpec extends ObjectBehavior
         $context->getErrorCollection()
             ->willReturn($errorCollection);
 
-        $properties->toArray()
-            ->willReturn([]);
-
-        $payload->toArray()
-            ->willReturn([]);
-
         $context->getProperties()
             ->willReturn($properties);
 
         $context->getPayload()
             ->willReturn($payload);
-
-        $errorCollection->toArray()
-            ->willReturn([]);
-
-        $errorCollection->getErrors()
-            ->willReturn([]);
 
         $this->start($transition, $context, true);
         $this->transit($transition, $context, true);

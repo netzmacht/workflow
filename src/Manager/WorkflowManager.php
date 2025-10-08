@@ -23,42 +23,19 @@ use function sprintf;
  * Usually there will a different workflow manager for different workflow types. The manager is the API entry point
  * when using the workflow API.
  */
-class WorkflowManager implements Manager
+final class WorkflowManager implements Manager
 {
     /**
-     * The state repository.
-     */
-    private StateRepository $stateRepository;
-
-    /**
-     * A set of workflows.
-     *
-     * @var Workflow[]
-     */
-    private array $workflows;
-
-    /**
-     * A Transition handler factory.
-     */
-    private TransitionHandlerFactory $handlerFactory;
-
-    /**
-     * Construct.
-     *
      * @param TransitionHandlerFactory $handlerFactory  The transition handler factory.
      * @param StateRepository          $stateRepository The state repository.
      * @param Workflow[]               $workflows       The set of managed workflows.
      */
     public function __construct(
-        TransitionHandlerFactory $handlerFactory,
-        StateRepository $stateRepository,
-        array $workflows = [],
+        private readonly TransitionHandlerFactory $handlerFactory,
+        private readonly StateRepository $stateRepository,
+        private array $workflows = [],
     ) {
         Assertion::allIsInstanceOf($workflows, Workflow::class);
-
-        $this->workflows       = $workflows;
-        $this->handlerFactory  = $handlerFactory;
-        $this->stateRepository = $stateRepository;
     }
 
     #[Override]
@@ -133,8 +110,9 @@ class WorkflowManager implements Manager
     #[Override]
     public function getWorkflowByItem(Item $item): Workflow
     {
-        if ($item->getWorkflowName()) {
-            $workflow = $this->getWorkflowByName($item->getWorkflowName());
+        $workflowName = $item->getWorkflowName();
+        if ($workflowName !== null) {
+            $workflow = $this->getWorkflowByName($workflowName);
 
             if ($workflow->supports($item->getEntityId(), $item->getEntity())) {
                 return $workflow;
@@ -144,9 +122,7 @@ class WorkflowManager implements Manager
         return $this->getWorkflow($item->getEntityId(), $item->getEntity());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     #[Override]
     public function hasWorkflow(EntityId $entityId, $entity): bool
     {
@@ -194,7 +170,7 @@ class WorkflowManager implements Manager
             $message = sprintf(
                 'Item "%s" already process workflow "%s" and cannot be handled by "%s"',
                 $item->getEntityId(),
-                $item->getWorkflowName(),
+                (string) $item->getWorkflowName(),
                 $workflow->getName(),
             );
 

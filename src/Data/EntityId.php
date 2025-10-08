@@ -6,6 +6,7 @@ namespace Netzmacht\Workflow\Data;
 
 use Assert\Assertion;
 
+use function array_pad;
 use function explode;
 use function is_numeric;
 
@@ -50,7 +51,7 @@ final class EntityId
      */
     public static function fromString(string $entityId): self
     {
-        [$providerName, $identifier] = explode('::', $entityId, 2);
+        [$providerName, $identifier] = array_pad(explode('::', $entityId, 2), 2, null);
 
         Assertion::notEmpty($providerName);
         Assertion::notEmpty($identifier);

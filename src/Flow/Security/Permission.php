@@ -13,7 +13,7 @@ use function sprintf;
 /**
  * Class Permission describes a permission in a workflow.
  */
-class Permission
+final class Permission
 {
     /**
      * The workflow name.

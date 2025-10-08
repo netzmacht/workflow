@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
+use Netzmacht\Workflow\Flow\Condition\Transition\ConditionCollection;
 use Netzmacht\Workflow\Flow\Condition\Transition\OrCondition;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Context\ErrorCollection;
@@ -13,7 +14,7 @@ use Netzmacht\Workflow\Flow\Transition;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class OrConditionSpec extends ObjectBehavior
+final class OrConditionSpec extends ObjectBehavior
 {
     public const string ERROR_COLLECTION_CLASS = ErrorCollection::class;
 
@@ -33,8 +34,8 @@ class OrConditionSpec extends ObjectBehavior
         Transition $transition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
     ): void {
+        $errorCollection = new ErrorCollection();
         $context->createCleanCopy()->willReturn($context);
         $context->getErrorCollection()->willReturn($errorCollection);
 
@@ -53,8 +54,9 @@ class OrConditionSpec extends ObjectBehavior
         Transition $transition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
     ): void {
+        $errorCollection = new ErrorCollection();
+
         $context->createCleanCopy()->willReturn($context);
         $context->getErrorCollection()->willReturn($errorCollection);
 
@@ -73,8 +75,7 @@ class OrConditionSpec extends ObjectBehavior
         Transition $transition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
     ): void {
-        $this->match($transition, $item, $context, $errorCollection)->shouldReturn(true);
+        $this->match($transition, $item, $context)->shouldReturn(true);
     }
 }

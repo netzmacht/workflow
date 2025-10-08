@@ -9,19 +9,11 @@ use Override;
 /**
  * Class DelegatingTransactionHandler delegates transaction commands to its children handlers.
  */
-class DelegatingTransactionHandler implements TransactionHandler
+final readonly class DelegatingTransactionHandler implements TransactionHandler
 {
-    /**
-     * Transaction handler.
-     *
-     * @var TransactionHandler[]
-     */
-    private array $transactionHandlers;
-
     /** @param TransactionHandler[] $transactionHandlers Child transaction handlers. */
-    public function __construct(array $transactionHandlers)
+    public function __construct(private array $transactionHandlers)
     {
-        $this->transactionHandlers = $transactionHandlers;
     }
 
     #[Override]

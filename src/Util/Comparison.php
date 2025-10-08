@@ -46,7 +46,7 @@ final class Comparison
     {
         $method = self::getOperatorMethod($operator);
 
-        if ($method) {
+        if ($method !== null) {
             return call_user_func([self::class, $method], $valueA, $valueB);
         }
 
@@ -54,10 +54,7 @@ final class Comparison
     }
 
     /**
-     * Consider if two values equals.
-     *
-     * @param mixed $valueA Value a.
-     * @param mixed $valueB Value b.
+     * Consider if two values equal.
      */
     public static function equals(mixed $valueA, mixed $valueB): bool
     {
@@ -148,15 +145,9 @@ final class Comparison
      *
      * @param string $operator The current operator.
      */
-    private static function getOperatorMethod(string $operator): string|bool
+    private static function getOperatorMethod(string $operator): string|null
     {
-        $operators = self::getOperators();
-
-        if (isset($operators[$operator])) {
-            return $operators[$operator];
-        }
-
-        return false;
+        return self::getOperators()[$operator] ?? null;
     }
 
     /**
@@ -166,6 +157,7 @@ final class Comparison
      */
     private static function getOperators(): array
     {
+        /** @psalm-suppress RedundantPropertyInitializationCheck */
         if (! isset(self::$operators)) {
             $reflector = new ReflectionClass(self::class);
             $constants = $reflector->getConstants();

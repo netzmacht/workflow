@@ -12,16 +12,16 @@ use Override;
 use ReturnTypeWillChange;
 
 use function array_map;
-use function assert;
 use function count;
 
 /**
  * Class ErrorCollection collects error messages being raised during transition.
  *
- * @psalm-type TError = array{0: string, 1: list<string>, 2: ErrorCollection|null}
- * @psalm-type TErrorArray = list<array{0: string, 1: list<string>, 2: list<array>|null}
+ * @implements IteratorAggregate<int, TError>
+ * @psalm-type TError = array{0: string, 1: list<string>|array<string, string>, 2: ErrorCollection|null}
+ * @psalm-type TErrorArray = list<array{0: string, 1: list<string>|array<string, string>, 2: list<array>|null}>
  */
-class ErrorCollection implements IteratorAggregate, Countable
+final class ErrorCollection implements IteratorAggregate, Countable
 {
     /**
      * Stored errors.
@@ -43,9 +43,9 @@ class ErrorCollection implements IteratorAggregate, Countable
     /**
      * Add a new error.
      *
-     * @param string               $message    Error message.
-     * @param list<string>         $params     Params for the error message.
-     * @param ErrorCollection|null $collection Option. Child collection of the error.
+     * @param string                             $message    Error message.
+     * @param list<string>|array<string, string> $params     Params for the error message.
+     * @param ErrorCollection|null               $collection Option. Child collection of the error.
      *
      * @return $this
      */
@@ -112,7 +112,7 @@ class ErrorCollection implements IteratorAggregate, Countable
     public function addErrors(array $errors): self
     {
         foreach ($errors as $error) {
-            [$message, $params, $collection] = (array) $error;
+            [$message, $params, $collection] = $error;
 
             $this->addError($message, $params, $collection);
         }
@@ -155,11 +155,7 @@ class ErrorCollection implements IteratorAggregate, Countable
     {
         return array_map(
             static function ($error) {
-                if ($error[2]) {
-                    $collection = $error[2];
-                    assert($collection instanceof ErrorCollection);
-                    $error[2] = $collection->toArray();
-                }
+                $error[2] = $error[2]?->toArray();
 
                 return $error;
             },

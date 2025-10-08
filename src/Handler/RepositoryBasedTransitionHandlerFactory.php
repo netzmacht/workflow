@@ -14,7 +14,7 @@ use Override;
 /**
  * Class RepositoryBasedTransitionHandlerFactory creates a repository based transition handler.
  */
-class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactory
+final class RepositoryBasedTransitionHandlerFactory implements TransitionHandlerFactory
 {
     /**
      * Transaction handler being used during workflow transitions.

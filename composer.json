@@ -35,6 +35,11 @@
       "Netzmacht\\Workflow\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "spec\\Netzmacht\\Workflow\\": "spec/"
+    }
+  },
   "config": {
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true

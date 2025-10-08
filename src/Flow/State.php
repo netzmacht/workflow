@@ -12,8 +12,9 @@ use Netzmacht\Workflow\Flow\Exception\FlowException;
 use function sprintf;
 
 /**
- * Class State stores information of a current state of an entity.
+ * Class State stores information about the current state of an entity.
  *
+ * @psalm-suppress ClassMustBeFinal
  * @psalm-import-type TErrorArray from ErrorCollection
  */
 class State
@@ -21,7 +22,7 @@ class State
     /**
      * The state id.
      */
-    private int $stateId;
+    private int|null $stateId;
 
     /**
      * The entity id.
@@ -79,11 +80,11 @@ class State
      * @param string               $startWorkflowName  Workflow name of the start point.
      * @param string               $transitionName     The transition executed to reach the step.
      * @param string               $stepToName         The step reached after transition.
-     * @param bool                 $successful         Consider if transition was successful.
+     * @param bool                 $successful         Consider if a transition was successful.
      * @param array<string, mixed> $data               Stored data.
      * @param DateTimeImmutable    $reachedAt          Time when state was reached.
      * @param TErrorArray          $errors             List of errors.
-     * @param int                  $stateId            The state id of a persisted state.
+     * @param int|null             $stateId            The state id of a persisted state.
      * @param string|null          $targetWorkflowName Workflow name of the target point. Allow null for BC reasons.
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
@@ -109,7 +110,7 @@ class State
         $this->reachedAt          = $reachedAt;
         $this->errors             = $errors;
         $this->stateId            = $stateId;
-        $this->targetWorkflowName = $targetWorkflowName ?: $startWorkflowName;
+        $this->targetWorkflowName = $targetWorkflowName ?? $startWorkflowName;
     }
 
     /**
@@ -136,7 +137,7 @@ class State
             );
         }
 
-        $workflowName = $stepTo->getWorkflowName() ?: $transition->getWorkflow()->getName();
+        $workflowName = $stepTo->getWorkflowName() ?? $transition->getWorkflow()->getName();
 
         return new State(
             $entityId,
@@ -277,19 +278,19 @@ class State
                 );
             }
 
-            $targetWorkflowName = $stepTo->getWorkflowName() ?: $transition->getWorkflow()->getName();
+            $targetWorkflowName = $stepTo->getWorkflowName() ?? $transition->getWorkflow()->getName();
             $stepName           = $stepTo->getName();
         }
 
         $properties = $context->getProperties();
 
-        return new static(
+        return new self(
             $this->entityId,
             $workflowName,
             $transition->getName(),
             $stepName,
             $success,
-            $properties ? $properties->toArray() : [],
+            $properties->toArray(),
             $dateTime,
             $context->getErrorCollection()->toArray(),
             null,

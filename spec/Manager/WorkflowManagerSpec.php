@@ -17,7 +17,8 @@ use Netzmacht\Workflow\Handler\TransitionHandlerFactory;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class WorkflowManagerSpec extends ObjectBehavior
+/** @extends ObjectBehavior<array-key, mixed> */
+final class WorkflowManagerSpec extends ObjectBehavior
 {
     public const string ENTITY_PROVIDER_NAME = 'provider_name';
 
@@ -32,13 +33,13 @@ class WorkflowManagerSpec extends ObjectBehavior
     }
 
     public function let(
-        TransitionHandlerFactory $transitionHandlerFactory,
+        TransitionHandlerFactory $handlerFactory,
         StateRepository $stateRepository,
         Workflow $workflow,
     ): void {
         $workflow->getName()->willReturn('workflow_a');
 
-        $this->beConstructedWith($transitionHandlerFactory, $stateRepository, [$workflow]);
+        $this->beConstructedWith($handlerFactory, $stateRepository, [$workflow]);
     }
 
     public function it_gets_workflow(Workflow $workflow): void
@@ -125,7 +126,7 @@ class WorkflowManagerSpec extends ObjectBehavior
     public function it_creates_handler_for_start_transition(
         Workflow $workflow,
         Item $item,
-        TransitionHandlerFactory $transitionHandlerFactory,
+        TransitionHandlerFactory $handlerFactory,
         StateRepository $stateRepository,
         TransitionHandler $transitionHandler,
     ): void {
@@ -138,7 +139,7 @@ class WorkflowManagerSpec extends ObjectBehavior
 
         $workflow->supports($entityId, static::$entity)->willReturn(true);
 
-        $transitionHandlerFactory->createTransitionHandler(
+        $handlerFactory->createTransitionHandler(
             $item,
             $workflow,
             Argument::any(),
@@ -152,7 +153,7 @@ class WorkflowManagerSpec extends ObjectBehavior
     public function it_creates_handler_for_ongoing_transition(
         Workflow $workflow,
         Item $item,
-        TransitionHandlerFactory $transitionHandlerFactory,
+        TransitionHandlerFactory $handlerFactory,
         StateRepository $stateRepository,
         TransitionHandler $transitionHandler,
         Transition $transition,
@@ -174,7 +175,7 @@ class WorkflowManagerSpec extends ObjectBehavior
         $workflow->getTransition('next')->willReturn($transition);
         $workflow->getName()->willReturn('workflow_a');
 
-        $transitionHandlerFactory->createTransitionHandler(
+        $handlerFactory->createTransitionHandler(
             $item,
             $workflow,
             Argument::any(),

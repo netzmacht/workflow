@@ -7,7 +7,7 @@ namespace spec\Netzmacht\Workflow\Data;
 use Netzmacht\Workflow\Data\EntityId;
 use PhpSpec\ObjectBehavior;
 
-class EntityIdSpec extends ObjectBehavior
+final class EntityIdSpec extends ObjectBehavior
 {
     public const string PROVIDER_NAME = 'provider_example';
 

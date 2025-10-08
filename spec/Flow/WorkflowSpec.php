@@ -12,7 +12,7 @@ use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use PhpSpec\ObjectBehavior;
 
-class WorkflowSpec extends ObjectBehavior
+final class WorkflowSpec extends ObjectBehavior
 {
     public const string NAME       = 'workflow';
     public const string PROVIDER   = 'provider_name';

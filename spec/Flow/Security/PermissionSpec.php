@@ -8,7 +8,7 @@ use Netzmacht\Workflow\Flow\Security\Permission;
 use Netzmacht\Workflow\Flow\Workflow;
 use PhpSpec\ObjectBehavior;
 
-class PermissionSpec extends ObjectBehavior
+final class PermissionSpec extends ObjectBehavior
 {
     public function let(Workflow $workflow): void
     {
@@ -31,16 +31,16 @@ class PermissionSpec extends ObjectBehavior
         $this->getPermissionId()->shouldReturn('perm');
     }
 
-    public function it_equals_if_workflow_and_permission_id_matches(Permission $permission): void
+    public function it_equals_if_workflow_and_permission_id_matches(): void
     {
-        $permission->__toString()->willReturn('workflow:perm');
+        $permission = Permission::forWorkflowName('workflow', 'perm');
 
         $this->equals($permission)->shouldReturn(true);
     }
 
-    public function it_does_not_equals_if_not_the_same_workflow(Permission $permission): void
+    public function it_does_not_equals_if_not_the_same_workflow(): void
     {
-        $permission->__toString()->willReturn('workflow2:perm');
+        $permission = Permission::forWorkflowName('workflow2', 'perm');
 
         $this->equals($permission)->shouldReturn(false);
     }

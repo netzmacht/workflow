@@ -12,7 +12,7 @@ use Netzmacht\Workflow\Flow\Transition;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class AndConditionSpec extends ObjectBehavior
+final class AndConditionSpec extends ObjectBehavior
 {
     public const string ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Flow\Context\ErrorCollection';
 
@@ -32,8 +32,9 @@ class AndConditionSpec extends ObjectBehavior
         Transition $transition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
     ): void {
+        $errorCollection = new ErrorCollection();
+
         $context->createCleanCopy()->willReturn($context);
         $context->getErrorCollection()->willReturn($errorCollection);
 
@@ -52,8 +53,9 @@ class AndConditionSpec extends ObjectBehavior
         Transition $transition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
     ): void {
+        $errorCollection = new ErrorCollection();
+
         $context->createCleanCopy()->willReturn($context);
         $context->getErrorCollection()->willReturn($errorCollection);
 
@@ -72,8 +74,9 @@ class AndConditionSpec extends ObjectBehavior
         Transition $transition,
         Item $item,
         Context $context,
-        ErrorCollection $errorCollection,
     ): void {
+        $errorCollection = new ErrorCollection();
+
         $context->createCleanCopy()->willReturn($context);
         $context->getErrorCollection()->willReturn($errorCollection);
 

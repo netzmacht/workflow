@@ -11,7 +11,7 @@ use Override;
 /**
  * This condition checks a config parameter value
  */
-class ConfigValueCondition implements Condition
+final class ConfigValueCondition implements Condition
 {
     /**
      * Name of the config parameter.

@@ -9,6 +9,8 @@ use Netzmacht\Workflow\Flow\Context\Properties;
 
 /**
  * Class Context provides extra information for a transition.
+ *
+ * @psalm-suppress ClassMustBeFinal
  */
 class Context
 {
@@ -34,8 +36,8 @@ class Context
     /**
      * Construct.
      *
-     * @param Properties           $properties      The properties to be stored.
-     * @param Properties           $payload         The given parameters.
+     * @param Properties|null      $properties      The properties to be stored.
+     * @param Properties|null      $payload         The given parameters.
      * @param ErrorCollection|null $errorCollection Error collection.
      */
     public function __construct(
@@ -43,9 +45,9 @@ class Context
         Properties|null $payload = null,
         ErrorCollection|null $errorCollection = null,
     ) {
-        $this->properties      = $properties ?: new Properties();
-        $this->payload         = $payload ?: new Properties();
-        $this->errorCollection = $errorCollection ?: new ErrorCollection();
+        $this->properties      = $properties ?? new Properties();
+        $this->payload         = $payload ?? new Properties();
+        $this->errorCollection = $errorCollection ?? new ErrorCollection();
     }
 
     /**
@@ -75,9 +77,9 @@ class Context
     /**
      * Add an error.
      *
-     * @param string               $message    Error message.
-     * @param list<string>         $params     Params for the error message.
-     * @param ErrorCollection|null $collection Option. Child collection of the error.
+     * @param string                             $message    Error message.
+     * @param list<string>|array<string, string> $params     Params for the error message.
+     * @param ErrorCollection|null               $collection Option. Child collection of the error.
      */
     public function addError(string $message, array $params = [], ErrorCollection|null $collection = null): self
     {

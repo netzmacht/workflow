@@ -13,13 +13,8 @@ use Override;
 /**
  * Workflow manager decorator caching the items and the relation between workflows and entities.
  */
-class CachedManager implements Manager
+final class CachedManager implements Manager
 {
-    /**
-     * Workflow manager.
-     */
-    private Manager $manager;
-
     /**
      * Workflow entity mapping.
      *
@@ -34,14 +29,9 @@ class CachedManager implements Manager
      */
     private array $items = [];
 
-    /**
-     * Construct.
-     *
-     * @param Manager $manager The inside workflow manager.
-     */
-    public function __construct(Manager $manager)
+    /** @param Manager $manager The inside workflow manager. */
+    public function __construct(private readonly Manager $manager)
     {
-        $this->manager = $manager;
     }
 
     #[Override]

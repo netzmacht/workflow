@@ -8,7 +8,7 @@ use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Workflow;
 use PhpSpec\ObjectBehavior;
 
-class ProviderNameConditionSpec extends ObjectBehavior
+final class ProviderNameConditionSpec extends ObjectBehavior
 {
     /** @var array<string, mixed> */
     protected static array $entity = ['id' => 5];
