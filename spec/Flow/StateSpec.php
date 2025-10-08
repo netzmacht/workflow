@@ -14,6 +14,7 @@ use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
 use Netzmacht\Workflow\Flow\Workflow;
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 
 /** @psalm-import-type TErrorArray from ErrorCollection */
 final class StateSpec extends ObjectBehavior
@@ -35,7 +36,7 @@ final class StateSpec extends ObjectBehavior
     /** @var TErrorArray */
     private static array $errors = [['error.message', [], null]];
 
-    public function let(DateTimeImmutable $dateTime): void
+    public function let(DateTimeImmutable $dateTime, Workflow $workflow, Step $stepTo): void
     {
         $this->entityId = EntityId::fromProviderNameAndId('entity', 4);
 
@@ -51,6 +52,9 @@ final class StateSpec extends ObjectBehavior
             self::STATE_ID,
             self::TARGET_WORKFLOW_NAME,
         );
+
+        $workflow->addTransition(Argument::type(Transition::class))->willReturn($workflow);
+        $stepTo->getName()->willReturn(self::STEP_TO);
     }
 
     public function it_is_initializable(): void
@@ -163,16 +167,9 @@ final class StateSpec extends ObjectBehavior
 
     public function it_constructs_with_start(
         Workflow $workflow,
-        Transition $transition,
         Step $stepTo,
     ): void {
-        $stepTo->getName()->willReturn(self::STEP_TO);
-
-        $transition->getWorkflow()->willReturn($workflow);
-        $transition->getStepTo()->willReturn($stepTo);
-
-        $transition->getName()
-            ->willReturn('transition');
+        $transition = new Transition('transition', $workflow->getWrappedObject(), $stepTo->getWrappedObject());
 
         $this->beConstructedThrough(
             'start',
@@ -187,13 +184,8 @@ final class StateSpec extends ObjectBehavior
 
     public function it_fails_constructing_with_start_if_target_step_is_not_defined(
         Workflow $workflow,
-        Transition $transition,
     ): void {
-        $transition->getWorkflow()->willReturn($workflow);
-        $transition->getStepTo()->willReturn(null);
-
-        $transition->getName()
-            ->willReturn('transition');
+        $transition = new Transition('transition', $workflow->getWrappedObject());
 
         $this->beConstructedThrough(
             'start',
@@ -208,7 +200,7 @@ final class StateSpec extends ObjectBehavior
         $this->shouldThrow(FlowException::class)->duringInstantiation();
     }
 
-    public function it_transits_to_next_state(Workflow $workflow, Transition $transition, Step $stepTo): void
+    public function it_transits_to_next_state(Workflow $workflow, Step $stepTo): void
     {
         $workflow
             ->getName()
@@ -217,11 +209,7 @@ final class StateSpec extends ObjectBehavior
         $stepTo->getName()->willReturn(self::STEP_TO);
         $stepTo->getWorkflowName()->willReturn(self::WORKFLOW_NAME);
 
-        $transition->getWorkflow()->willReturn($workflow);
-        $transition->getStepTo()->willReturn($stepTo);
-
-        $transition->getName()
-            ->willReturn('transition');
+        $transition = new Transition('transition', $workflow->getWrappedObject(), $stepTo->getWrappedObject());
 
         $this->transit($transition, new Context(), true)
             ->shouldBeAnInstanceOf(State::class);
@@ -229,7 +217,6 @@ final class StateSpec extends ObjectBehavior
 
     public function it_fallbacks_to_transition_workflow_name_if_step_doesnt_contain_the_name(
         Workflow $workflow,
-        Transition $transition,
         Step $stepTo,
     ): void {
         $workflow
@@ -237,23 +224,19 @@ final class StateSpec extends ObjectBehavior
             ->shouldBeCalled()
             ->willReturn(self::WORKFLOW_NAME);
 
+        $transition = new Transition('transition', $workflow->getWrappedObject(), $stepTo->getWrappedObject());
+
         $stepTo->getName()->willReturn(self::STEP_TO);
         $stepTo->getWorkflowName()->willReturn(null);
-
-        $transition->getWorkflow()->willReturn($workflow);
-        $transition->getStepTo()->willReturn($stepTo);
-
-        $transition->getName()
-            ->willReturn('transition');
 
         $this->transit($transition, new Context(), true)
             ->shouldBeAnInstanceOf(State::class);
     }
 
-    public function it_fails_to_transit_if_target_step_is_not_defined(Transition $transition): void
+    public function it_fails_to_transit_if_target_step_is_not_defined(): void
     {
-        $transition->getStepTo()->willReturn(null);
-        $transition->getName()->willReturn('transition');
+        $workflow   = new Workflow('workflow', 'workflow');
+        $transition = new Transition('transition', $workflow);
 
         $this->shouldThrow(FlowException::class)
             ->during('transit', [$transition, new Context(), true]);

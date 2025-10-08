@@ -7,6 +7,8 @@ namespace spec\Netzmacht\Workflow\Handler;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\EntityRepository;
 use Netzmacht\Workflow\Data\StateRepository;
+use Netzmacht\Workflow\Exception\WorkflowException;
+use Netzmacht\Workflow\Flow\Action;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\State;
@@ -29,6 +31,8 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
     private EntityId $entityId;
 
+    private Transition $transition;
+
     public function let(
         Item $item,
         Workflow $workflow,
@@ -36,27 +40,30 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         StateRepository $stateRepository,
         TransactionHandler $transactionHandler,
         Step $step,
-        Transition $transition,
         State $state,
     ): void {
         $this->entityId = EntityId::fromProviderNameAndId('entity', '2');
 
+        $workflow->addTransition(Argument::type(Transition::class))->willReturn($workflow);
+        $this->transition = new Transition(
+            self::TRANSITION_NAME,
+            $workflow->getWrappedObject(),
+            $step->getWrappedObject(),
+        );
+
         $workflow->getStep(self::STEP_NAME)->willReturn($step);
-        $workflow->getStartTransition()->willReturn($transition);
+        $workflow->getStartTransition()->willReturn($this->transition);
         $workflow->getName()->willReturn(self::WORKFLOW_NAME);
 
         $step->isTransitionAllowed(self::TRANSITION_NAME)->willReturn(true);
-        $workflow->getTransition(self::TRANSITION_NAME)->willReturn($transition);
+        $workflow->getTransition(self::TRANSITION_NAME)->willReturn($this->transition);
 
-        $transition->getName()->willReturn(self::TRANSITION_NAME);
-        $transition->getRequiredPayloadProperties($item)->willReturn([]);
-
-        $item->transit($transition, Argument::type(Context::class))
+        $item->transit($this->transition, Argument::type(Context::class))
             ->willReturn($state);
 
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn(self::STEP_NAME);
-        $item->getEntity()->willReturn(static::$entity);
+        $item->getEntity()->willReturn(self::$entity);
 
         $this->beConstructedWith(
             $item,
@@ -84,7 +91,6 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
         TransactionHandler $transactionHandler,
-        Transition $transition,
     ): void {
         $this->beConstructedWith(
             $item,
@@ -97,19 +103,14 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
         $item->isWorkflowStarted()->willReturn(false);
         $item->getEntityId()->willReturn($this->entityId);
-
-        $workflow->getStartTransition()->willReturn($transition);
-
-        $this->getTransition()->shouldReturn($transition);
+        $this->getTransition()->shouldReturn($this->transition);
     }
 
-    public function it_gets_transition_if_already_started(Item $item, Workflow $workflow, Transition $transition): void
+    public function it_gets_transition_if_already_started(Item $item): void
     {
         $item->isWorkflowStarted()->willReturn(true);
 
-        $workflow->getTransition(self::TRANSITION_NAME)->willReturn($transition);
-
-        $this->getTransition()->shouldReturn($transition);
+        $this->getTransition()->shouldReturn($this->transition);
     }
 
     public function it_gets_item(Item $item): void
@@ -174,22 +175,15 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $this->isWorkflowStarted()->shouldReturn(false);
     }
 
-    public function it_checks_if_input_data_is_required(Workflow $workflow, Transition $transition, Item $item): void
+    public function it_checks_if_input_data_is_required(): void
     {
-        $workflow->getStartTransition()->willReturn($transition);
-        $transition->getRequiredPayloadProperties($item)->willReturn(['foo']);
+        $this->transition->addAction($this->actionWithRequiredPayload(['foo']));
 
         $this->getRequiredPayloadProperties()->shouldReturn(['foo']);
     }
 
-    public function it_checks_if_input_data_is_not_required(
-        Workflow $workflow,
-        Transition $transition,
-        Item $item,
-    ): void {
-        $workflow->getStartTransition()->willReturn($transition);
-        $transition->getRequiredPayloadProperties($item)->willReturn([]);
-
+    public function it_checks_if_input_data_is_not_required(): void
+    {
         $this->getRequiredPayloadProperties()->shouldReturn([]);
     }
 
@@ -198,69 +192,70 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $this->getContext()->shouldHaveType(Context::class);
     }
 
-    public function it_validates(Workflow $workflow, Transition $transition, Item $item): void
+    public function it_validates(Workflow $workflow, Step $step): void
     {
-        $workflow->getStartTransition()->willReturn($transition);
-        $transition->getName()->willReturn(self::TRANSITION_NAME);
+        $this->transition = new Transition(
+            self::TRANSITION_NAME,
+            $workflow->getWrappedObject(),
+            $step->getWrappedObject(),
+        );
 
-        $transition->getRequiredPayloadProperties($item)->willReturn(['foo']);
-
-        $transition->validate($item, Argument::type(Context::class))
-            ->willReturn(true)
-            ->shouldBeCalled();
-
-        $transition->checkPreCondition($item, Argument::type(Context::class))
-            ->shouldBeCalled()
-            ->willReturn(true);
-
-        $transition->checkCondition($item, Argument::type(Context::class))
-            ->shouldBeCalled()
-            ->willReturn(true);
+        $this->transition->addAction($this->actionWithRequiredPayload(['foo']));
 
         $this->validate([])->shouldReturn(true);
     }
 
-    public function it_throws_during_transits_if_not_validated(Workflow $workflow, Transition $transition): void
+    public function it_throws_during_transits_if_not_validated(): void
     {
-        $workflow->getStartTransition()->willReturn($transition);
-
-        $this->shouldThrow('Netzmacht\Workflow\Exception\WorkflowException')->duringTransit();
+        $this->shouldThrow(WorkflowException::class)->duringTransit();
     }
 
-    public function it_transits_to_next_state(Transition $transition, Item $item, State $state): void
+    public function it_transits_to_next_state(Item $item, State $state, State $newState): void
     {
+        $item->getLatestStateOccurred()->willReturn($state);
         $item->releaseRecordedStateChanges()
             ->shouldBeCalledOnce()
-            ->willReturn([$state]);
+            ->willReturn([$newState]);
 
-        $transition->validate($item, Argument::type(Context::class))
-            ->willReturn(true)
-            ->shouldBeCalled();
-
-        $transition->execute($item, Argument::type(Context::class))
-            ->willReturn($state)
-            ->shouldBeCalledOnce();
-
-        $transition->checkCondition($item, Argument::type(Context::class))
-            ->willReturn(true)
-            ->shouldBeCalled();
-
-        $transition->checkPreCondition($item, Argument::type(Context::class))
-            ->willReturn(true)
-            ->shouldBeCalled();
+        $item->transit($this->transition, Argument::type(Context::class), true)->willReturn($newState);
 
         $this->validate([]);
         $this->transit()->shouldHaveType(State::class);
     }
 
-    public function it_checks_if_transition_is_available(Transition $transition, Item $item): void
+    public function it_checks_if_transition_is_available(): void
     {
-        $transition->getName()->willReturn(self::TRANSITION_NAME);
-        $transition->isAvailable(
-            $item,
-            Argument::type(Context::class),
-        )->willReturn(true);
-
         $this->isAvailable()->shouldReturn(true);
+    }
+
+    /**
+     * @param list<string> $properties
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    private function actionWithRequiredPayload(array $properties): Action
+    {
+        return new class ($properties) implements Action
+        {
+            /** @param list<string> $properties */
+            public function __construct(private readonly array $properties)
+            {
+            }
+
+            /** {@inheritDoc} */
+            public function getRequiredPayloadProperties(Item $item): array
+            {
+                return $this->properties;
+            }
+
+            public function validate(Item $item, Context $context): bool
+            {
+                return true;
+            }
+
+            public function transit(Transition $transition, Item $item, Context $context): void
+            {
+            }
+        };
     }
 }

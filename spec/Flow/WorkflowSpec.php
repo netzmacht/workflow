@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace spec\Netzmacht\Workflow\Flow;
 
 use Netzmacht\Workflow\Data\EntityId;
+use Netzmacht\Workflow\Flow\Base;
 use Netzmacht\Workflow\Flow\Condition\Workflow\Condition;
 use Netzmacht\Workflow\Flow\Context;
+use Netzmacht\Workflow\Flow\Exception\TransitionNotFound;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Step;
 use Netzmacht\Workflow\Flow\Transition;
+use Netzmacht\Workflow\Flow\Workflow;
 use PhpSpec\ObjectBehavior;
 
 final class WorkflowSpec extends ObjectBehavior
@@ -21,26 +24,29 @@ final class WorkflowSpec extends ObjectBehavior
     /** @var array<string, mixed> */
     protected static array $entity = ['id' => 5];
 
-    public function let(Step $transitionStep, Transition $transition): void
+    private Transition $transition;
+
+    public function let(Step $transitionStep): void
     {
-        $transitionStep->getName()->willReturn(self::START_STEP);
-
-        $transition->getName()->willReturn('start');
-
         $this->beConstructedWith(self::NAME, self::PROVIDER);
 
+        $transitionStep->getName()->willReturn(self::START_STEP);
+
+        $this->transition = new Transition('start', $this->getWrappedObject(), $transitionStep->getWrappedObject());
+
         $this->addStep($transitionStep);
-        $this->addTransition($transition, true);
+        $this->addTransition($this->transition);
+        $this->setStartTransition('start');
     }
 
     public function it_is_initializable(): void
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Flow\Workflow');
+        $this->shouldHaveType(Workflow::class);
     }
 
     public function it_behaves_like_base(): void
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Flow\Base');
+        $this->shouldHaveType(Base::class);
     }
 
     public function it_adds_a_step(Step $anotherStep): void
@@ -56,31 +62,31 @@ final class WorkflowSpec extends ObjectBehavior
         $this->shouldThrow('Netzmacht\Workflow\Flow\Exception\StepNotFoundException')->duringGetStep('not_set');
     }
 
-    public function it_adds_a_transition(Transition $anotherTransition): void
+    public function it_adds_a_transition(Step $step): void
     {
-        $anotherTransition->getName()->willReturn('another');
+        $transition = new Transition('another', $this->getWrappedObject(), $step->getWrappedObject());
 
-        $this->addTransition($anotherTransition)->shouldReturn($this);
-        $this->getTransition('another')->shouldReturn($anotherTransition);
+        $this->addTransition($transition)->shouldReturn($this);
+        $this->getTransition('another')->shouldReturn($transition);
     }
 
     public function it_throws_if_transition_not_exists(): void
     {
         $this
-            ->shouldThrow('Netzmacht\Workflow\Flow\Exception\TransitionNotFound')
+            ->shouldThrow(TransitionNotFound::class)
             ->duringGetTransition('not_set');
     }
 
-    public function it_has_a_start_transition(Transition $transition): void
+    public function it_has_a_start_transition(): void
     {
         $this->setStartTransition('start')->shouldReturn($this);
-        $this->getStartTransition()->shouldReturn($transition);
+        $this->getStartTransition()->shouldReturn($this->transition);
     }
 
     public function it_throws_if_start_transition_is_not_part_of_workflow(): void
     {
         $this
-            ->shouldThrow('Netzmacht\Workflow\Flow\Exception\TransitionNotFound')
+            ->shouldThrow(TransitionNotFound::class)
             ->duringSetStartTransition('not_set');
     }
 
@@ -90,9 +96,9 @@ final class WorkflowSpec extends ObjectBehavior
         $this->hasTransition('test')->shouldReturn(false);
     }
 
-    public function it_gets_all_transitions(Transition $transition): void
+    public function it_gets_all_transitions(): void
     {
-        $this->getTransitions()->shouldReturn([$transition]);
+        $this->getTransitions()->shouldReturn([$this->transition]);
     }
 
     public function it_knows_if_start_transition_is_available_for_an_item(Item $item): void
@@ -124,15 +130,13 @@ final class WorkflowSpec extends ObjectBehavior
     public function it_knows_if_transition_is_available_for_an_item(
         Item $item,
         Step $step,
-        Transition $transition,
     ): void {
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('started');
 
         $context = new Context();
 
-        $transition->getName()->willReturn('next');
-        $transition->isAvailable($item, $context)->shouldBeCalled()->willReturn(true);
+        $transition = new Transition('next', $this->getWrappedObject(), $step->getWrappedObject());
         $this->addTransition($transition);
 
         $step->getName()->willReturn('started');

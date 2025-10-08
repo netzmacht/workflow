@@ -9,8 +9,10 @@ use Netzmacht\Workflow\Flow\Condition\Transition\PayloadPropertyCondition;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
+use Netzmacht\Workflow\Flow\Workflow;
 use Netzmacht\Workflow\Util\Comparison;
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 
 use function expect;
 
@@ -18,8 +20,10 @@ final class PayloadPropertyConditionSpec extends ObjectBehavior
 {
     private Context $context;
 
-    public function let(): void
+    public function let(Workflow $workflow): void
     {
+        $workflow->addTransition(Argument::type(Transition::class))->willReturn($workflow);
+
         $this->context = new Context();
         $this->context->getPayload()->set('foo', 'bar');
 
@@ -36,27 +40,22 @@ final class PayloadPropertyConditionSpec extends ObjectBehavior
         $this->shouldImplement(Condition::class);
     }
 
-    public function it_compares_payload_property_with_expected_value(
-        Transition $transition,
-        Item $item,
-    ): void {
-        $this->match($transition, $item, $this->context);
+    public function it_compares_payload_property_with_expected_value(Workflow $workflow, Item $item): void
+    {
+        $this->match(new Transition('transition', $workflow->getWrappedObject()), $item, $this->context);
     }
 
-    public function it_supports_different_operators(
-        Transition $transition,
-        Item $item,
-    ): void {
+    public function it_supports_different_operators(Workflow $workflow, Item $item): void
+    {
         $this->beConstructedWith('foo', 3, Comparison::LESSER_THAN);
-        $this->match($transition, $item, $this->context);
+        $this->match(new Transition('transition', $workflow->getWrappedObject()), $item, $this->context);
     }
 
-    public function it_creates_an_error_when_comparison_fails(
-        Transition $transition,
-        Item $item,
-    ): void {
+    public function it_creates_an_error_when_comparison_fails(Workflow $workflow, Item $item): void
+    {
         $this->beConstructedWith('foo', 3, Comparison::EQUALS);
 
+        $transition = new Transition('transition', $workflow->getWrappedObject());
         $this->match($transition, $item, $this->context)->shouldReturn(false);
 
         expect($this->context->getErrorCollection()->getErrors())->shouldBe(

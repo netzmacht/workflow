@@ -70,22 +70,17 @@ class Workflow extends Base
     /**
      * Add a transition to the workflow.
      *
-     * @param Transition $transition      Transition to be added.
-     * @param bool       $startTransition True if transition is the start transition.
+     * @param Transition $transition Transition to be added.
      *
      * @return $this
      */
-    public function addTransition(Transition $transition, bool $startTransition = false): self
+    public function addTransition(Transition $transition): self
     {
         if (in_array($transition, $this->transitions)) {
             return $this;
         }
 
         $this->transitions[] = $transition;
-
-        if ($startTransition) {
-            $this->startTransition = $transition;
-        }
 
         return $this;
     }

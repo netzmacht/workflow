@@ -8,13 +8,18 @@ use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
+use Netzmacht\Workflow\Flow\Workflow;
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 
 use function expect;
 
 final class AndConditionSpec extends ObjectBehavior
 {
-    public const string ERROR_COLLECTION_CLASS = 'Netzmacht\Workflow\Flow\Context\ErrorCollection';
+    public function let(Workflow $workflow): void
+    {
+        $workflow->addTransition(Argument::type(Transition::class))->willReturn($workflow);
+    }
 
     public function it_is_initializable(): void
     {
@@ -29,10 +34,11 @@ final class AndConditionSpec extends ObjectBehavior
     public function it_matches_if_all_children_matches(
         Condition $conditionA,
         Condition $conditionB,
-        Transition $transition,
+        Workflow $workflow,
         Item $item,
     ): void {
-        $context = new Context();
+        $context    = new Context();
+        $transition = new Transition('transition', $workflow->getWrappedObject());
 
         $conditionA->match($transition, $item, $context)->willReturn(true);
         $conditionB->match($transition, $item, $context)->willReturn(true);
@@ -46,10 +52,11 @@ final class AndConditionSpec extends ObjectBehavior
     public function it_does_not_match_if_one_child_does_not(
         Condition $conditionA,
         Condition $conditionB,
-        Transition $transition,
+        Workflow $workflow,
         Item $item,
     ): void {
-        $context = new Context();
+        $context    = new Context();
+        $transition = new Transition('transition', $workflow->getWrappedObject());
 
         $conditionA->match($transition, $item, $context)->willReturn(true);
         $conditionB->match($transition, $item, $context)->willReturn(false);
@@ -63,9 +70,11 @@ final class AndConditionSpec extends ObjectBehavior
     }
 
     public function it_matches_if_no_children_exists(
-        Transition $transition,
+        Workflow $workflow,
         Item $item,
     ): void {
+        $transition = new Transition('transition', $workflow->getWrappedObject());
+
         $this->match($transition, $item, new Context())->shouldReturn(true);
     }
 }

@@ -20,7 +20,7 @@ use function sprintf;
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @psalm-suppress ClassMustBeFinal
  */
-class Transition extends Base
+final class Transition extends Base
 {
     /**
      * Actions which will be executed during the transition.
@@ -61,7 +61,7 @@ class Transition extends Base
     public function __construct(
         string $name,
         private readonly Workflow $workflow,
-        private readonly Step|null $stepTo,
+        private readonly Step|null $stepTo = null,
         string $label = '',
         array $config = [],
     ) {
