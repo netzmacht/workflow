@@ -32,8 +32,7 @@ final class WorkflowSpec extends ObjectBehavior
     {
         $this->beConstructedWith(self::NAME, self::PROVIDER);
 
-        $this->step = new Step(self::START_STEP);
-
+        $this->step       = new Step(self::START_STEP);
         $this->transition = new Transition('start', $this->getWrappedObject(), $this->step);
 
         $this->addStep($this->step);

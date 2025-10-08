@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Manager;
 
+use DateTimeImmutable;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\StateRepository;
 use Netzmacht\Workflow\Exception\WorkflowNotFound;
@@ -216,16 +217,12 @@ final class WorkflowManagerSpec extends ObjectBehavior
 
     public function it_creates_an_item(
         StateRepository $stateRepository,
-        State $state,
     ): void {
         $entityId = EntityId::fromProviderNameAndId(self::ENTITY_PROVIDER_NAME, self::ENTITY_ID);
-
-        $state->getStepName()->willReturn('step');
-        $state->getWorkflowName()->willReturn('workflow');
-        $state->isSuccessful()->willReturn(true);
+        $state    = new State($entityId, 'workflow', 'start', 'step', true, [], new DateTimeImmutable());
 
         $stateRepository->find($entityId)->willReturn([$state]);
 
-        $this->createItem($entityId, self::$entity)->shouldHaveType('Netzmacht\Workflow\Flow\Item');
+        $this->createItem($entityId, self::$entity)->shouldHaveType(Item::class);
     }
 }

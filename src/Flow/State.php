@@ -17,7 +17,7 @@ use function sprintf;
  * @psalm-suppress ClassMustBeFinal
  * @psalm-import-type TErrorArray from ErrorCollection
  */
-class State
+final class State
 {
     /**
      * The state id.

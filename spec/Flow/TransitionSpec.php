@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Flow;
 
+use DateTimeImmutable;
+use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Action;
 use Netzmacht\Workflow\Flow\Base;
 use Netzmacht\Workflow\Flow\Condition\Transition\AndCondition;
@@ -29,11 +31,22 @@ final class TransitionSpec extends ObjectBehavior
 
     private Step $step;
 
+    private State $state;
+
     public function let(Workflow $workflow): void
     {
         $workflow->addTransition(Argument::any())->willReturn($workflow);
 
-        $this->step = new Step('step');
+        $this->step  = new Step('step');
+        $this->state = new State(
+            EntityId::fromProviderNameAndId('test', 5),
+            'workflow',
+            'start',
+            'step',
+            true,
+            [],
+            new DateTimeImmutable(),
+        );
 
         $this->beConstructedWith(self::NAME, $workflow, $this->step);
     }
@@ -287,9 +300,18 @@ final class TransitionSpec extends ObjectBehavior
         Item $item,
         Action $action,
         Action $postAction,
-        State $state,
     ): void {
         $context = new Context();
+
+        $newState = new State(
+            EntityId::fromProviderNameAndId('test', 5),
+            'workflow',
+            'transition',
+            'target',
+            true,
+            [],
+            new DateTimeImmutable(),
+        );
 
         $this->addAction($action);
         $this->addPostAction($postAction);
@@ -300,7 +322,7 @@ final class TransitionSpec extends ObjectBehavior
 
         $item->getLatestStateOccurred()
             ->shouldBeCalled()
-            ->willReturn($state);
+            ->willReturn($this->state, $newState);
 
         $action->transit($this->getWrappedObject(), $item, $context)
             ->shouldBeCalledOnce();
@@ -309,20 +331,27 @@ final class TransitionSpec extends ObjectBehavior
             ->shouldBeCalledOnce();
 
         $item->transit(Argument::type(Transition::class), $context, true)
+            ->willReturn($newState)
             ->shouldBeCalledOnce();
 
-        $this->execute($item, $context)->shouldReturn($state);
+        $this->execute($item, $context)->shouldReturn($newState);
     }
 
-    public function it_executes_actions(
-        Item $item,
-        Action $action,
-        State $state,
-        State $newState,
-    ): void {
+    public function it_executes_actions(Item $item, Action $action): void
+    {
         $context = new Context();
 
-        $item->getLatestStateOccurred()->willReturn($state, $newState);
+        $newState = new State(
+            EntityId::fromProviderNameAndId('test', 5),
+            'workflow',
+            'transition',
+            'target',
+            true,
+            [],
+            new DateTimeImmutable(),
+        );
+
+        $item->getLatestStateOccurred()->willReturn($this->state, $newState);
         $item->isWorkflowStarted()->willReturn(true);
         $item->transit($this->getWrappedObject(), $context, true)->willReturn($newState);
         $action->transit($this, $item, $context)->shouldBeCalled();
@@ -331,14 +360,21 @@ final class TransitionSpec extends ObjectBehavior
         $this->execute($item, $context)->shouldReturn($newState);
     }
 
-    public function it_catches_action_failed_exceptions_during_action_execution(
-        Item $item,
-        State $state,
-        State $newState,
-    ): void {
+    public function it_catches_action_failed_exceptions_during_action_execution(Item $item): void
+    {
         $context = new Context();
 
-        $item->getLatestStateOccurred()->willReturn($state, $newState);
+        $newState = new State(
+            EntityId::fromProviderNameAndId('test', 5),
+            'workflow',
+            'transition',
+            'target',
+            true,
+            [],
+            new DateTimeImmutable(),
+        );
+
+        $item->getLatestStateOccurred()->willReturn($this->state, $newState);
         $item->isWorkflowStarted()->willReturn(true);
         $item->transit($this->getWrappedObject(), $context, false)->willReturn($newState);
 
@@ -347,15 +383,21 @@ final class TransitionSpec extends ObjectBehavior
         $this->execute($item, $context);
     }
 
-    public function it_executes_post_actions(
-        Item $item,
-        Action $action,
-        State $state,
-        State $newState,
-    ): void {
+    public function it_executes_post_actions(Item $item, Action $action): void
+    {
         $context = new Context();
 
-        $item->getLatestStateOccurred()->willReturn($state, $newState);
+        $newState = new State(
+            EntityId::fromProviderNameAndId('test', 5),
+            'workflow',
+            'transition',
+            'target',
+            true,
+            [],
+            new DateTimeImmutable(),
+        );
+
+        $item->getLatestStateOccurred()->willReturn($this->state, $newState);
         $item->isWorkflowStarted()->willReturn(true);
         $item->transit($this->getWrappedObject(), $context, true)->willReturn($newState);
 
@@ -367,12 +409,20 @@ final class TransitionSpec extends ObjectBehavior
 
     public function it_catches_action_failed_exceptions_during_post_action_execution(
         Item $item,
-        State $state,
-        State $newState,
     ): void {
         $context = new Context();
 
-        $item->getLatestStateOccurred()->willReturn($state, $newState);
+        $newState = new State(
+            EntityId::fromProviderNameAndId('test', 5),
+            'workflow',
+            'transition',
+            'target',
+            true,
+            [],
+            new DateTimeImmutable(),
+        );
+
+        $item->getLatestStateOccurred()->willReturn($this->state, $newState);
         $item->isWorkflowStarted()->willReturn(true);
         $item->transit($this->getWrappedObject(), $context, true)->willReturn($newState);
 

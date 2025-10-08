@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Handler;
 
+use DateTimeImmutable;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Data\EntityRepository;
 use Netzmacht\Workflow\Data\StateRepository;
@@ -36,18 +37,21 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
 
     private Step $step;
 
+    private State $state;
+
     public function let(
         Item $item,
         Workflow $workflow,
         EntityRepository $entityRepository,
         StateRepository $stateRepository,
         TransactionHandler $transactionHandler,
-        State $state,
     ): void {
         $this->entityId = EntityId::fromProviderNameAndId('entity', '2');
 
         $this->step = new Step(self::STEP_NAME);
         $this->step->allowTransition(self::TRANSITION_NAME);
+
+        $this->state = new State($this->entityId, 'workflow', 'start', 'step', true, [], new DateTimeImmutable());
 
         $workflow->addTransition(Argument::type(Transition::class))->willReturn($workflow);
         $this->transition = new Transition(
@@ -63,7 +67,7 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $workflow->getTransition(self::TRANSITION_NAME)->willReturn($this->transition);
 
         $item->transit($this->transition, Argument::type(Context::class))
-            ->willReturn($state);
+            ->willReturn($this->state);
 
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn(self::STEP_NAME);
@@ -214,9 +218,19 @@ final class RepositoryBasedTransitionHandlerSpec extends ObjectBehavior
         $this->shouldThrow(WorkflowException::class)->duringTransit();
     }
 
-    public function it_transits_to_next_state(Item $item, State $state, State $newState): void
+    public function it_transits_to_next_state(Item $item): void
     {
-        $item->getLatestStateOccurred()->willReturn($state);
+        $newState = new State(
+            $this->entityId,
+            'workflow',
+            self::TRANSITION_NAME,
+            self::STEP_NAME,
+            true,
+            [],
+            new DateTimeImmutable(),
+        );
+
+        $item->getLatestStateOccurred()->willReturn($this->state);
         $item->releaseRecordedStateChanges()
             ->shouldBeCalledOnce()
             ->willReturn([$newState]);
