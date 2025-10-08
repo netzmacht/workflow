@@ -95,27 +95,22 @@ final class WorkflowSpec extends ObjectBehavior
         $this->getTransitions()->shouldReturn([$transition]);
     }
 
-    public function it_knows_if_start_transition_is_available_for_an_item(
-        Item $item,
-        Context $context,
-    ): void {
-        $item->isWorkflowStarted()->willReturn(false);
-
-        $this->isTransitionAvailable($item, $context, 'start')->shouldReturn(true);
-    }
-
-    public function it_knows_if_start_transition_is_not_available_for_an_item(Item $item, Context $context): void
+    public function it_knows_if_start_transition_is_available_for_an_item(Item $item): void
     {
         $item->isWorkflowStarted()->willReturn(false);
 
-        $this->isTransitionAvailable($item, $context, 'start2')->shouldReturn(false);
+        $this->isTransitionAvailable($item, new Context(), 'start')->shouldReturn(true);
     }
 
-    public function it_knows_if_transition_is_not_available_for_an_item(
-        Item $item,
-        Step $step,
-        Context $context,
-    ): void {
+    public function it_knows_if_start_transition_is_not_available_for_an_item(Item $item): void
+    {
+        $item->isWorkflowStarted()->willReturn(false);
+
+        $this->isTransitionAvailable($item, new Context(), 'start2')->shouldReturn(false);
+    }
+
+    public function it_knows_if_transition_is_not_available_for_an_item(Item $item, Step $step): void
+    {
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('started');
 
@@ -123,17 +118,18 @@ final class WorkflowSpec extends ObjectBehavior
         $step->isTransitionAllowed('start')->willReturn(false);
         $this->addStep($step);
 
-        $this->isTransitionAvailable($item, $context, 'start')->shouldReturn(false);
+        $this->isTransitionAvailable($item, new Context(), 'start')->shouldReturn(false);
     }
 
     public function it_knows_if_transition_is_available_for_an_item(
         Item $item,
         Step $step,
-        Context $context,
         Transition $transition,
     ): void {
         $item->isWorkflowStarted()->willReturn(true);
         $item->getCurrentStepName()->willReturn('started');
+
+        $context = new Context();
 
         $transition->getName()->willReturn('next');
         $transition->isAvailable($item, $context)->shouldBeCalled()->willReturn(true);

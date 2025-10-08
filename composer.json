@@ -26,6 +26,7 @@
     "beberlei/assert": "^2.0 || ^3.0"
   },
   "require-dev": {
+    "friends-of-phpspec/phpspec-expect": "^4.1",
     "netzmacht/phpspec-phpcq-plugin": "@dev",
     "phpcq/runner-bootstrap": "@dev",
     "phpspec/phpspec": "^7.0 || ^8.0"

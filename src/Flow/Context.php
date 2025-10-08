@@ -12,7 +12,7 @@ use Netzmacht\Workflow\Flow\Context\Properties;
  *
  * @psalm-suppress ClassMustBeFinal
  */
-class Context
+final class Context
 {
     public const string NAMESPACE_DEFAULT = 'default';
 

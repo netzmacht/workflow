@@ -8,7 +8,6 @@ use DateTimeImmutable;
 use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Context\ErrorCollection;
-use Netzmacht\Workflow\Flow\Context\Properties;
 use Netzmacht\Workflow\Flow\Exception\FlowException;
 use Netzmacht\Workflow\Flow\State;
 use Netzmacht\Workflow\Flow\Step;
@@ -166,11 +165,7 @@ final class StateSpec extends ObjectBehavior
         Workflow $workflow,
         Transition $transition,
         Step $stepTo,
-        Context $context,
     ): void {
-        $errorCollection = new ErrorCollection();
-        $properties      = new Properties();
-
         $stepTo->getName()->willReturn(self::STEP_TO);
 
         $transition->getWorkflow()->willReturn($workflow);
@@ -179,18 +174,12 @@ final class StateSpec extends ObjectBehavior
         $transition->getName()
             ->willReturn('transition');
 
-        $context->getProperties()
-            ->willReturn($properties);
-
-        $context->getErrorCollection()
-            ->willReturn($errorCollection);
-
         $this->beConstructedThrough(
             'start',
             [
                 EntityId::fromProviderNameAndId('example', 1),
                 $transition,
-                $context,
+                new Context(),
                 true,
             ],
         );
@@ -199,29 +188,19 @@ final class StateSpec extends ObjectBehavior
     public function it_fails_constructing_with_start_if_target_step_is_not_defined(
         Workflow $workflow,
         Transition $transition,
-        Context $context,
     ): void {
-        $errorCollection = new ErrorCollection();
-        $properties      = new Properties();
-
         $transition->getWorkflow()->willReturn($workflow);
         $transition->getStepTo()->willReturn(null);
 
         $transition->getName()
             ->willReturn('transition');
 
-        $context->getProperties()
-            ->willReturn($properties);
-
-        $context->getErrorCollection()
-            ->willReturn($errorCollection);
-
         $this->beConstructedThrough(
             'start',
             [
                 EntityId::fromProviderNameAndId('example', 1),
                 $transition,
-                $context,
+                new Context(),
                 true,
             ],
         );
@@ -229,15 +208,8 @@ final class StateSpec extends ObjectBehavior
         $this->shouldThrow(FlowException::class)->duringInstantiation();
     }
 
-    public function it_transits_to_next_state(
-        Workflow $workflow,
-        Transition $transition,
-        Step $stepTo,
-        Context $context,
-    ): void {
-        $errorCollection = new ErrorCollection();
-        $properties      = new Properties();
-
+    public function it_transits_to_next_state(Workflow $workflow, Transition $transition, Step $stepTo): void
+    {
         $workflow
             ->getName()
             ->shouldNotBeCalled();
@@ -251,13 +223,7 @@ final class StateSpec extends ObjectBehavior
         $transition->getName()
             ->willReturn('transition');
 
-        $context->getProperties()
-            ->willReturn($properties);
-
-        $context->getErrorCollection()
-            ->willReturn($errorCollection);
-
-        $this->transit($transition, $context, true)
+        $this->transit($transition, new Context(), true)
             ->shouldBeAnInstanceOf(State::class);
     }
 
@@ -265,11 +231,7 @@ final class StateSpec extends ObjectBehavior
         Workflow $workflow,
         Transition $transition,
         Step $stepTo,
-        Context $context,
     ): void {
-        $errorCollection = new ErrorCollection();
-        $properties      = new Properties();
-
         $workflow
             ->getName()
             ->shouldBeCalled()
@@ -284,33 +246,16 @@ final class StateSpec extends ObjectBehavior
         $transition->getName()
             ->willReturn('transition');
 
-        $context->getProperties()
-            ->willReturn($properties);
-
-        $context->getErrorCollection()
-            ->willReturn($errorCollection);
-
-        $this->transit($transition, $context, true)
+        $this->transit($transition, new Context(), true)
             ->shouldBeAnInstanceOf(State::class);
     }
 
-    public function it_fails_to_transit_if_target_step_is_not_defined(Transition $transition, Context $context): void
+    public function it_fails_to_transit_if_target_step_is_not_defined(Transition $transition): void
     {
-        $errorCollection = new ErrorCollection();
-        $properties      = new Properties();
-
         $transition->getStepTo()->willReturn(null);
-
-        $transition->getName()
-            ->willReturn('transition');
-
-        $context->getProperties()
-            ->willReturn($properties);
-
-        $context->getErrorCollection()
-            ->willReturn($errorCollection);
+        $transition->getName()->willReturn('transition');
 
         $this->shouldThrow(FlowException::class)
-            ->during('transit', [$transition, $context, true]);
+            ->during('transit', [$transition, new Context(), true]);
     }
 }

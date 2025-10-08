@@ -6,11 +6,11 @@ namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Context;
-use Netzmacht\Workflow\Flow\Context\ErrorCollection;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
+
+use function expect;
 
 final class AndConditionSpec extends ObjectBehavior
 {
@@ -31,12 +31,8 @@ final class AndConditionSpec extends ObjectBehavior
         Condition $conditionB,
         Transition $transition,
         Item $item,
-        Context $context,
     ): void {
-        $errorCollection = new ErrorCollection();
-
-        $context->createCleanCopy()->willReturn($context);
-        $context->getErrorCollection()->willReturn($errorCollection);
+        $context = new Context();
 
         $conditionA->match($transition, $item, $context)->willReturn(true);
         $conditionB->match($transition, $item, $context)->willReturn(true);
@@ -52,34 +48,24 @@ final class AndConditionSpec extends ObjectBehavior
         Condition $conditionB,
         Transition $transition,
         Item $item,
-        Context $context,
     ): void {
-        $errorCollection = new ErrorCollection();
-
-        $context->createCleanCopy()->willReturn($context);
-        $context->getErrorCollection()->willReturn($errorCollection);
+        $context = new Context();
 
         $conditionA->match($transition, $item, $context)->willReturn(true);
         $conditionB->match($transition, $item, $context)->willReturn(false);
-
-        $context->addError(Argument::cetera())->shouldBeCalled();
 
         $this->addCondition($conditionA);
         $this->addCondition($conditionB);
 
         $this->match($transition, $item, $context)->shouldReturn(false);
+
+        expect($context->getErrorCollection()->hasErrors())->shouldBe(true);
     }
 
     public function it_matches_if_no_children_exists(
         Transition $transition,
         Item $item,
-        Context $context,
     ): void {
-        $errorCollection = new ErrorCollection();
-
-        $context->createCleanCopy()->willReturn($context);
-        $context->getErrorCollection()->willReturn($errorCollection);
-
-        $this->match($transition, $item, $context)->shouldReturn(true);
+        $this->match($transition, $item, new Context())->shouldReturn(true);
     }
 }
