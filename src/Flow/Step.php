@@ -12,8 +12,6 @@ use function in_array;
 
 /**
  * Class Step defines a fixed step in the workflow process.
- *
- * @psalm-suppress ClassMustBeFinal
  */
 final class Step extends Base
 {

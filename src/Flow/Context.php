@@ -9,8 +9,6 @@ use Netzmacht\Workflow\Flow\Context\Properties;
 
 /**
  * Class Context provides extra information for a transition.
- *
- * @psalm-suppress ClassMustBeFinal
  */
 final class Context
 {

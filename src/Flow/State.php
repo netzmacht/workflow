@@ -14,7 +14,6 @@ use function sprintf;
 /**
  * Class State stores information about the current state of an entity.
  *
- * @psalm-suppress ClassMustBeFinal
  * @psalm-import-type TErrorArray from ErrorCollection
  */
 final class State

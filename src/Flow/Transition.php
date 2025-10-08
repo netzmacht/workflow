@@ -18,7 +18,6 @@ use function sprintf;
  * Class Transition handles the transition from a step to another.
  *
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
- * @psalm-suppress ClassMustBeFinal
  */
 final class Transition extends Base
 {
