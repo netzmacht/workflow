@@ -58,7 +58,7 @@ final class Comparison
      */
     public static function equals(mixed $valueA, mixed $valueB): bool
     {
-        return $valueA === $valueB;
+        return $valueA == $valueB;
     }
 
     /**
