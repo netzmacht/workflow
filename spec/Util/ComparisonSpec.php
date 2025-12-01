@@ -19,6 +19,8 @@ final class ComparisonSpec extends ObjectBehavior
     {
         $this->equals(1, 2)->shouldReturn(false);
         $this->equals(1, 1)->shouldReturn(true);
+        $this->equals(1, true)->shouldReturn(true);
+        $this->equals('1', true)->shouldReturn(true);
     }
 
     public function it_checks_if_values_not_equals(): void
