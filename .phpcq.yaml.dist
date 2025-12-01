@@ -78,7 +78,9 @@ tasks:
       exclude:
         - spec/Manager/WorkflowManagerSpec.php
         - spec/Flow/Condition/Transition/ConditionCollectionSpec.php
+        - spec/Flow/Condition/Transition/AndConditionSpec.php
         - spec/Flow/Condition/Workflow/ConditionCollectionSpec.php
+        - spec/Flow/Condition/Transition/OrConditionSpec.php
   phpcs:
     config:
       standard: ~

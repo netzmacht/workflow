@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
+use Netzmacht\Workflow\Data\EntityId;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
 use Netzmacht\Workflow\Flow\Condition\Transition\PayloadPropertyCondition;
 use Netzmacht\Workflow\Flow\Context;
@@ -40,21 +41,26 @@ final class PayloadPropertyConditionSpec extends ObjectBehavior
         $this->shouldImplement(Condition::class);
     }
 
-    public function it_compares_payload_property_with_expected_value(Workflow $workflow, Item $item): void
+    public function it_compares_payload_property_with_expected_value(Workflow $workflow): void
     {
+        $item = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
+
         $this->match(new Transition('transition', $workflow->getWrappedObject()), $item, $this->context);
     }
 
-    public function it_supports_different_operators(Workflow $workflow, Item $item): void
+    public function it_supports_different_operators(Workflow $workflow): void
     {
+        $item = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
+
         $this->beConstructedWith('foo', 3, Comparison::LESSER_THAN);
         $this->match(new Transition('transition', $workflow->getWrappedObject()), $item, $this->context);
     }
 
-    public function it_creates_an_error_when_comparison_fails(Workflow $workflow, Item $item): void
+    public function it_creates_an_error_when_comparison_fails(Workflow $workflow): void
     {
         $this->beConstructedWith('foo', 3, Comparison::EQUALS);
 
+        $item       = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
         $transition = new Transition('transition', $workflow->getWrappedObject());
         $this->match($transition, $item, $this->context)->shouldReturn(false);
 

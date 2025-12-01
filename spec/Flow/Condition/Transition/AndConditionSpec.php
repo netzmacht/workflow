@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace spec\Netzmacht\Workflow\Flow\Condition\Transition;
 
+use Netzmacht\Workflow\Data\EntityId;
+use Netzmacht\Workflow\Flow\Condition\Transition\AndCondition;
 use Netzmacht\Workflow\Flow\Condition\Transition\Condition;
+use Netzmacht\Workflow\Flow\Condition\Transition\ConditionCollection;
 use Netzmacht\Workflow\Flow\Context;
 use Netzmacht\Workflow\Flow\Item;
 use Netzmacht\Workflow\Flow\Transition;
@@ -23,20 +26,20 @@ final class AndConditionSpec extends ObjectBehavior
 
     public function it_is_initializable(): void
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Flow\Condition\Transition\AndCondition');
+        $this->shouldHaveType(AndCondition::class);
     }
 
     public function it_is_a_condition_collection(): void
     {
-        $this->shouldHaveType('Netzmacht\Workflow\Flow\Condition\Transition\ConditionCollection');
+        $this->shouldHaveType(ConditionCollection::class);
     }
 
     public function it_matches_if_all_children_matches(
         Condition $conditionA,
         Condition $conditionB,
         Workflow $workflow,
-        Item $item,
     ): void {
+        $item       = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
         $context    = new Context();
         $transition = new Transition('transition', $workflow->getWrappedObject());
 
@@ -53,8 +56,8 @@ final class AndConditionSpec extends ObjectBehavior
         Condition $conditionA,
         Condition $conditionB,
         Workflow $workflow,
-        Item $item,
     ): void {
+        $item       = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
         $context    = new Context();
         $transition = new Transition('transition', $workflow->getWrappedObject());
 
@@ -71,8 +74,8 @@ final class AndConditionSpec extends ObjectBehavior
 
     public function it_matches_if_no_children_exists(
         Workflow $workflow,
-        Item $item,
     ): void {
+        $item       = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
         $transition = new Transition('transition', $workflow->getWrappedObject());
 
         $this->match($transition, $item, new Context())->shouldReturn(true);

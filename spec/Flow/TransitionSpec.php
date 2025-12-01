@@ -83,8 +83,10 @@ final class TransitionSpec extends ObjectBehavior
         $this->getStepTo()->shouldReturn($this->step);
     }
 
-    public function it_knows_if_input_data_is_not_required(Action $action, Item $item): void
+    public function it_knows_if_input_data_is_not_required(Action $action): void
     {
+        $item = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
+
         $this->getRequiredPayloadProperties($item)->shouldReturn([]);
 
         $action->getRequiredPayloadProperties($item)->willReturn([]);
@@ -93,8 +95,10 @@ final class TransitionSpec extends ObjectBehavior
         $this->getRequiredPayloadProperties($item)->shouldReturn([]);
     }
 
-    public function it_knows_if_input_data_is_required(Action $action, Item $item): void
+    public function it_knows_if_input_data_is_required(Action $action): void
     {
+        $item = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
+
         $this->getRequiredPayloadProperties($item)->shouldReturn([]);
 
         $action->getRequiredPayloadProperties($item)->willReturn(['foo']);
@@ -103,9 +107,10 @@ final class TransitionSpec extends ObjectBehavior
         $this->getRequiredPayloadProperties($item)->shouldReturn(['foo']);
     }
 
-    public function it_checks_a_precondition(Condition $condition, Item $item): void
+    public function it_checks_a_precondition(Condition $condition): void
     {
         $context = new Context();
+        $item    = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
 
         $condition->match($this, $item, $context)->willReturn(true);
 
@@ -113,9 +118,10 @@ final class TransitionSpec extends ObjectBehavior
         $this->checkPreCondition($item, $context)->shouldReturn(true);
     }
 
-    public function it_checks_a_precondition_failing(Condition $condition, Item $item): void
+    public function it_checks_a_precondition_failing(Condition $condition): void
     {
         $context = new Context();
+        $item    = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
 
         $condition->match($this, $item, $context)->willReturn(false);
 
@@ -137,9 +143,10 @@ final class TransitionSpec extends ObjectBehavior
         $this->getPreCondition()->shouldHaveType(AndCondition::class);
     }
 
-    public function it_checks_a_condition(Condition $condition, Item $item): void
+    public function it_checks_a_condition(Condition $condition): void
     {
         $context = new Context();
+        $item    = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
 
         $condition->match($this, $item, $context)->willReturn(true);
 
@@ -147,9 +154,10 @@ final class TransitionSpec extends ObjectBehavior
         $this->checkCondition($item, $context)->shouldReturn(true);
     }
 
-    public function it_checks_a_condition_failing(Condition $condition, Item $item): void
+    public function it_checks_a_condition_failing(Condition $condition): void
     {
         $context = new Context();
+        $item    = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
 
         $condition->match($this, $item, $context)->willReturn(false);
 
@@ -157,12 +165,10 @@ final class TransitionSpec extends ObjectBehavior
         $this->checkCondition($item, $context)->shouldReturn(false);
     }
 
-    public function it_is_allowed_by_conditions(
-        Condition $preCondition,
-        Condition $condition,
-        Item $item,
-    ): void {
+    public function it_is_allowed_by_conditions(Condition $preCondition, Condition $condition): void
+    {
         $context = new Context();
+        $item    = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
 
         $condition->match($this, $item, $context)->willReturn(true);
         $preCondition->match($this, $item, $context)->willReturn(true);
@@ -173,12 +179,10 @@ final class TransitionSpec extends ObjectBehavior
         $this->isAllowed($item, $context)->shouldReturn(true);
     }
 
-    public function it_is_not_allowed_by_failing_pre_condition(
-        Condition $preCondition,
-        Condition $condition,
-        Item $item,
-    ): void {
+    public function it_is_not_allowed_by_failing_pre_condition(Condition $preCondition, Condition $condition): void
+    {
         $context = new Context();
+        $item    = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
 
         $condition->match($this, $item, $context)->willReturn(true);
         $preCondition->match($this, $item, $context)->willReturn(false);
@@ -189,12 +193,10 @@ final class TransitionSpec extends ObjectBehavior
         $this->isAllowed($item, $context)->shouldReturn(false);
     }
 
-    public function it_is_not_allowed_by_failing_condition(
-        Condition $preCondition,
-        Condition $condition,
-        Item $item,
-    ): void {
+    public function it_is_not_allowed_by_failing_condition(Condition $preCondition, Condition $condition): void
+    {
         $context = new Context();
+        $item    = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
 
         $condition->match($this, $item, $context)->willReturn(false);
         $preCondition->match($this, $item, $context)->willReturn(true);
@@ -205,12 +207,10 @@ final class TransitionSpec extends ObjectBehavior
         $this->isAllowed($item, $context)->shouldReturn(false);
     }
 
-    public function it_is_available_when_passing_conditions(
-        Condition $preCondition,
-        Condition $condition,
-        Item $item,
-    ): void {
+    public function it_is_available_when_passing_conditions(Condition $preCondition, Condition $condition): void
+    {
         $context = new Context();
+        $item    = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
 
         $condition->match($this->getWrappedObject(), $item, Argument::type(Context::class))->willReturn(true);
         $preCondition->match($this->getWrappedObject(), $item, Argument::type(Context::class))->willReturn(true);
@@ -221,12 +221,10 @@ final class TransitionSpec extends ObjectBehavior
         $this->isAvailable($item, $context)->shouldReturn(true);
     }
 
-    public function it_is_not_available_when_condition_fails(
-        Condition $preCondition,
-        Condition $condition,
-        Item $item,
-    ): void {
+    public function it_is_not_available_when_condition_fails(Condition $preCondition, Condition $condition): void
+    {
         $context = new Context();
+        $item    = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
 
         $condition
             ->match($this->getWrappedObject(), $item, Argument::type(Context::class))
@@ -247,10 +245,10 @@ final class TransitionSpec extends ObjectBehavior
     public function it_is_not_available_when_precondition_fails(
         Condition $preCondition,
         Condition $condition,
-        Item $item,
         Action $action,
     ): void {
         $context = new Context();
+        $item    = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
 
         $action->getRequiredPayloadProperties($item)->willReturn(['foo']);
         $this->addAction($action);
@@ -274,10 +272,10 @@ final class TransitionSpec extends ObjectBehavior
     public function it_only_recognize_precondition_when_input_is_required(
         Condition $preCondition,
         Condition $condition,
-        Item $item,
         Action $action,
     ): void {
         $context = new Context();
+        $item    = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
 
         $preCondition
             ->match($this->getWrappedObject(), $item, Argument::type(Context::class))
@@ -296,12 +294,10 @@ final class TransitionSpec extends ObjectBehavior
         $this->isAvailable($item, $context)->shouldReturn(true);
     }
 
-    public function it_executes(
-        Item $item,
-        Action $action,
-        Action $postAction,
-    ): void {
+    public function it_executes(Action $action, Action $postAction): void
+    {
         $context = new Context();
+        $item    = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
 
         $newState = new State(
             EntityId::fromProviderNameAndId('test', 5),
@@ -316,30 +312,19 @@ final class TransitionSpec extends ObjectBehavior
         $this->addAction($action);
         $this->addPostAction($postAction);
 
-        $item->isWorkflowStarted()
-            ->shouldBeCalled()
-            ->willReturn(true);
-
-        $item->getLatestStateOccurred()
-            ->shouldBeCalled()
-            ->willReturn($this->state, $newState);
-
         $action->transit($this->getWrappedObject(), $item, $context)
             ->shouldBeCalledOnce();
 
         $postAction->transit($this->getWrappedObject(), $item, $context)
             ->shouldBeCalledOnce();
 
-        $item->transit(Argument::type(Transition::class), $context, true)
-            ->willReturn($newState)
-            ->shouldBeCalledOnce();
-
         $this->execute($item, $context)->shouldReturn($newState);
     }
 
-    public function it_executes_actions(Item $item, Action $action): void
+    public function it_executes_actions(Action $action): void
     {
         $context = new Context();
+        $item    = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
 
         $newState = new State(
             EntityId::fromProviderNameAndId('test', 5),
@@ -351,41 +336,26 @@ final class TransitionSpec extends ObjectBehavior
             new DateTimeImmutable(),
         );
 
-        $item->getLatestStateOccurred()->willReturn($this->state, $newState);
-        $item->isWorkflowStarted()->willReturn(true);
-        $item->transit($this->getWrappedObject(), $context, true)->willReturn($newState);
         $action->transit($this, $item, $context)->shouldBeCalled();
         $this->addAction($action);
 
         $this->execute($item, $context)->shouldReturn($newState);
     }
 
-    public function it_catches_action_failed_exceptions_during_action_execution(Item $item): void
+    public function it_catches_action_failed_exceptions_during_action_execution(): void
     {
         $context = new Context();
-
-        $newState = new State(
-            EntityId::fromProviderNameAndId('test', 5),
-            'workflow',
-            'transition',
-            'target',
-            true,
-            [],
-            new DateTimeImmutable(),
-        );
-
-        $item->getLatestStateOccurred()->willReturn($this->state, $newState);
-        $item->isWorkflowStarted()->willReturn(true);
-        $item->transit($this->getWrappedObject(), $context, false)->willReturn($newState);
+        $item    = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
 
         $this->addAction($this->throwingAction());
 
         $this->execute($item, $context);
     }
 
-    public function it_executes_post_actions(Item $item, Action $action): void
+    public function it_executes_post_actions(Action $action): void
     {
         $context = new Context();
+        $item    = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
 
         $newState = new State(
             EntityId::fromProviderNameAndId('test', 5),
@@ -407,10 +377,10 @@ final class TransitionSpec extends ObjectBehavior
         $this->execute($item, $context)->shouldReturn($newState);
     }
 
-    public function it_catches_action_failed_exceptions_during_post_action_execution(
-        Item $item,
-    ): void {
+    public function it_catches_action_failed_exceptions_during_post_action_execution(): void
+    {
         $context = new Context();
+        $item    = Item::initialize(EntityId::fromProviderNameAndId('test', 5), ['id' => 5]);
 
         $newState = new State(
             EntityId::fromProviderNameAndId('test', 5),
