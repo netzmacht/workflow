@@ -55,6 +55,8 @@ final class Comparison
 
     /**
      * Consider if two values equal.
+     *
+     * phpcs:disable SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
      */
     public static function equals(mixed $valueA, mixed $valueB): bool
     {
